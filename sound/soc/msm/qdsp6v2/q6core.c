@@ -42,7 +42,7 @@ static int32_t aprv2_core_fn_q(struct apr_client_data *data, void *priv)
 	int i, j;
 
 	if (data == NULL) {
-		pr_err("%s: data argument is null", __func__);
+		pr_err("%s: data argument is null\n", __func__);
 		return -EINVAL;
 	}
 
