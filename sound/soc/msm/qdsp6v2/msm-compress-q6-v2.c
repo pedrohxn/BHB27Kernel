@@ -1406,6 +1406,7 @@ static int msm_compr_trigger(struct snd_compr_stream *cstream, int cmd)
 			prtd->gapless_state.gapless_transition = 1;
 			prtd->marker_timestamp = 0;
 			prtd->dsp_fragments_sent = 0;
+
 			/*
 			Don't reset these as these vars map to
 			total_bytes_transferred and total_bytes_available
