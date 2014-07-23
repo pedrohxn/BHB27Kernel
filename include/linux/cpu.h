@@ -26,10 +26,21 @@ struct cpu {
 	struct device dev;
 };
 
+struct cpu_pstate_pwr {
+	unsigned int freq;
+	uint32_t power;
+};
+
+struct cpu_pwr_stats {
+	int cpu;
+	long temp;
+	struct cpu_pstate_pwr *ptable;
+	int len;
+};
+
 extern int register_cpu(struct cpu *cpu, int num);
 extern struct device *get_cpu_device(unsigned cpu);
 extern bool cpu_is_hotpluggable(unsigned cpu);
-extern bool arch_match_cpu_phys_id(int cpu, u64 phys_id);
 
 extern int cpu_add_dev_attr(struct device_attribute *attr);
 extern void cpu_remove_dev_attr(struct device_attribute *attr);
@@ -264,6 +275,9 @@ static inline int disable_nonboot_cpus(void) { return 0; }
 static inline void enable_nonboot_cpus(void) {}
 #endif /* !CONFIG_PM_SLEEP_SMP */
 
+struct cpu_pwr_stats *get_cpu_pwr_stats(void);
+void trigger_cpu_pwr_stats_calc(void);
+
 enum cpuhp_state {
 	CPUHP_OFFLINE,
 	CPUHP_ONLINE,
@@ -286,5 +300,10 @@ void arch_cpu_idle_dead(void);
 void idle_notifier_register(struct notifier_block *n);
 void idle_notifier_unregister(struct notifier_block *n);
 void idle_notifier_call_chain(unsigned long val);
+
+#ifdef CONFIG_CPU_BOOST
+extern bool check_cpuboost(int cpu);
+extern bool wakeup_boost;
+#endif
 
 #endif /* _LINUX_CPU_H_ */
