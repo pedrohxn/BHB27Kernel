@@ -246,7 +246,6 @@ static int sel_netport_avc_callback(u32 event)
 static __init int sel_netport_init(void)
 {
 	int iter;
-	int ret;
 
 	if (!selinux_enabled)
 		return 0;
@@ -260,7 +259,7 @@ static __init int sel_netport_init(void)
 	if (ret != 0)
 		panic("avc_add_callback() failed, error %d\n", ret);
 
-	return ret;
+	return 0;
 }
 
 __initcall(sel_netport_init);
