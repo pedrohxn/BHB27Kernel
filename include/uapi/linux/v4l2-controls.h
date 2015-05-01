@@ -871,9 +871,6 @@ enum v4l2_mpeg_vidc_video_ltrmode {
 #define V4L2_CID_MPEG_VIDC_VIDEO_HIER_P_NUM_LAYERS \
 		(V4L2_CID_MPEG_MSM_VIDC_BASE + 51)
 
-#define V4L2_CID_MPEG_VIDC_VIDEO_BUFFER_SIZE_LIMIT \
-		(V4L2_CID_MPEG_MSM_VIDC_BASE + 52)
-
 #define V4L2_CID_MPEG_VIDC_VIDEO_ENABLE_INITIAL_QP \
 		(V4L2_CID_MPEG_MSM_VIDC_BASE + 53)
 
@@ -886,8 +883,6 @@ enum v4l2_mpeg_vidc_video_ltrmode {
 #define V4L2_CID_MPEG_VIDC_VIDEO_B_FRAME_QP \
 		(V4L2_CID_MPEG_MSM_VIDC_BASE + 56)
 
-<<<<<<< HEAD
-=======
 #define V4L2_CID_MPEG_VIDC_VIDEO_IFRAME_X_RANGE \
 		(V4L2_CID_MPEG_MSM_VIDC_BASE + 57)
 
@@ -984,7 +979,14 @@ enum v4l2_mpeg_vidc_video_perf_mode {
 #define V4L2_CID_MPEG_VIDC_VIDEO_HYBRID_HIERP_MODE \
 		(V4L2_CID_MPEG_MSM_VIDC_BASE + 72)
 
->>>>>>> 4cb68fe... msm: vidc: Send resolution along with output buffer
+#define V4L2_CID_MPEG_VIDC_VIDEO_PRIORITY \
+		(V4L2_CID_MPEG_MSM_VIDC_BASE + 73)
+
+enum v4l2_mpeg_vidc_video_priority {
+	V4L2_MPEG_VIDC_VIDEO_PRIORITY_REALTIME_ENABLE = 0,
+	V4L2_MPEG_VIDC_VIDEO_PRIORITY_REALTIME_DISABLE = 1,
+};
+
 /*  Camera class control IDs */
 
 #define V4L2_CID_CAMERA_CLASS_BASE 	(V4L2_CTRL_CLASS_CAMERA | 0x900)
