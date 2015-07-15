@@ -602,7 +602,7 @@ _kgsl_sharedmem_page_alloc(struct kgsl_memdesc *memdesc,
 	void *ptr;
 	size_t len;
 	unsigned int align;
-	int step = ((VMALLOC_END - VMALLOC_START)/8) >> PAGE_SHIFT;
+	int step = SZ_2M >> PAGE_SHIFT;
 
 	size = PAGE_ALIGN(size);
 	if (size == 0 || size > UINT_MAX)
