@@ -108,6 +108,22 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
 
+config CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE
+	bool "intelliactive"
+	select CPU_FREQ_GOV_INTELLIACTIVE
+	help
+	  Use the CPUFreq governor 'intelliactive' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'interactive' governor for latency-sensitive workloads.
+
+config CPU_FREQ_DEFAULT_GOV_SMARTASS2
+	bool "smartass2"
+	select CPU_FREQ_GOV_SMARTASS2
+	help
+	  Use the CPUFreq governor 'smartassV2' as default.
+
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -206,6 +222,31 @@ config CPU_FREQ_GOV_CONSERVATIVE
 
 	  If in doubt, say N.
 
+config CPU_FREQ_GOV_INTELLIACTIVE
+	tristate "'intelliactive' cpufreq policy governor"
+	help
+	  'intelliactive' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
+
+	  This governor attempts to reduce the latency of clock
+	  increases so that the system is more responsive to
+	  interactive workloads.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called cpufreq_interactive.
+
+	  For details, take a look at linux/Documentation/cpu-freq.
+
+	  If in doubt, say N.
+
+
+config CPU_FREQ_GOV_SMARTASS2
+  	tristate "'smartassV2' cpufreq governor"
+  	depends on CPU_FREQ
+  	help
+    	'smartassV2' - a "smart" governor
+
+
 config CPU_BOOST
 	tristate "Event base short term CPU freq boost"
 	depends on CPU_FREQ
@@ -214,6 +255,14 @@ config CPU_BOOST
 	  various events that might occur in the system. As of now, the
 	  events it reacts to are:
 	  - Migration of important threads from one CPU to another.
+
+	  If in doubt, say N.
+
+config CPU_BOOST_DISABLE_INPUTBOOST
+	bool "Disable input boost"
+	depends on CPU_BOOST
+	help
+	  Disable touch input CPU freq. boost within CPU_BOOST
 
 	  If in doubt, say N.
 
@@ -226,6 +275,13 @@ config GENERIC_CPUFREQ_CPU0
 	  systems which share clock and voltage across all CPUs.
 
 	  If in doubt, say N.
+
+ config SUSPEND_BOOSTER
+	bool "Suspend booster for Samsung"
+	default y
+	help
+	  Samsung TN PowerManagement Feature.
+
 
 menu "x86 CPU frequency scaling drivers"
 depends on X86
@@ -307,6 +363,7 @@ config SPARC_US2E_CPUFREQ
 	  For details, take a look at <file:Documentation/cpu-freq>.
 
 	  If in doubt, say N.
+
 endmenu
 
 menu "SH CPU Frequency scaling"
