@@ -385,7 +385,8 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -std=gnu89 
 
-KBUILD_CFLAGS	+= -Wno-unused
+#extra add by BHB27
+KBUILD_CFLAGS	+= -Wno-unused -Wno-implicit-function-declaration
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
