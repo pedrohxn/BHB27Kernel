@@ -385,12 +385,6 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-delete-null-pointer-checks \
 		   -std=gnu89 
 
-# arter97's optimizations
-KBUILD_CFLAGS	+= -mcpu=cortex-a15 -mtune=cortex-a15 -Ofast
-
-# not tested
-#-s -pipe  -mfloat-abi=soft -mfpu=vfpv4 -fno-tree-vectorize -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-inline-functions -funroll-loops
-
 KBUILD_CFLAGS	+= -Wno-unused
 
 KBUILD_AFLAGS_KERNEL :=
