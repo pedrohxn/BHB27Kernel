@@ -388,6 +388,13 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 #extra add by BHB27
 KBUILD_CFLAGS	+= -Wno-unused -Wno-implicit-function-declaration
 
+# arter97's optimizations		
+KBUILD_CFLAGS	+= -mcpu=cortex-a15 -mtune=cortex-a15 -mfloat-abi=soft -mfpu=vfpv4
+		
+# not tested		
+#-s -pipe -Ofast -fno-tree-vectorize -fmodulo-sched -fmodulo-sched-allow-regmoves -fno-inline-functions -funroll-loops		
+
+
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
