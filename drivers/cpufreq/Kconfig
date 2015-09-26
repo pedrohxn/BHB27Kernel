@@ -250,6 +250,23 @@ config CPU_FREQ_GOV_INTELLIACTIVE
 
 	  If in doubt, say N.
 
+config CPU_FREQ_GOV_ONDEMANDPLUS
+	tristate "'ondemandplus' cpufreq policy governor"
+	depends on CPU_FREQ
+	---help---
+	 'ondemandplus' - This driver adds a dynamic cpufreq policy
+	 governor. The governor does a periodic polling and
+	 changes frequency based on the CPU utilization.
+	 The support for this governor depends on CPU capability to
+	 do fast frequency switching (i.e, very low latency frequency
+	 transitions).
+
+	 To compile this driver as a module, choose M here: the
+	 module will be called cpufreq_ondemandplus.
+
+	 For details, take a look at linux/Documentation/cpu-freq.
+
+	 If in doubt, say N.
 
 config CPU_FREQ_GOV_SMARTASS2
   	tristate "'smartassV2' cpufreq governor"
