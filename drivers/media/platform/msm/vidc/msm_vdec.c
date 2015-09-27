@@ -492,6 +492,9 @@ static struct msm_vidc_ctrl msm_vdec_ctrls[] = {
 		.name = "Buffer size limit",
 		.type = V4L2_CTRL_TYPE_INTEGER,
 		.minimum = 0,
+<<<<<<< HEAD
+		.maximum = 0x7fffffff,
+=======
 		.maximum = INT_MAX,
 		.default_value = 0,
 		.step = 1,
@@ -516,19 +519,10 @@ static struct msm_vidc_ctrl msm_vdec_ctrls[] = {
 		.type = V4L2_CTRL_TYPE_BOOLEAN,
 		.minimum = 0,
 		.maximum = 1,
+>>>>>>> 4cb68fe... msm: vidc: Send resolution along with output buffer
 		.default_value = 0,
 		.step = 1,
 		.menu_skip_mask = 0,
-		.qmenu = NULL,
-	},
-	{
-		.id = V4L2_CID_MPEG_VIDC_VIDEO_PRIORITY,
-		.name = "Session Priority",
-		.type = V4L2_CTRL_TYPE_INTEGER,
-		.minimum = V4L2_MPEG_VIDC_VIDEO_PRIORITY_REALTIME_ENABLE,
-		.maximum = V4L2_MPEG_VIDC_VIDEO_PRIORITY_REALTIME_DISABLE,
-		.default_value = V4L2_MPEG_VIDC_VIDEO_PRIORITY_REALTIME_DISABLE,
-		.step = 1,
 		.qmenu = NULL,
 	},
 };
@@ -1148,15 +1142,11 @@ int msm_vdec_s_fmt(struct msm_vidc_inst *inst, struct v4l2_format *f)
 	int i;
 	struct hal_buffer_requirements *buff_req_buffer;
 	int max_input_size = 0;
-	struct hfi_device *hdev;
 
-	if (!inst || !f || !inst->core || !inst->core->device) {
+	if (!inst || !f) {
 		dprintk(VIDC_ERR, "%s invalid parameters\n", __func__);
 		return -EINVAL;
 	}
-
-	hdev = inst->core->device;
-
 	if (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
 
 		fmt = msm_comm_get_pixel_fmt_fourcc(vdec_formats,
@@ -2124,10 +2114,17 @@ static int try_set_ctrl(struct msm_vidc_inst *inst, struct v4l2_ctrl *ctrl)
 		pdata = &property_val;
 		break;
 	case V4L2_CID_MPEG_VIDC_VIDEO_BUFFER_SIZE_LIMIT:
+<<<<<<< HEAD
+	{
+=======
+>>>>>>> 4cb68fe... msm: vidc: Send resolution along with output buffer
 		inst->capability.buffer_size_limit = ctrl->val;
 		dprintk(VIDC_DBG,
 			"Limiting input buffer size to :%u\n", ctrl->val);
 		break;
+<<<<<<< HEAD
+	}
+=======
 	case V4L2_CID_MPEG_VIDC_VIDEO_NON_SECURE_OUTPUT2:
 		property_id = HAL_PARAM_VDEC_NON_SECURE_OUTPUT2;
 		hal_property.enable = ctrl->val;
@@ -2135,11 +2132,7 @@ static int try_set_ctrl(struct msm_vidc_inst *inst, struct v4l2_ctrl *ctrl)
 			ctrl->val ? "Enabling" : "Disabling");
 		pdata = &hal_property;
 		break;
-	case V4L2_CID_MPEG_VIDC_VIDEO_PRIORITY:
-		property_id = HAL_CONFIG_REALTIME;
-		hal_property.enable = ctrl->val;
-		pdata = &hal_property;
-		break;
+>>>>>>> 4cb68fe... msm: vidc: Send resolution along with output buffer
 	default:
 		break;
 	}
