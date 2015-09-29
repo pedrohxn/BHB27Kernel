@@ -21,6 +21,9 @@
 #include <linux/msm_adreno_devfreq.h>
 #include <soc/qcom/scm.h>
 #include "governor.h"
+#ifdef CONFIG_ADRENO_IDLER		
+#include "adreno_idler.h"		
+#endif
 
 static DEFINE_SPINLOCK(tz_lock);
 
