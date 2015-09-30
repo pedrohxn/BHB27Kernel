@@ -87,5 +87,4 @@ obj-$(CONFIG_ARM_PSCI)		+= psci.o
 
 extra-y := $(head-y) vmlinux.lds
 
-
 #obj-y += mako_hotplug.o
