@@ -1467,6 +1467,8 @@ config MMI_RAM_INFO
 config HAS_MACH_MEMUTILS
 	default n
 	bool "Motorola MSM memcpy enhancements"
+	help
+	Faster memcpy performance for Krait
 
 config INTELLI_HOTPLUG
 	bool "Intelli hotplug driver"
