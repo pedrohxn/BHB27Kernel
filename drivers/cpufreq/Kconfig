@@ -123,6 +123,26 @@ config CPU_FREQ_DEFAULT_GOV_SMARTASS2
 	help
 	  Use the CPUFreq governor 'smartassV2' as default.
 
+config CPU_FREQ_DEFAULT_GOV_INTERACTIVE_PRO
+	bool "interactive_pro"
+	select CPU_FREQ_GOV_INTERACTIVE_PRO
+	help
+	Use the CPUFreq governor 'interactive_pro' as default.
+
+config CPU_FREQ_DEFAULT_GOV_BLUACTIVE
+	bool "bluactive"
+	select CPU_FREQ_GOV_BLUACTIVE
+	help
+	Use the CPUFreq governor 'bluactive' as default.
+
+config CPU_FREQ_DEFAULT_GOV_UMBRELLA_CORE
+	bool "umbrella_core"
+	select CPU_FREQ_GOV_UMBRELLA_CORE
+	help
+	  Use the CPUFreq governor 'umbrella_core' as default. This allows
+	  you to get a full dynamic cpu frequency capable system by simply
+	  loading your cpufreq low-level hardware driver, using the
+	  'umbrella_core' governor for latency-sensitive workloads.
 
 endchoice
 
@@ -274,6 +294,24 @@ config CPU_FREQ_GOV_SMARTASS2
   	help
     	'smartassV2' - a "smart" governor
 
+config CPU_FREQ_GOV_INTERACTIVE_PRO
+	tristate "'interactive_pro' cpufreq governor"
+	depends on CPU_FREQ
+
+config CPU_FREQ_GOV_BLUACTIVE
+	tristate "'bluactive' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'bluactive' - less aggressive version of conservative
+
+config CPU_FREQ_GOV_UMBRELLA_CORE
+	tristate "'umbrella_core' cpufreq policy governor"
+	help
+	  'umbrella_core' - This driver adds a dynamic cpufreq policy governor
+	  designed for latency-sensitive workloads.
+
+	  The governor is based on interactive to provide a resident controller
+	  which interprets unnecessary battery drain as evil.
 
 
 config GENERIC_CPUFREQ_CPU0
