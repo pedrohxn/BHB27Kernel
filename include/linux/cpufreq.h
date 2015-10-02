@@ -16,6 +16,9 @@
 #include <linux/kobject.h>
 #include <linux/notifier.h>
 #include <linux/sysfs.h>
+#ifdef CONFIG_CPUFREQ_HARDLIMIT
+#include <linux/cpufreq_hardlimit.h>
+#endif
 
 
 /*********************************************************************
@@ -32,6 +35,9 @@
 #define CPUFREQ_NAME_LEN		16
 /* Print length for names. Extra 1 space for accomodating '\n' in prints */
 #define CPUFREQ_NAME_PLEN		(CPUFREQ_NAME_LEN + 1)
+/* Minimum frequency cutoff to notify the userspace about cpu utilization
+ * changes */
+#define MIN_CPU_UTIL_NOTIFY   40
 
 struct cpufreq_governor;
 
@@ -160,6 +166,46 @@ static inline unsigned int cpufreq_quick_get_max(unsigned int cpu)
 }
 static inline void disable_cpufreq(void) { }
 #endif
+#ifdef CONFIG_MSM_LIMITER
+int cpufreq_set_gov(char *target_gov, unsigned int cpu);
+char *cpufreq_get_gov(unsigned int cpu);
+int cpufreq_set_freq(unsigned int max_freq, unsigned int min_freq,
+			unsigned int cpu);
+int cpufreq_get_max(unsigned int cpu);
+int cpufreq_get_min(unsigned int cpu);
+#endif
+
+#if defined (CONFIG_CPU_FREQ_LIMIT_USERSPACE)
+enum {
+	BOOT_CPU = 0,
+};
+
+#define MIN_TOUCH_LOW_LIMIT     1497600
+#define MIN_TOUCH_LIMIT         1574400
+#define MIN_TOUCH_HIGH_LIMIT    1728000
+#define MIN_CAMERA_LIMIT        998400
+#define MIN_TOUCH_LIMIT_SECOND  1267200
+
+enum {
+	DVFS_NO_ID			= 0,
+
+	/* need to update now */
+	DVFS_TOUCH_ID			= 0x00000001,
+	DVFS_APPS_MIN_ID		= 0x00000002,
+	DVFS_APPS_MAX_ID		= 0x00000004,
+	DVFS_UNICPU_ID			= 0x00000008,
+	DVFS_LTETP_ID			= 0x00000010,
+	DVFS_CAMERA_ID			= 0x00000012,
+
+	/* DO NOT UPDATE NOW */
+	DVFS_THERMALD_ID		= 0x00000100,
+
+	DVFS_MAX_ID
+};
+
+
+int set_freq_limit(unsigned long id, unsigned int freq);
+#endif
 
 /*********************************************************************
  *                      CPUFREQ DRIVER INTERFACE                     *
@@ -224,6 +270,9 @@ struct cpufreq_driver {
 	unsigned int	(*get)	(unsigned int cpu);
 
 	/* optional */
+    unsigned int (*getavg)	(struct cpufreq_policy *policy,
+                             unsigned int cpu);
+
 	int	(*bios_limit)	(int cpu, unsigned int *limit);
 
 	int	(*exit)		(struct cpufreq_policy *policy);
@@ -266,7 +315,19 @@ const char *cpufreq_get_current_driver(void);
 static inline void cpufreq_verify_within_limits(struct cpufreq_policy *policy,
 		unsigned int min, unsigned int max)
 {
-
+#ifdef CONFIG_CPUFREQ_HARDLIMIT
+	#ifdef CPUFREQ_HARDLIMIT_DEBUG
+	pr_info("[HARDLIMIT] cpufreq.h verify_within_limits : min = %u / max = %u / new_min = %u / new_max = %u \n",
+			min,
+			max,
+			check_cpufreq_hardlimit(min),
+			check_cpufreq_hardlimit(max)
+		);
+	#endif
+	 /* Yank555.lu - Enforce hardlimit */
+	min = check_cpufreq_hardlimit(min);
+	max = check_cpufreq_hardlimit(max);
+#endif
 	if (policy->min < min)
 		policy->min = min;
 	if (policy->max < min)
@@ -319,7 +380,6 @@ int cpufreq_unregister_notifier(struct notifier_block *nb, unsigned int list);
 
 void cpufreq_notify_transition(struct cpufreq_policy *policy,
 		struct cpufreq_freqs *freqs, unsigned int state);
-
 /*
  * Governor specific info that can be passed to modules that subscribe
  * to CPUFREQ_GOVINFO_NOTIFIER
@@ -330,6 +390,9 @@ struct cpufreq_govinfo {
 	unsigned int sampling_rate_us;
 };
 extern struct atomic_notifier_head cpufreq_govinfo_notifier_list;
+
+void cpufreq_notify_utilization(struct cpufreq_policy *policy,
+                                unsigned int load);
 
 #else /* CONFIG_CPU_FREQ */
 static inline int cpufreq_register_notifier(struct notifier_block *nb,
@@ -411,6 +474,8 @@ int cpufreq_driver_target(struct cpufreq_policy *policy,
 int __cpufreq_driver_target(struct cpufreq_policy *policy,
 				   unsigned int target_freq,
 				   unsigned int relation);
+extern int __cpufreq_driver_getavg(struct cpufreq_policy *policy,
+                                   unsigned int cpu);
 int cpufreq_register_governor(struct cpufreq_governor *governor);
 void cpufreq_unregister_governor(struct cpufreq_governor *governor);
 
@@ -439,24 +504,58 @@ extern struct cpufreq_governor cpufreq_gov_conservative;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIACTIVE)
-extern struct cpufreq_governor cpufreq_gov_intelliactive;
-#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_intelliactive)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIDEMAND)
+extern struct cpufreq_governor cpufreq_gov_intellidemand;
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_intellidemand)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DANCEDANCE)
+extern struct cpufreq_governor cpufreq_gov_dancedance;
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_dancedance)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_LIONHEART)
+extern struct cpufreq_governor cpufreq_gov_lionheart;
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_lionheart)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX)
+extern struct cpufreq_governor cpufreq_gov_smartmax;
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_smartmax)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTASS2)
 extern struct cpufreq_governor cpufreq_gov_smartass2;
-#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_smartass2)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE_PRO)
-extern struct cpufreq_governor cpufreq_gov_interactive_pro;
-#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive_pro)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BLUACTIVE)
-extern struct cpufreq_governor cpufreq_gov_bluactive;
-#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_bluactive)
-#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_UMBRELLA_CORE)
-extern struct cpufreq_governor cpufreq_gov_umbrella_core;
-#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_umbrella_core)
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_smartass2)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_PEGASUSQ)
+extern struct cpufreq_governor cpufreq_gov_pegasusq;
+#define CPUFREQ_DEFAULT_GOVERNOR 	(&cpufreq_gov_pegasusq)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_YANKACTIVE)
 extern struct cpufreq_governor cpufreq_gov_yankactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_yankactive)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_UMBRELLA_CORE)
+extern struct cpufreq_governor cpufreq_gov_umbrella_core;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_umbrella_core)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BLUACTIVE)
+extern struct cpufreq_governor cpufreq_gov_bluactive;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_bluactive)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ELEMENTALX)
+extern struct cpufreq_governor cpufreq_gov_elementalx;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_elementalx)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIMM)
+extern struct cpufreq_governor cpufreq_gov_intellimm;
+#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_intellimm)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BIOSHOCK)
+extern struct cpufreq_governor cpufreq_gov_bioshock;
+#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_bioshock)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_RACCOON_CITY)
+extern struct cpufreq_governor cpufreq_gov_raccoon_city;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_raccoon_city)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE_PRO)
+extern struct cpufreq_governor cpufreq_gov_interactive_pro;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive_pro)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SLIM)
+extern struct cpufreq_governor cpufreq_gov_slim;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_slim)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BARRY_ALLEN)
+extern struct cpufreq_governor cpufreq_gov_barry_allen;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_barry_allen)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_IMPULSE)
+extern struct cpufreq_governor cpufreq_gov_impulse;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_impulse)
+
 #endif
 
 /*********************************************************************
