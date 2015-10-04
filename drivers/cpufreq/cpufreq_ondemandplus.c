@@ -96,7 +96,7 @@ static unsigned long up_threshold;
 #define DEFAULT_DOWN_DIFFERENTIAL 20
 static unsigned long down_differential;
 
-#define DEFAULT_MIN_FREQ 300000
+#define DEFAULT_MIN_FREQ 268800
 static u64 allowed_min;
 
 #define DEFAULT_MAX_FREQ 2265600
@@ -105,10 +105,10 @@ static u64 allowed_max;
 #define DEFAULT_INTER_HIFREQ 1728000
 static u64 inter_hifreq;
 
-#define DEFAULT_INTER_LOFREQ 300000
+#define DEFAULT_INTER_LOFREQ 268800
 static u64 inter_lofreq;
 
-#define SUSPEND_FREQ 300000
+#define SUSPEND_FREQ 268800
 static u64 suspend_frequency;
 
 #define DEFAULT_INTER_STAYCYCLES 2
