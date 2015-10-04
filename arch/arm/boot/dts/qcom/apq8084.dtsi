@@ -4311,8 +4311,6 @@
 	qcom,msm-cpufreq@0 {
 		reg = <0 4>;
 		compatible = "qcom,msm-cpufreq";
-		qcom,cpu-mem-ports = <1 512>;
-
 		qcom,cpufreq-table =
 			<  268800  268800  800    762 >, /* underclock */
 			<  300000  268800  1144   800 >,
