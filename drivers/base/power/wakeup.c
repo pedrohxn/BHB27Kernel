@@ -667,7 +667,7 @@ void pm_print_active_wakeup_sources(void)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
-		if (ws->active) {
+		if (ws->active && len < max) {
 			pr_info("active wakeup source: %s\n", ws->name);
 			active = 1;
 		} else if (!active &&
