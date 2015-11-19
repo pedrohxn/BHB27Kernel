@@ -200,6 +200,12 @@ config CPU_FREQ_DEFAULT_GOV_BIOSHOCK
 	help
 	  Default governor of BioShock kernel
 
+config CPU_FREQ_DEFAULT_GOV_ZZMOOVE
+	bool "zzmoove"
+	select CPU_FREQ_GOV_ZZMOOVE
+	help
+	Use the CPUFreq governor 'zzmoove' as default.
+
 endchoice
 
 config CPU_FREQ_GOV_PERFORMANCE
@@ -269,6 +275,10 @@ config CPU_FREQ_GOV_DANCEDANCE
            help
              dancedance' - a "smart" optimized governor!
              If in doubt, say N.
+
+config CPU_FREQ_GOV_ZZMOOVE
+	   tristate "'zzmoove' cpufreq governor"
+	   depends on CPU_FREQ
 
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
