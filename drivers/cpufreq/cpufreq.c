@@ -2057,6 +2057,7 @@ static int cpufreq_set_policy(struct cpufreq_policy *policy,
 
 	policy->min = new_policy->min;
 	policy->max = new_policy->max;
+	trace_cpu_frequency_limits(policy->max, policy->min, policy->cpu);
 
 	if (new_policy->cpu)
 		cpu0_policy = cpufreq_cpu_get(0);
