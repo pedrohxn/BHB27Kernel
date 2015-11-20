@@ -1721,8 +1721,8 @@ static int freq_mitigation_notify(enum thermal_trip_type type,
 		break;
 	case THERMAL_TRIP_CONFIGURABLE_LOW:
 		if (cpu_node->max_freq) {
-			ppr_info_ratelimited(
-+				"Removing frequency mitigation for CPU%d\n",
+			pr_info_ratelimited(
+				"Removing frequency mitigation for CPU%d\n",
 				cpu_node->cpu);
 
 			cpu_node->max_freq = false;
