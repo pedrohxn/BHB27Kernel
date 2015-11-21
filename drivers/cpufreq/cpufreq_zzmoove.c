@@ -7978,14 +7978,6 @@ static int __init cpufreq_gov_dbs_init(void)						// ZZ: idle exit time handling
     INIT_WORK(&hotplug_online_work, hotplug_online_work_fn);				// ZZ: init hotplug online work
 #endif /* ENABLE_HOTPLUGGING */
 
-#if (defined(USE_LCD_NOTIFIER) && !defined(CONFIG_POWERSUSPEND))
-	// AP: register callback handler for lcd notifier
-	zzmoove_lcd_notif.notifier_call = zzmoove_lcd_notifier_callback;
-	if (lcd_register_client(&zzmoove_lcd_notif) != 0) {
-		pr_err("%s: Failed to register lcd callback\n", __func__);
-		return -EFAULT;
-	}
-#endif
 	return cpufreq_register_governor(&cpufreq_gov_zzmoove);
 }
 
@@ -7997,9 +7989,6 @@ static void __exit cpufreq_gov_dbs_exit(void)
 	destroy_workqueue(dbs_aux_wq);
 #endif
 
-#if (defined(USE_LCD_NOTIFIER) && !defined(CONFIG_POWERSUSPEND))
-	lcd_unregister_client(&zzmoove_lcd_notif);
-#endif
 }
 
 MODULE_AUTHOR("Zane Zaminsky <cyxman@yahoo.com>");
