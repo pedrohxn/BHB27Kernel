@@ -4360,7 +4360,7 @@
 			<  3051 /*  200 MHz */ >,
 			<  3952 /*  259 MHz */ >,
 			<  4684 /*  307 MHz */ >,
-			<  5996 /*  393 MHz */ >,
+			<  5859 /*  384 MHz */ >,
 			<  7019 /*  460 MHz */ >,
 			<  8056 /*  528 MHz */ >,
 			< 10101 /*  662 MHz */ >,
@@ -4391,8 +4391,8 @@
 			<  960000  960000  3952 >,
 			< 1036800 1036800  4684 >,
 			< 1113600 1036800  4684 >,
-			< 1190400 1036800  5996 >,
-			< 1267200 1036800  5996 >,
+			< 1190400 1036800  5859 >,
+			< 1267200 1036800  5859 >,
 			< 1344000 1036800  7019 >,
 			< 1420800 1036800  7019 >,
 			< 1497600 1036800  8056 >,
@@ -4943,7 +4943,6 @@
 		qcom,bcl-enable;
 		qcom,ibat-vadc = <&pma8084_vadc>;
 		qcom,ibat-threshold-adc_tm = <&pma8084_adc_tm>;
-		qcom,bcl-hotplug-list = <&CPU2 &CPU3>;
 		qcom,ibat-monitor {
 			high-threshold-uamp = <3000000>;
 			low-threshold-uamp = <1000000>;
@@ -4982,7 +4981,7 @@
 		compatible = "qcom,msm-thermal";
 		qcom,sensor-id = <5>;
 		qcom,poll-ms = <250>;
-		qcom,limit-temp = <60>;
+		qcom,limit-temp = <70>;
 		qcom,temp-hysteresis = <10>;
 		qcom,therm-reset-temp = <115>;
 		qcom,freq-step = <2>;
