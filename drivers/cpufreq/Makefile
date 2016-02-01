@@ -10,6 +10,7 @@ obj-$(CONFIG_CPU_FREQ_GOV_BARRY_ALLEN)	  += cpufreq_barry_allen.o
 obj-$(CONFIG_CPU_FREQ_GOV_BIOSHOCK)	  += cpufreq_bioshock.o
 obj-$(CONFIG_CPU_FREQ_GOV_BLUACTIVE)	  += cpufreq_bluactive.o
 obj-$(CONFIG_CPU_FREQ_GOV_CONSERVATIVE)	  += cpufreq_conservative.o
+obj-$(CONFIG_CPU_FREQ_GOV_CONSERVATIVEX) += cpufreq_conservativex.o
 obj-$(CONFIG_CPU_FREQ_GOV_DANCEDANCE)     += cpufreq_dancedance.o	
 obj-$(CONFIG_CPU_FREQ_GOV_IMPULSE)	  += cpufreq_impulse.o
 obj-$(CONFIG_CPU_FREQ_GOV_INTELLIACTIVE)  += cpufreq_intelliactive.o	

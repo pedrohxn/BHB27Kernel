@@ -129,6 +129,12 @@ config CPU_FREQ_DEFAULT_GOV_INTERACTIVE_PRO
 	help
 	Use the CPUFreq governor 'interactive_pro' as default.
 
+config CPU_FREQ_DEFAULT_GOV_CONSERVATIVEX
+	bool "conservativex"
+	select CPU_FREQ_GOV_CONSERVATIVEX
+	help
+	  Use the CPUFreq governor 'conservativex' as default.
+
 config CPU_FREQ_DEFAULT_GOV_BLUACTIVE
 	bool "bluactive"
 	select CPU_FREQ_GOV_BLUACTIVE
@@ -406,6 +412,12 @@ config CPU_FREQ_GOV_LIONHEART
            help
              lionheart' - a "smart" optimized governor!
              If in doubt, say N.
+
+config CPU_FREQ_GOV_CONSERVATIVEX
+	tristate "'conservativex' cpufreq governor"
+	depends on CPU_FREQ
+	help
+	  'conservativex' - less aggressive version of conservative
 
 config CPU_FREQ_GOV_BLUACTIVE
 	tristate "'bluactive' cpufreq governor"
