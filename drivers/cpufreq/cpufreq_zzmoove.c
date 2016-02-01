@@ -6952,7 +6952,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 		}
 
 		__cpufreq_driver_target(policy, this_dbs_info->requested_freq,
-			CPUFREQ_RELATION_L);							// ZZ: changed to relation low
+			CPUFREQ_RELATION_C);							// ZZ: changed to relation low
 		return;
 	}
 }
@@ -7859,7 +7859,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 
 		mutex_lock(&this_dbs_info->timer_mutex);
 		    __cpufreq_driver_target(this_dbs_info->cur_policy,
-				policy->cur, CPUFREQ_RELATION_L);
+				policy->cur, CPUFREQ_RELATION_C);
 		dbs_check_cpu(this_dbs_info);
 		mutex_unlock(&this_dbs_info->timer_mutex);
 
