@@ -62,8 +62,8 @@
 #define WAKE_GESTURE		0x0b
 #define SWEEP_RIGHT		0x01
 #define SWEEP_LEFT		0x02
-#define SWEEP_UP		0x04
-#define SWEEP_DOWN		0x08
+#define SWEEP_UP		0x03
+#define SWEEP_DOWN		0x04
 #define VIB_STRENGTH 		20
 
 
@@ -561,7 +561,7 @@ static ssize_t sweep2wake_dump(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
 	sscanf(buf, "%d ", &s2w_switch);
-	if (s2w_switch < 0 || s2w_switch > 15)
+	if (s2w_switch < 0 || s2w_switch > 5)
 		s2w_switch = 0;
 		
 	if (s2w_switch == 0)
@@ -674,8 +674,8 @@ static DEVICE_ATTR(vib_strength, (S_IWUSR|S_IRUGO),
  * INIT / EXIT stuff below here
  */
 
-struct kobject *android_touch_kobj;
-EXPORT_SYMBOL_GPL(android_touch_kobj);
+struct kobject *android_touch2_kobj;
+EXPORT_SYMBOL_GPL(android_touch2_kobj);
 
 static int __init wake_gestures_init(void)
 {
@@ -711,28 +711,28 @@ static int __init wake_gestures_init(void)
 	}
 #endif
 
-	android_touch_kobj = kobject_create_and_add("android_touch", NULL) ;
-	if (android_touch_kobj == NULL) {
-		pr_warn("%s: android_touch_kobj create_and_add failed\n", __func__);
+	android_touch2_kobj = kobject_create_and_add("android_touch", NULL) ;
+	if (android_touch2_kobj == NULL) {
+		pr_warn("%s: android_touch2_kobj create_and_add failed\n", __func__);
 	}
-	rc = sysfs_create_file(android_touch_kobj, &dev_attr_sweep2wake.attr);
+	rc = sysfs_create_file(android_touch2_kobj, &dev_attr_sweep2wake.attr);
 	if (rc) {
 		pr_warn("%s: sysfs_create_file failed for sweep2wake\n", __func__);
 	}
-	rc = sysfs_create_file(android_touch_kobj, &dev_attr_sweep2sleep.attr);
+	rc = sysfs_create_file(android_touch2_kobj, &dev_attr_sweep2sleep.attr);
 	if (rc) {
 		pr_warn("%s: sysfs_create_file failed for sweep2sleep\n", __func__);
 	}
-		rc = sysfs_create_file(android_touch_kobj, &dev_attr_doubletap2wake.attr);
+		rc = sysfs_create_file(android_touch2_kobj, &dev_attr_doubletap2wake.attr);
 	if (rc) {
 		pr_warn("%s: sysfs_create_file failed for doubletap2wake\n", __func__);
 	}
-	rc = sysfs_create_file(android_touch_kobj, &dev_attr_vib_strength.attr);
+	rc = sysfs_create_file(android_touch2_kobj, &dev_attr_vib_strength.attr);
 	if (rc) {
 		pr_warn("%s: sysfs_create_file failed for vib_strength\n", __func__);
 	}
 #if (WAKE_GESTURES_ENABLED)
-	rc = sysfs_create_file(android_touch_kobj, &dev_attr_wake_gestures.attr);
+	rc = sysfs_create_file(android_touch2_kobj, &dev_attr_wake_gestures.attr);
 	if (rc) {
 		pr_warn("%s: sysfs_create_file failed for wake_gestures\n", __func__);
 	}
@@ -749,7 +749,7 @@ err_alloc_dev:
 
 static void __exit wake_gestures_exit(void)
 {
-	kobject_del(android_touch_kobj);
+	kobject_del(android_touch2_kobj);
 	input_unregister_handler(&wg_input_handler);
 	input_free_device(wake_dev);
 	wake_lock_destroy(&dt2w_wakelock);
