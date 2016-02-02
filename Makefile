@@ -392,7 +392,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   $(MODFLAGS)
 
 #extra add by BHB27
-KBUILD_CFLAGS	+= -Wno-unused -Wno-implicit-function-declaration
+# KBUILD_CFLAGS	+= -Wno-unused -Wno-implicit-function-declaration
 
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
