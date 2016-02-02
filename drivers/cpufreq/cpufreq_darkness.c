@@ -249,7 +249,7 @@ static void darkness_check_cpu(struct cpufreq_darkness_cpuinfo *this_darkness_cp
 	next_freq = adjust_cpufreq_frequency_target(policy, this_darkness_cpuinfo->freq_table, 
 												max_load * (policy->max / 100));
 	if (next_freq != policy->cur && next_freq > 0)
-		__cpufreq_driver_target(policy, next_freq, CPUFREQ_RELATION_L);
+		__cpufreq_driver_target(policy, next_freq, CPUFREQ_RELATION_C);
 }
 
 static void do_darkness_timer(struct work_struct *work)
@@ -364,7 +364,7 @@ static int cpufreq_governor_darkness(struct cpufreq_policy *policy,
 		}
 		mutex_lock(&this_darkness_cpuinfo->timer_mutex);
 		__cpufreq_driver_target(this_darkness_cpuinfo->cur_policy,
-				policy->cur, CPUFREQ_RELATION_L);
+				policy->cur, CPUFREQ_RELATION_C);
 		mutex_unlock(&this_darkness_cpuinfo->timer_mutex);
 
 		break;

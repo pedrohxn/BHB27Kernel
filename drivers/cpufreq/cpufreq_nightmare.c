@@ -557,7 +557,7 @@ static void nightmare_check_cpu(struct cpufreq_nightmare_cpuinfo *this_nightmare
 		return;
 	}
 	if (tmp_freq != policy->cur && tmp_freq > 0)
-		__cpufreq_driver_target(policy, tmp_freq, CPUFREQ_RELATION_L);
+		__cpufreq_driver_target(policy, tmp_freq, CPUFREQ_RELATION_C);
 }
 
 static void do_nightmare_timer(struct work_struct *work)
@@ -672,7 +672,7 @@ static int cpufreq_governor_nightmare(struct cpufreq_policy *policy,
 		}
 		mutex_lock(&this_nightmare_cpuinfo->timer_mutex);
 		__cpufreq_driver_target(this_nightmare_cpuinfo->cur_policy,
-				policy->cur, CPUFREQ_RELATION_L);
+				policy->cur, CPUFREQ_RELATION_C);
 		mutex_unlock(&this_nightmare_cpuinfo->timer_mutex);
 
 		break;
