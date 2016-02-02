@@ -438,10 +438,6 @@ static unsigned int disable_hotplug_asleep;			// ZZ: for setting hotplug on/off 
 #endif /* ENABLE_HOTPLUGGING */
 #endif
 
-#if defined(USE_LCD_NOTIFIER) && !defined(CONFIG_POWERSUSPEND)
-static struct notifier_block zzmoove_lcd_notif;
-#endif
-
 #ifdef ENABLE_INPUTBOOSTER
 // ff: Input Booster variables
 static unsigned int boost_on_tsp = DEF_INPUTBOOST_ON_TSP;	// ff: hardcoded since it'd be silly not to use it
@@ -7901,38 +7897,6 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 	}
 	return 0;
 }
-
-#if (defined(USE_LCD_NOTIFIER) && !defined(CONFIG_POWERSUSPEND))
-// AP: callback handler for lcd notifier
-static int zzmoove_lcd_notifier_callback(struct notifier_block *this,
-								unsigned long event, void *data)
-{
-	switch (event)
-	{
-		case LCD_EVENT_OFF_END:
-
-			if (!suspend_flag)
-			    zzmoove_suspend();
-#ifdef ZZMOOVE_DEBUG
-			pr_info("[zzmoove/lcd_notifier] Screen switched off.\n");
-#endif
-			break;
-
-		case LCD_EVENT_ON_START:
-
-			if (suspend_flag)
-			    zzmoove_resume();
-#ifdef ZZMOOVE_DEBUG
-			pr_info("[zzmoove/lcd_notifier] Screen switched on.\n");
-#endif
-			break;
-
-		default:
-			break;
-	}
-return 0;
-}
-#endif
 
 #ifndef CONFIG_CPU_FREQ_DEFAULT_GOV_ZZMOOVE
 static
