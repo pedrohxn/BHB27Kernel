@@ -711,7 +711,7 @@ static int __init wake_gestures_init(void)
 	}
 #endif
 
-	android_touch2_kobj = kobject_create_and_add("android_touch", NULL) ;
+	android_touch2_kobj = kobject_create_and_add("android_touch2", NULL) ;
 	if (android_touch2_kobj == NULL) {
 		pr_warn("%s: android_touch2_kobj create_and_add failed\n", __func__);
 	}
