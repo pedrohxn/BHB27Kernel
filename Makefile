@@ -246,7 +246,7 @@ CONFIG_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 
 HOSTCC       = ccache gcc
 HOSTCXX      = ccache g++
-HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 -fomit-frame-pointer -pipe -DNDEBUG -floop-nest-optimize -std=gnu89
+HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O3 -fomit-frame-pointer -fgcse-las -pipe -DNDEBUG -floop-nest-optimize -std=gnu89
 HOSTCXXFLAGS = -pipe -DNDEBUG -O3 -floop-nest-optimize
 
 # Decide whether to build built-in, modular, or both.
@@ -352,15 +352,15 @@ CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 MODFLAGS	= -pipe -DNDEBUG -O3 -ffast-math -mtune=cortex-a15 -mcpu=cortex-a15 \
-		  -marm -mfpu=neon-vfpv4 -ftree-vectorize -mvectorize-with-neon-quad \
+		  -marm -mfpu=neon-vfpv4 -fgcse-las -ftree-vectorize -mvectorize-with-neon-quad \
 		  -fweb -std=gnu89 \
 		  --param l1-cache-size=16 \
 		  --param l1-cache-line-size=16 --param l2-cache-size=2048
 CFLAGS_MODULE   = -DMODULE $(MODFLAGS)
 AFLAGS_MODULE   = -DMODULE $(MODFLAGS)
-LDFLAGS_MODULE  =
+LDFLAGS_MODULE  = --strip-debug
 CFLAGS_KERNEL	= $(MODFLAGS)
-AFLAGS_KERNEL	=
+AFLAGS_KERNEL	= $(MODFLAGS)
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
 
