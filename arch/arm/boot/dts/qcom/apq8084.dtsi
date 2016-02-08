@@ -456,7 +456,6 @@
 		interrupt-names = "hc_irq", "pwr_irq";
 
 		qcom,bus-width = <8>;
-		qcom,wakeup-on-idle;
 		qcom,cpu-dma-latency-us = <701>;
 
 		qcom,msm-bus,name = "sdhc1";
