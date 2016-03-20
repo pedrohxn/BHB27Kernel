@@ -32,6 +32,9 @@
 #include <linux/slab.h>
 #include <linux/kernel_stat.h>
 #include <asm/cputime.h>
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
+#endif
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/cpufreq_interactive.h>
@@ -383,6 +386,9 @@ static void cpufreq_interactive_timer(unsigned long data)
 	cpufreq_notify_utilization(pcpu->policy, cpu_load);
 	pcpu->prev_load = cpu_load;
 	boosted = boost_val || now < boostpulse_endtime;
+#ifdef CONFIG_STATE_NOTIFIER
+	boosted = boosted && !state_suspended;
+#endif
 	this_hispeed_freq = max(hispeed_freq, pcpu->policy->min);
 
 	if (cpu_load >= go_hispeed_load || boosted) {
