@@ -3456,7 +3456,6 @@ static int msm_thermal_dev_probe(struct platform_device *pdev)
 		msm_thermal_add_vdd_rstr_nodes();
 		vdd_rstr_nodes_called = false;
 	}
-	msm_thermal_ioctl_init();
 	ret = msm_thermal_init(&data);
 	msm_thermal_probed = true;
 
@@ -3471,7 +3470,6 @@ fail:
 
 static int msm_thermal_dev_exit(struct platform_device *inp_dev)
 {
-	msm_thermal_ioctl_cleanup();
 	if (thresh) {
 		if (vdd_rstr_enabled)
 			kfree(thresh[MSM_VDD_RESTRICTION].thresh_list);
@@ -3509,9 +3507,6 @@ int __init msm_thermal_device_init(void)
 
 int __init msm_thermal_late_init(void)
 {
-	if (!msm_thermal_probed)
-		return 0;
-
 	if (num_possible_cpus() > 1)
 		msm_thermal_add_cc_nodes();
 	msm_thermal_add_psm_nodes();
