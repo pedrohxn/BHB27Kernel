@@ -27,6 +27,6 @@ zip -r9 BHB27-Kernel * -x README .gitignore modules/.gitignore ZipScriptSign/* Z
 mv BHB27-Kernel.zip ./ZipScriptSign
 ./ZipScriptSign/sign.sh test BHB27-Kernel.zip
 rm -rf ./ZipScriptSign/BHB27-Kernel.zip
-mv ./ZipScriptSign/BHB27-Kernel-signed.zip ./BHB27-Kernel-V129-4-M.zip
+mv ./ZipScriptSign/BHB27-Kernel-signed.zip ./BHB27-Kernel-V129-1-L.zip
 cd -
 
