@@ -57,7 +57,7 @@
 #define DT2W_TIME 		50
 
 /* Wake Gestures */
-#define SWEEP_TIMEOUT		85
+#define SWEEP_TIMEOUT		30
 #define TRIGGER_TIMEOUT		50
 #define WAKE_GESTURE		0x0b
 #define SWEEP_RIGHT		0x01
@@ -121,7 +121,7 @@ static void report_gesture(int gest)
 	if (pwrtrigger_time[0] - pwrtrigger_time[1] < TRIGGER_TIMEOUT)
 		return;
 
-	wake_lock_timeout(&dt2w_wakelock, msecs_to_jiffies(500));
+	wake_lock_timeout(&dt2w_wakelock, HZ/2);
 	pr_debug("WG: gesture = %d\n", gest);
 	input_report_rel(gesture_dev, WAKE_GESTURE, gest);
 	input_sync(gesture_dev);
@@ -184,7 +184,7 @@ static void new_touch(int x, int y) {
 	x_pre = x;
 	y_pre = y;
 	touch_nr++;
-	wake_lock_timeout(&dt2w_wakelock, msecs_to_jiffies(500));
+	wake_lock_timeout(&dt2w_wakelock, HZ/2);
 }
 
 /* Doubletap2wake main function */
@@ -754,7 +754,7 @@ static ssize_t sweep_timeout_dump(struct device *dev,
 {
 	sscanf(buf, "%d ",&sweep_timeout);
 	if (sweep_timeout < 1 || sweep_timeout > 200)
-		sweep_timeout = 85;
+		sweep_timeout = 30;
 
 	return count;
 }
