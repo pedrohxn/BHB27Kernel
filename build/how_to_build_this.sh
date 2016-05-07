@@ -29,4 +29,7 @@ mv BHB27-Kernel.zip ./ZipScriptSign
 rm -rf ./ZipScriptSign/BHB27-Kernel.zip
 mv ./ZipScriptSign/BHB27-Kernel-signed.zip ./BHB27-Kernel-V129-5-M.zip
 cd -
+grep -B 3 -C 6 -r error: build/build_log.txt
+grep -B 3 -C 6 -r warn build/build_log.txt
+
 
