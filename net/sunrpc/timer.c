@@ -21,9 +21,9 @@
 
 #include <linux/sunrpc/clnt.h>
 
-#define RPC_RTO_MAX (60*HZ)
-#define RPC_RTO_INIT (HZ/5)
-#define RPC_RTO_MIN (HZ/10)
+#define RPC_RTO_MAX (msecs_to_jiffies(60000))
+#define RPC_RTO_INIT (msecs_to_jiffies(200))
+#define RPC_RTO_MIN (msecs_to_jiffies(100))
 
 /**
  * rpc_init_rtt - Initialize an RPC RTT estimator context

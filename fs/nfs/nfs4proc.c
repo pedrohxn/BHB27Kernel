@@ -68,8 +68,8 @@
 
 #define NFSDBG_FACILITY		NFSDBG_PROC
 
-#define NFS4_POLL_RETRY_MIN	(HZ/10)
-#define NFS4_POLL_RETRY_MAX	(15*HZ)
+#define NFS4_POLL_RETRY_MIN	(msecs_to_jiffies(100))
+#define NFS4_POLL_RETRY_MAX	(msecs_to_jiffies(15000))
 
 struct nfs4_opendata;
 static int _nfs4_proc_open(struct nfs4_opendata *data);
@@ -339,7 +339,7 @@ static int nfs4_handle_exception(struct nfs_server *server, int errorcode, struc
 			goto wait_on_recovery;
 #endif /* defined(CONFIG_NFS_V4_1) */
 		case -NFS4ERR_FILE_OPEN:
-			if (exception->timeout > HZ) {
+			if (exception->timeout > msecs_to_jiffies(1000)) {
 				/* We have retried a decent amount, time to
 				 * fail
 				 */
@@ -583,7 +583,7 @@ int nfs41_setup_sequence(struct nfs4_session *session,
 	if (IS_ERR(slot)) {
 		/* If out of memory, try again in 1/4 second */
 		if (slot == ERR_PTR(-ENOMEM))
-			task->tk_timeout = HZ >> 2;
+			task->tk_timeout = msecs_to_jiffies(1000) >> 2;
 		dprintk("<-- %s: no free slots\n", __func__);
 		goto out_sleep;
 	}
@@ -3551,7 +3551,7 @@ static int nfs4_do_fsinfo(struct nfs_server *server, struct nfs_fh *fhandle, str
 			struct nfs_client *clp = server->nfs_client;
 
 			spin_lock(&clp->cl_lock);
-			clp->cl_lease_time = fsinfo->lease_time * HZ;
+			clp->cl_lease_time = fsinfo->lease_time * msecs_to_jiffies(1000);
 			clp->cl_last_renewal = now;
 			spin_unlock(&clp->cl_lock);
 			break;
@@ -4549,8 +4549,8 @@ int nfs4_proc_delegreturn(struct inode *inode, struct rpc_cred *cred, const nfs4
 	return err;
 }
 
-#define NFS4_LOCK_MINTIMEOUT (1 * HZ)
-#define NFS4_LOCK_MAXTIMEOUT (30 * HZ)
+#define NFS4_LOCK_MINTIMEOUT (msecs_to_jiffies(1000))
+#define NFS4_LOCK_MAXTIMEOUT (msecs_to_jiffies(30000))
 
 /* 
  * sleep, with exponential backoff, and retry the LOCK operation. 

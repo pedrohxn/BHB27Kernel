@@ -3326,7 +3326,7 @@ static int pktgen_thread_worker(void *arg)
 				break;
 			wait_event_interruptible_timeout(t->queue,
 							 t->control != 0,
-							 HZ/10);
+							 msecs_to_jiffies(100));
 			try_to_freeze();
 			continue;
 		}

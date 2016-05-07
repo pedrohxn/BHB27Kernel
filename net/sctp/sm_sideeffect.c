@@ -260,7 +260,7 @@ void sctp_generate_t3_rtx_event(unsigned long peer)
 		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
 
 		/* Try again later.  */
-		if (!mod_timer(&transport->T3_rtx_timer, jiffies + (HZ/20)))
+		if (!mod_timer(&transport->T3_rtx_timer, jiffies + (msecs_to_jiffies(50))))
 			sctp_transport_hold(transport);
 		goto out_unlock;
 	}
@@ -302,7 +302,7 @@ static void sctp_generate_timeout_event(struct sctp_association *asoc,
 				  timeout_type);
 
 		/* Try again later.  */
-		if (!mod_timer(&asoc->timers[timeout_type], jiffies + (HZ/20)))
+		if (!mod_timer(&asoc->timers[timeout_type], jiffies + (msecs_to_jiffies(50))))
 			sctp_association_hold(asoc);
 		goto out_unlock;
 	}
@@ -380,7 +380,7 @@ void sctp_generate_heartbeat_event(unsigned long data)
 		SCTP_DEBUG_PRINTK("%s:Sock is busy.\n", __func__);
 
 		/* Try again later.  */
-		if (!mod_timer(&transport->hb_timer, jiffies + (HZ/20)))
+		if (!mod_timer(&transport->hb_timer, jiffies + (msecs_to_jiffies(50))))
 			sctp_transport_hold(transport);
 		goto out_unlock;
 	}
@@ -419,7 +419,7 @@ void sctp_generate_proto_unreach_event(unsigned long data)
 
 		/* Try again later.  */
 		if (!mod_timer(&transport->proto_unreach_timer,
-				jiffies + (HZ/20)))
+				jiffies + (msecs_to_jiffies(50))))
 			sctp_association_hold(asoc);
 		goto out_unlock;
 	}

@@ -224,7 +224,7 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt)
 
 	del_timer(&q->adapt_timer);
 	if (ctl->flags & TC_RED_ADAPTATIVE)
-		mod_timer(&q->adapt_timer, jiffies + HZ/2);
+		mod_timer(&q->adapt_timer, jiffies + msecs_to_jiffies(500));
 
 	if (!q->qdisc->q.qlen)
 		red_start_of_idle_period(&q->vars);
@@ -241,7 +241,7 @@ static inline void red_adaptative_timer(unsigned long arg)
 
 	spin_lock(root_lock);
 	red_adaptative_algo(&q->parms, &q->vars);
-	mod_timer(&q->adapt_timer, jiffies + HZ/2);
+	mod_timer(&q->adapt_timer, jiffies + msecs_to_jiffies(500);
 	spin_unlock(root_lock);
 }
 

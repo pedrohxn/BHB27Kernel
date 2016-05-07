@@ -48,7 +48,7 @@
 
 #define I2C_RETRY_DELAY		5 /* ms */
 #define I2C_RETRIES		5
-#define TPA6165_POLLING_FREQ	(2*HZ)
+#define TPA6165_POLLING_FREQ	(msecs_to_jiffies(2000))
 
 #define TPA6165A2_JACK_MASK (SND_JACK_HEADSET | SND_JACK_HEADPHONE| \
 				SND_JACK_UNSUPPORTED)
@@ -621,7 +621,7 @@ static void tpa6165_delayed_mono_work(struct work_struct *work)
 			 * so rarely expect to hit this case.
 			 */
 			queue_delayed_work(tpa6165->wq, &tpa6165->delay_work,
-					HZ);
+					msecs_to_jiffies(1000));
 		} else if (tpa6165->force_hstype == TPA6165_MONO_MIC_0N_RING1) {
 			pr_debug("%s: high cap headphone detected\n", __func__);
 			tpa6165_reg_write(tpa6165, TPA6165_ACC_STATE_REG,
@@ -804,7 +804,7 @@ static int tpa6165_get_hs_acc_type(struct tpa6165_data *tpa6165)
 		/* force to non omtp type & trigger delayed detection */
 		tpa6165_reg_write(tpa6165, TPA6165_ACC_STATE_REG,
 			tpa6165->force_hstype, 0xff);
-		queue_delayed_work(tpa6165->wq, &tpa6165->delay_work, HZ/2);
+		queue_delayed_work(tpa6165->wq, &tpa6165->delay_work, msecs_to_jiffies(500));
 		break;
 	default:
 		/* no valid acc detected */
@@ -1365,7 +1365,7 @@ static irqreturn_t tpa6165_irq_handler(int irq, void *data)
 {
 	struct tpa6165_data *irq_data = data;
 
-	wake_lock_timeout(&irq_data->wake_lock, HZ);
+	wake_lock_timeout(&irq_data->wake_lock, msecs_to_jiffies(1000));
 	queue_delayed_work(irq_data->wq, &irq_data->work_det,
 						msecs_to_jiffies(2));
 	return IRQ_HANDLED;
@@ -1387,7 +1387,7 @@ static void tpa6165_det_thread(struct work_struct *work)
 	pr_debug("%s: Enter", __func__);
 	if (atomic_read(&irq_data->is_suspending)) {
 		pr_debug("tpa6165_det_thread: pm state: suspend retry work\n");
-		wake_lock_timeout(&irq_data->wake_lock, HZ);
+		wake_lock_timeout(&irq_data->wake_lock, msecs_to_jiffies(1000));
 		queue_delayed_work(irq_data->wq, &irq_data->work_det,
 				msecs_to_jiffies(20));
 		mutex_unlock(&irq_data->lock);
@@ -1407,7 +1407,7 @@ static void tpa6165_det_thread(struct work_struct *work)
 		regulator_set_optimum_mode(irq_data->vdd, 0);
 
 	/* timed wake lock here so that user space wakeup in time */
-	wake_lock_timeout(&irq_data->wake_lock, HZ/2);
+	wake_lock_timeout(&irq_data->wake_lock, msecs_to_jiffies(500));
 	if (irq_data->polling_state) {
 		pr_debug("tpa6165: enable polling ..\n");
 		queue_delayed_work(irq_data->wq, &irq_data->poll_work,

@@ -297,7 +297,7 @@ wavefront_wait (snd_wavefront_t *dev, int mask)
 			return 1;
 		}
 
-		if (wavefront_sleep (HZ/sleep_interval)) {
+		if (wavefront_sleep (msecs_to_jiffies(1000)/sleep_interval)) {
 			return (0);
 		}
 	}
@@ -1858,7 +1858,7 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 
 	wavefront_should_cause_interrupt(dev, 0x80|0x40|0x10|0x1,
 					 dev->control_port,
-					 (reset_time*HZ)/100);
+					 (reset_time*msecs_to_jiffies(1000))/100);
 
 	/* Note: data port is now the data port, not the h/w initialization
 	   port.
@@ -1886,7 +1886,7 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 	*/
 
 	wavefront_should_cause_interrupt(dev, WFC_HARDWARE_VERSION, 
-					 dev->data_port, ramcheck_time*HZ);
+					 dev->data_port, ramcheck_time*msecs_to_jiffies(1000));
 
 	if (!dev->irq_ok) {
 		snd_printk ("post-RAM-check interrupt not received.\n");
@@ -2038,7 +2038,7 @@ wavefront_do_reset (snd_wavefront_t *dev)
 
 		wavefront_should_cause_interrupt (dev, WFC_NOOP,
 						  dev->data_port,
-						  (osrun_time*HZ));
+						  (osrun_time*msecs_to_jiffies(1000)));
 
 		if (!dev->irq_ok) {
 			snd_printk ("no post-OS interrupt.\n");
@@ -2048,7 +2048,7 @@ wavefront_do_reset (snd_wavefront_t *dev)
 		/* Now, do it again ! */
 		
 		wavefront_should_cause_interrupt (dev, WFC_NOOP,
-						  dev->data_port, (10*HZ));
+						  dev->data_port, (msecs_to_jiffies(10000)));
 		
 		if (!dev->irq_ok) {
 			snd_printk ("no post-OS interrupt(2).\n");

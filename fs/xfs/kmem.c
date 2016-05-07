@@ -60,7 +60,7 @@ kmem_alloc(size_t size, xfs_km_flags_t flags)
 			xfs_err(NULL,
 		"possible memory allocation deadlock in %s (mode:0x%x)",
 					__func__, lflags);
-		congestion_wait(BLK_RW_ASYNC, HZ/50);
+		congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
 	} while (1);
 }
 
@@ -116,7 +116,7 @@ kmem_zone_alloc(kmem_zone_t *zone, xfs_km_flags_t flags)
 			xfs_err(NULL,
 		"possible memory allocation deadlock in %s (mode:0x%x)",
 					__func__, lflags);
-		congestion_wait(BLK_RW_ASYNC, HZ/50);
+		congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
 	} while (1);
 }
 

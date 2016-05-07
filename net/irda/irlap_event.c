@@ -203,7 +203,7 @@ static void irlap_start_poll_timer(struct irlap_cb *self, int timeout)
 				 *         function
 				 */
 				self->fast_RR_timeout +=
-					(sysctl_fast_poll_increase * HZ/1000);
+					(sysctl_fast_poll_increase * msecs_to_jiffies(1));
 
 				/* Use this fast(er) timeout instead */
 				timeout = self->fast_RR_timeout;

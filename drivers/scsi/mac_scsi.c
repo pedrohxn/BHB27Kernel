@@ -89,9 +89,9 @@ static int setup_hostid = -1;
 #define TOSHIBA_DELAY
 
 #ifdef TOSHIBA_DELAY
-#define	AFTER_RESET_DELAY	(5*HZ/2)
+#define	AFTER_RESET_DELAY	(msecs_to_jiffies(2500))
 #else
-#define	AFTER_RESET_DELAY	(HZ/2)
+#define	AFTER_RESET_DELAY	(msecs_to_jiffies(500))
 #endif
 
 static volatile unsigned char *mac_scsi_regp = NULL;

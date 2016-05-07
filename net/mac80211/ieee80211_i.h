@@ -304,10 +304,10 @@ struct mesh_preq_queue {
 	u8 flags;
 };
 
-#if HZ/100 == 0
+#if msecs_to_jiffies(10) == 0
 #define IEEE80211_ROC_MIN_LEFT	1
 #else
-#define IEEE80211_ROC_MIN_LEFT	(HZ/100)
+#define IEEE80211_ROC_MIN_LEFT	(msecs_to_jiffies(10))
 #endif
 
 struct ieee80211_roc_work {

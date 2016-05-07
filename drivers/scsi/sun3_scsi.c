@@ -123,7 +123,7 @@ module_param(setup_hostid, int, 0);
 
 static struct scsi_cmnd *sun3_dma_setup_done = NULL;
 
-#define	AFTER_RESET_DELAY	(HZ/2)
+#define	AFTER_RESET_DELAY	(msecs_to_jiffies(500))
 
 /* ms to wait after hitting dma regs */
 #define SUN3_DMA_DELAY 10

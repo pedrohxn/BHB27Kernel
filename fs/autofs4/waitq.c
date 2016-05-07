@@ -290,7 +290,7 @@ static int validate_request(struct autofs_wait_queue **wait,
 
 		while (ino->flags & AUTOFS_INF_EXPIRING) {
 			mutex_unlock(&sbi->wq_mutex);
-			schedule_timeout_interruptible(HZ/10);
+			schedule_timeout_interruptible(msecs_to_jiffies(100));
 			if (mutex_lock_interruptible(&sbi->wq_mutex))
 				return -EINTR;
 

@@ -1465,7 +1465,7 @@ static void __exit unload_waveartist(struct address_info *hw)
 
 #include <asm/hardware/dec21285.h>
  
-#define	VNC_TIMER_PERIOD (HZ/4)	//check slider 4 times/sec
+#define	VNC_TIMER_PERIOD (msecs_to_jiffies(250))	//check slider 4 times/sec
 
 #define	MIXER_PRIVATE3_RESET	0x53570000
 #define	MIXER_PRIVATE3_READ	0x53570001

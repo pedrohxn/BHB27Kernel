@@ -111,10 +111,10 @@
 #ifdef CONFIG_IP_MULTICAST
 /* Parameter names and values are taken from igmp-v2-06 draft */
 
-#define IGMP_V1_Router_Present_Timeout		(400*HZ)
-#define IGMP_V2_Router_Present_Timeout		(400*HZ)
-#define IGMP_Unsolicited_Report_Interval	(10*HZ)
-#define IGMP_Query_Response_Interval		(10*HZ)
+#define IGMP_V1_Router_Present_Timeout		(msecs_to_jiffies(400000))
+#define IGMP_V2_Router_Present_Timeout		(msecs_to_jiffies(400000))
+#define IGMP_Unsolicited_Report_Interval	(msecs_to_jiffies(10000))
+#define IGMP_Query_Response_Interval		(msecs_to_jiffies(10000))
 #define IGMP_Unsolicited_Report_Count		2
 
 
@@ -858,7 +858,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
 			group = 0;
 		} else {
 			/* v2 router present */
-			max_delay = ih->code*(HZ/IGMP_TIMER_SCALE);
+			max_delay = ih->code*(msecs_to_jiffies(1000)/IGMP_TIMER_SCALE);
 			in_dev->mr_v2_seen = jiffies +
 				IGMP_V2_Router_Present_Timeout;
 		}
@@ -881,7 +881,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
 		 * different encoding. We use the v3 encoding as more likely
 		 * to be intended in a v3 query.
 		 */
-		max_delay = IGMPV3_MRC(ih3->code)*(HZ/IGMP_TIMER_SCALE);
+		max_delay = IGMPV3_MRC(ih3->code)*(msecs_to_jiffies(1000)/IGMP_TIMER_SCALE);
 		if (!max_delay)
 			max_delay = 1;	/* can't mod w/ 0 */
 	} else { /* v3 */
@@ -896,7 +896,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
 			ih3 = igmpv3_query_hdr(skb);
 		}
 
-		max_delay = IGMPV3_MRC(ih3->code)*(HZ/IGMP_TIMER_SCALE);
+		max_delay = IGMPV3_MRC(ih3->code)*(msecs_to_jiffies(1000)/IGMP_TIMER_SCALE);
 		if (!max_delay)
 			max_delay = 1;	/* can't mod w/ 0 */
 		in_dev->mr_maxdelay = max_delay;

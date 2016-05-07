@@ -1349,7 +1349,7 @@ shrink_inactive_list(unsigned long nr_to_scan, struct lruvec *lruvec,
 	struct zone_reclaim_stat *reclaim_stat = &lruvec->reclaim_stat;
 
 	while (unlikely(too_many_isolated(zone, file, sc))) {
-		congestion_wait(BLK_RW_ASYNC, HZ/10);
+		congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(100));
 
 		/* We are about to die and free our memory. Return now. */
 		if (fatal_signal_pending(current))
@@ -1432,7 +1432,7 @@ shrink_inactive_list(unsigned long nr_to_scan, struct lruvec *lruvec,
 	 */
 	if (nr_writeback && nr_writeback >=
 			(nr_taken >> (DEF_PRIORITY - sc->priority)))
-		wait_iff_congested(zone, BLK_RW_ASYNC, HZ/10);
+		wait_iff_congested(zone, BLK_RW_ASYNC, msecs_to_jiffies(100));
 
 	trace_mm_vmscan_lru_shrink_inactive(zone->zone_pgdat->node_id,
 		zone_idx(zone),
@@ -2287,7 +2287,7 @@ static unsigned long do_try_to_free_pages(struct zonelist *zonelist,
 			first_zones_zonelist(zonelist, gfp_zone(sc->gfp_mask),
 						&cpuset_current_mems_allowed,
 						&preferred_zone);
-			wait_iff_congested(preferred_zone, BLK_RW_ASYNC, HZ/10);
+			wait_iff_congested(preferred_zone, BLK_RW_ASYNC, msecs_to_jiffies(100));
 		}
 	} while (--sc->priority >= 0);
 
@@ -2425,7 +2425,7 @@ static bool throttle_direct_reclaim(gfp_t gfp_mask, struct zonelist *zonelist,
 	 */
 	if (!(gfp_mask & __GFP_FS)) {
 		wait_event_interruptible_timeout(pgdat->pfmemalloc_wait,
-			pfmemalloc_watermark_ok(pgdat), HZ);
+			pfmemalloc_watermark_ok(pgdat), msecs_to_jiffies(1000));
 
 		goto check_pending;
 	}
@@ -2666,7 +2666,7 @@ static bool pgdat_balanced(pg_data_t *pgdat, int order, int classzone_idx)
 static bool prepare_kswapd_sleep(pg_data_t *pgdat, int order, long remaining,
 					int classzone_idx)
 {
-	/* If a direct reclaimer woke kswapd within HZ/10, it's premature */
+	/* If a direct reclaimer woke kswapd within HZ/10 or msecs_to_jiffies(100), it's premature */
 	if (remaining)
 		return false;
 
@@ -2984,7 +2984,7 @@ static void kswapd_try_to_sleep(pg_data_t *pgdat, int order, int classzone_idx)
 
 	/* Try to sleep for a short interval */
 	if (prepare_kswapd_sleep(pgdat, order, remaining, classzone_idx)) {
-		remaining = schedule_timeout(HZ/10);
+		remaining = schedule_timeout(msecs_to_jiffies(100));
 		finish_wait(&pgdat->kswapd_wait, &wait);
 		prepare_to_wait(&pgdat->kswapd_wait, &wait, TASK_INTERRUPTIBLE);
 	}

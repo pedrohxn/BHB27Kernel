@@ -461,7 +461,7 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 			return;
 		else {
 			if (!mod_timer(&t->proto_unreach_timer,
-						jiffies + (HZ/20)))
+						jiffies + (msecs_to_jiffies(50))))
 				sctp_association_hold(asoc);
 		}
 			

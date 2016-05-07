@@ -88,7 +88,7 @@ static __inline__ int mtrr_del(int reg, unsigned long base, unsigned long size)
 #define DRM_COPY_TO_USER(arg1, arg2, arg3)		\
 	copy_to_user(arg1, arg2, arg3)
 
-#define DRM_HZ HZ
+#define DRM_HZ msecs_to_jiffies(1000)
 
 #define DRM_WAIT_ON( ret, queue, timeout, condition )		\
 do {								\
@@ -104,7 +104,7 @@ do {								\
 			ret = -EBUSY;				\
 			break;					\
 		}						\
-		schedule_timeout((HZ/100 > 1) ? HZ/100 : 1);	\
+		schedule_timeout((msecs_to_jiffies(10) > 1) ? msecs_to_jiffies(10) : 1);	\
 		if (signal_pending(current)) {			\
 			ret = -EINTR;				\
 			break;					\

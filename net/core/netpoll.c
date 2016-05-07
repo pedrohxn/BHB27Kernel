@@ -100,7 +100,7 @@ static void queue_process(struct work_struct *work)
 			__netif_tx_unlock(txq);
 			local_irq_restore(flags);
 
-			schedule_delayed_work(&npinfo->tx_work, HZ/10);
+			schedule_delayed_work(&npinfo->tx_work, msecs_to_jiffies(100));
 			return;
 		}
 		__netif_tx_unlock(txq);
@@ -1132,8 +1132,8 @@ int netpoll_setup(struct netpoll *np)
 		}
 
 		rtnl_unlock();
-		atleast = jiffies + HZ/10;
-		atmost = jiffies + carrier_timeout * HZ;
+		atleast = jiffies + msecs_to_jiffies(100);
+		atmost = jiffies + carrier_timeout * msecs_to_jiffies(1000);
 		while (!netif_carrier_ok(ndev)) {
 			if (time_after(jiffies, atmost)) {
 				np_notice(np, "timeout waiting for carrier\n");

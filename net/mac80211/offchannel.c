@@ -293,7 +293,7 @@ void ieee80211_start_next_roc(struct ieee80211_local *local)
 	} else {
 		/* delay it a bit */
 		ieee80211_queue_delayed_work(&local->hw, &roc->work,
-					     round_jiffies_relative(HZ/2));
+					     round_jiffies_relative(msecs_to_jiffies(500)));
 	}
 }
 

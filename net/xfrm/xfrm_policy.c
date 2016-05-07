@@ -35,8 +35,8 @@
 
 #include "xfrm_hash.h"
 
-#define XFRM_QUEUE_TMO_MIN ((unsigned)(HZ/10))
-#define XFRM_QUEUE_TMO_MAX ((unsigned)(60*HZ))
+#define XFRM_QUEUE_TMO_MIN ((unsigned)(msecs_to_jiffies(100)))
+#define XFRM_QUEUE_TMO_MAX ((unsigned)(msecs_to_jiffies(60000)))
 #define XFRM_MAX_QUEUE_LEN	100
 
 DEFINE_MUTEX(xfrm_cfg_mutex);
@@ -168,10 +168,10 @@ static inline struct dst_entry *xfrm_dst_lookup(struct xfrm_state *x, int tos,
 
 static inline unsigned long make_jiffies(long secs)
 {
-	if (secs >= (MAX_SCHEDULE_TIMEOUT-1)/HZ)
+	if (secs >= (MAX_SCHEDULE_TIMEOUT-1)/msecs_to_jiffies(1000))
 		return MAX_SCHEDULE_TIMEOUT-1;
 	else
-		return secs*HZ;
+		return secs*msecs_to_jiffies(1000);
 }
 
 static void xfrm_policy_timer(unsigned long data)
@@ -669,7 +669,7 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
 	hlist_add_head(&policy->byidx, net->xfrm.policy_byidx+idx_hash(net, policy->index));
 	policy->curlft.add_time = get_seconds();
 	policy->curlft.use_time = 0;
-	if (!mod_timer(&policy->timer, jiffies + HZ))
+	if (!mod_timer(&policy->timer, jiffies + msecs_to_jiffies(1000)))
 		xfrm_pol_hold(policy);
 	list_add(&policy->walk.all, &net->xfrm.policy_all);
 	write_unlock_bh(&xfrm_policy_lock);

@@ -70,10 +70,10 @@ enum {
 /*
  * If requests are retransmitted within this interval, they're dropped.
  */
-#define RC_DELAY		(HZ/5)
+#define RC_DELAY		(msecs_to_jiffies(200))
 
 /* Cache entries expire after this time period */
-#define RC_EXPIRE		(120 * HZ)
+#define RC_EXPIRE		(msecs_to_jiffies(120000))
 
 /* Checksum this amount of the request */
 #define RC_CSUMLEN		(256U)

@@ -392,7 +392,7 @@ int snd_ice1712_init_cs8427(struct snd_ice1712 *ice, int addr)
 	int err;
 
 	err = snd_cs8427_create(ice->i2c, addr,
-		(ice->cs8427_timeout * HZ) / 1000, &ice->cs8427);
+		(ice->cs8427_timeout * msecs_to_jiffies(1000)) / 1000, &ice->cs8427);
 	if (err < 0) {
 		snd_printk(KERN_ERR "CS8427 initialization failed\n");
 		return err;

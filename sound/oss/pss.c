@@ -154,7 +154,7 @@ static void pss_write(pss_confdata *devc, int data)
 {
 	unsigned long i, limit;
 
-	limit = jiffies + HZ/10;	/* The timeout is 0.1 seconds */
+	limit = jiffies + msecs_to_jiffies(100);	/* The timeout is 0.1 seconds */
 	/*
 	 * Note! the i<5000000 is an emergency exit. The dsp_command() is sometimes
 	 * called while interrupts are disabled. This means that the timer is
@@ -266,7 +266,7 @@ static int set_dma(pss_confdata * devc, int dev, int dma)
 
 static int pss_reset_dsp(pss_confdata * devc)
 {
-	unsigned long   i, limit = jiffies + HZ/10;
+	unsigned long   i, limit = jiffies + msecs_to_jiffies(100);
 
 	outw(0x2000, REG(PSS_CONTROL));
 	for (i = 0; i < 32768 && time_after_eq(limit, jiffies); i++)
@@ -317,7 +317,7 @@ static int pss_download_boot(pss_confdata * devc, unsigned char *block, int size
 /*_____ Warn DSP software that a boot is coming */
 		outw(0x00fe, REG(PSS_DATA));
 
-		limit = jiffies + HZ/10;
+		limit = jiffies + msecs_to_jiffies(100);
 		for (i = 0; i < 32768 && time_before(jiffies, limit); i++)
 			if (inw(REG(PSS_DATA)) == 0x5500)
 				break;
@@ -368,11 +368,11 @@ static int pss_download_boot(pss_confdata * devc, unsigned char *block, int size
 /*_____ Why */
 		outw(0, REG(PSS_DATA));
 
-		limit = jiffies + HZ/10;
+		limit = jiffies + msecs_to_jiffies(100);
 		for (i = 0; i < 32768 && time_after_eq(limit, jiffies); i++)
 			val = inw(REG(PSS_STATUS));
 
-		limit = jiffies + HZ/10;
+		limit = jiffies + msecs_to_jiffies(100);
 		for (i = 0; i < 32768 && time_after_eq(limit, jiffies); i++)
 		{
 			val = inw(REG(PSS_STATUS));

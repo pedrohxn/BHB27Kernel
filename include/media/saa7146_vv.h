@@ -8,7 +8,7 @@
 #include <media/videobuf-dma-sg.h>
 
 #define MAX_SAA7146_CAPTURE_BUFFERS	32	/* arbitrary */
-#define BUFFER_TIMEOUT     (HZ/2)  /* 0.5 seconds */
+#define BUFFER_TIMEOUT     (msecs_to_jiffies(500))  /* 0.5 seconds */
 
 #define WRITE_RPS0(x) do { \
 	dev->d_rps0.cpu_addr[ count++ ] = cpu_to_le32(x); \

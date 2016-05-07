@@ -88,7 +88,7 @@ static void drain_midi_queue(int dev)
 	if (midi_devs[dev]->buffer_status != NULL)
 		while (!signal_pending(current) && midi_devs[dev]->buffer_status(dev)) 
 			interruptible_sleep_on_timeout(&midi_sleeper[dev],
-						       HZ/10);
+						       msecs_to_jiffies(100));
 }
 
 static void midi_input_intr(int dev, unsigned char data)
@@ -382,7 +382,7 @@ int MIDIbuf_ioctl(int dev, struct file *file,
 					return -EFAULT;
 				if (val < 0)
 					val = 0;
-				val = (HZ * val) / 10;
+				val = (msecs_to_jiffies(1000) * val) / 10;
 				parms[dev].prech_timeout = val;
 				return put_user(val, (int __user *)arg);
 			

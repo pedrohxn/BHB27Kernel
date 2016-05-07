@@ -17,8 +17,8 @@
 #include <net/neighbour.h>
 #include <asm/processor.h>
 
-#define DST_GC_MIN	(HZ/10)
-#define DST_GC_INC	(HZ/2)
+#define DST_GC_MIN	(msecs_to_jiffies(100))
+#define DST_GC_INC	(msecs_to_jiffies(500))
 #define DST_GC_MAX	(120*HZ)
 
 /* Each dst_entry has reference count and sits in some parent list(s).

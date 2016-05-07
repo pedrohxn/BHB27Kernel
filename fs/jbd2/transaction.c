@@ -176,7 +176,7 @@ alloc_transaction:
 			 * to retry the allocation ourselves.
 			 */
 			if ((gfp_mask & __GFP_FS) == 0) {
-				congestion_wait(BLK_RW_ASYNC, HZ/50);
+				congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
 				goto alloc_transaction;
 			}
 			return -ENOMEM;
@@ -661,7 +661,7 @@ repeat:
 
 	/* If it takes too long to lock the buffer, trace it */
 	time_lock = jbd2_time_diff(start_lock, jiffies);
-	if (time_lock > HZ/10)
+	if (time_lock > msecs_to_jiffies(100))
 		trace_jbd2_lock_buffer_stall(bh->b_bdev->bd_dev,
 			jiffies_to_msecs(time_lock));
 

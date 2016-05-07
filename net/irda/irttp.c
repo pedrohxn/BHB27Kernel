@@ -185,7 +185,7 @@ static void irttp_todo_expired(unsigned long data)
 			self->disconnect_skb = NULL;
 		} else {
 			/* Try again later */
-			irttp_start_todo_timer(self, HZ/10);
+			irttp_start_todo_timer(self, msecs_to_jiffies(100));
 
 			/* No reason to try and close now */
 			return;
@@ -523,7 +523,7 @@ int irttp_close_tsap(struct tsap_cb *self)
 			irttp_disconnect_request(self, NULL, P_NORMAL);
 		}
 		self->close_pend = TRUE;
-		irttp_start_todo_timer(self, HZ/10);
+		irttp_start_todo_timer(self, msecs_to_jiffies(100));
 
 		return 0; /* Will be back! */
 	}
@@ -1555,7 +1555,7 @@ int irttp_disconnect_request(struct tsap_cb *self, struct sk_buff *userdata,
 
 			irttp_run_tx_queue(self);
 
-			irttp_start_todo_timer(self, HZ/10);
+			irttp_start_todo_timer(self, msecs_to_jiffies(100));
 			return -1;
 		}
 	}

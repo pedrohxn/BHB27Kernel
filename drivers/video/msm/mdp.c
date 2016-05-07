@@ -56,7 +56,7 @@ struct completion mdp_ppp_comp;
 struct semaphore mdp_ppp_mutex;
 struct semaphore mdp_pipe_ctrl_mutex;
 
-unsigned long mdp_timer_duration = (HZ/20);   /* 50 msecond */
+unsigned long mdp_timer_duration = (msecs_to_jiffies(50));   /* 50 msecond */
 
 boolean mdp_ppp_waiting = FALSE;
 uint32 mdp_tv_underflow_cnt;
@@ -1245,7 +1245,7 @@ static int mdp_do_histogram(struct fb_info *info,
 {
 	struct mdp_hist_mgmt *mgmt = NULL;
 	int ret = 0;
-	unsigned long timeout = (MDP_HISTOGRAM_TIMEOUT_MS * HZ) / 1000;
+	unsigned long timeout = (MDP_HISTOGRAM_TIMEOUT_MS * msecs_to_jiffies(1000)) / 1000;
 
 	ret = mdp_histogram_block2mgmt(hist->block, &mgmt);
 	if (ret) {
@@ -1352,7 +1352,7 @@ int mdp_ppp_pipe_wait(void)
 
 	if (wait == TRUE) {
 		ret = wait_for_completion_interruptible_timeout(&mdp_ppp_comp,
-								5 * HZ);
+								msecs_to_jiffies(5000));
 		if (!ret)
 			printk(KERN_ERR "%s: Timed out waiting for the MDP.\n",
 				__func__);
@@ -2712,10 +2712,10 @@ static int mdp_probe(struct platform_device *pdev)
 
 		if (mfd->panel.type == EXT_MDDI_PANEL) {
 			/* 15 fps -> 66 msec */
-			mfd->refresh_timer_duration = (66 * HZ / 1000);
+			mfd->refresh_timer_duration = (msecs_to_jiffies(66));
 		} else {
 			/* 24 fps -> 42 msec */
-			mfd->refresh_timer_duration = (42 * HZ / 1000);
+			mfd->refresh_timer_duration = (msecs_to_jiffies(42));
 		}
 
 #ifdef CONFIG_FB_MSM_MDP22

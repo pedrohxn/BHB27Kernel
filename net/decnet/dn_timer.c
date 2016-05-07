@@ -30,7 +30,7 @@
  * Slow timer is for everything else (n * 500mS)
  */
 
-#define SLOW_INTERVAL (HZ/2)
+#define SLOW_INTERVAL (msecs_to_jiffies(500))
 
 static void dn_slow_timer(unsigned long arg);
 
@@ -53,7 +53,7 @@ static void dn_slow_timer(unsigned long arg)
 	bh_lock_sock(sk);
 
 	if (sock_owned_by_user(sk)) {
-		sk_reset_timer(sk, &sk->sk_timer, jiffies + HZ / 10);
+		sk_reset_timer(sk, &sk->sk_timer, jiffies + msecs_to_jiffies(100));
 		goto out;
 	}
 

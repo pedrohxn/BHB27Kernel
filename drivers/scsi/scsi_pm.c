@@ -172,7 +172,7 @@ static int sdev_runtime_suspend(struct device *dev)
 	err = scsi_dev_type_suspend(dev, cb);
 	if (err == -EAGAIN)
 		pm_schedule_suspend(dev, jiffies_to_msecs(
-					round_jiffies_up_relative(HZ/10)));
+					round_jiffies_up_relative(msecs_to_jiffies(100))));
 	return err;
 }
 

@@ -135,7 +135,7 @@ static void dccp_write_timer(unsigned long data)
 	if (sock_owned_by_user(sk)) {
 		/* Try again later */
 		sk_reset_timer(sk, &icsk->icsk_retransmit_timer,
-			       jiffies + (HZ / 20));
+			       jiffies + (msecs_to_jiffies(50)));
 		goto out;
 	}
 
@@ -178,7 +178,7 @@ static void dccp_keepalive_timer(unsigned long data)
 	bh_lock_sock(sk);
 	if (sock_owned_by_user(sk)) {
 		/* Try again later. */
-		inet_csk_reset_keepalive_timer(sk, HZ / 20);
+		inet_csk_reset_keepalive_timer(sk, msecs_to_jiffies(50));
 		goto out;
 	}
 

@@ -127,17 +127,17 @@ struct neigh_table nd_tbl = {
 		.tbl			= &nd_tbl,
 		.base_reachable_time	= ND_REACHABLE_TIME,
 		.retrans_time		= ND_RETRANS_TIMER,
-		.gc_staletime		= 60 * HZ,
+		.gc_staletime		= msecs_to_jiffies(60000),
 		.reachable_time		= ND_REACHABLE_TIME,
-		.delay_probe_time	= 5 * HZ,
+		.delay_probe_time	= msecs_to_jiffies(50000),
 		.queue_len_bytes	= 64*1024,
 		.ucast_probes		= 3,
 		.mcast_probes		= 3,
-		.anycast_delay		= 1 * HZ,
-		.proxy_delay		= (8 * HZ) / 10,
+		.anycast_delay		= msecs_to_jiffies(1000),
+		.proxy_delay		= msecs_to_jiffies(800),
 		.proxy_qlen		= 64,
 	},
-	.gc_interval =	  30 * HZ,
+	.gc_interval =	  msecs_to_jiffies(30000),
 	.gc_thresh1 =	 128,
 	.gc_thresh2 =	 512,
 	.gc_thresh3 =	1024,
@@ -1191,7 +1191,7 @@ static void ndisc_router_discovery(struct sk_buff *skb)
 	}
 
 	if (rt)
-		rt6_set_expires(rt, jiffies + (HZ * lifetime));
+		rt6_set_expires(rt, jiffies + (msecs_to_jiffies(1000) * lifetime));
 	if (ra_msg->icmph.icmp6_hop_limit) {
 		/* Only set hop_limit on the interface if it is higher than
 		 * the current hop_limit.
@@ -1215,21 +1215,21 @@ skip_defrtr:
 	if (in6_dev->nd_parms) {
 		unsigned long rtime = ntohl(ra_msg->retrans_timer);
 
-		if (rtime && rtime/1000 < MAX_SCHEDULE_TIMEOUT/HZ) {
-			rtime = (rtime*HZ)/1000;
-			if (rtime < HZ/10)
-				rtime = HZ/10;
+		if (rtime && rtime/1000 < MAX_SCHEDULE_TIMEOUT/msecs_to_jiffies(1000)) {
+			rtime = (rtime*msecs_to_jiffies(1000))/1000;
+			if (rtime < msecs_to_jiffies(100))
+				rtime = msecs_to_jiffies(100);
 			in6_dev->nd_parms->retrans_time = rtime;
 			in6_dev->tstamp = jiffies;
 			inet6_ifinfo_notify(RTM_NEWLINK, in6_dev);
 		}
 
 		rtime = ntohl(ra_msg->reachable_time);
-		if (rtime && rtime/1000 < MAX_SCHEDULE_TIMEOUT/(3*HZ)) {
-			rtime = (rtime*HZ)/1000;
+		if (rtime && rtime/1000 < MAX_SCHEDULE_TIMEOUT/(msecs_to_jiffies(3000))) {
+			rtime = (rtime*msecs_to_jiffies(1000))/1000;
 
-			if (rtime < HZ/10)
-				rtime = HZ/10;
+			if (rtime < msecs_to_jiffies(100))
+				rtime = msecs_to_jiffies(100);
 
 			if (rtime != in6_dev->nd_parms->base_reachable_time) {
 				in6_dev->nd_parms->base_reachable_time = rtime;
@@ -1452,7 +1452,7 @@ void ndisc_send_redirect(struct sk_buff *skb, const struct in6_addr *target)
 		goto release;
 	}
 	peer = inet_getpeer_v6(net->ipv6.peers, &rt->rt6i_dst.addr, 1);
-	ret = inet_peer_xrlim_allow(peer, 1*HZ);
+	ret = inet_peer_xrlim_allow(peer, msecs_to_jiffies(1000));
 	if (peer)
 		inet_putpeer(peer);
 	if (!ret)
