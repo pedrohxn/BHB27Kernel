@@ -277,7 +277,7 @@ static void mmc_omap_release_slot(struct mmc_omap_slot *slot, int clk_enabled)
 
 	if (clk_enabled)
 		/* Keeps clock running for at least 8 cycles on valid freq */
-		mod_timer(&host->clk_timer, jiffies  + msecs_to_jiffies(100));
+		mod_timer(&host->clk_timer, jiffies  + HZ/10);
 	else {
 		del_timer(&host->clk_timer);
 		mmc_omap_fclk_offdelay(slot);
@@ -396,7 +396,7 @@ mmc_omap_start_command(struct mmc_omap_host *host, struct mmc_command *cmd)
 	if (host->data && !(host->data->flags & MMC_DATA_WRITE))
 		cmdreg |= 1 << 15;
 
-	mod_timer(&host->cmd_abort_timer, jiffies + msecs_to_jiffies(500));
+	mod_timer(&host->cmd_abort_timer, jiffies + HZ/2);
 
 	OMAP_MMC_WRITE(host, CTO, 200);
 	OMAP_MMC_WRITE(host, ARGL, cmd->arg & 0xffff);

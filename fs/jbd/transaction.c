@@ -102,7 +102,7 @@ alloc_transaction:
 	if (!journal->j_running_transaction) {
 		new_transaction = kzalloc(sizeof(*new_transaction), GFP_NOFS);
 		if (!new_transaction) {
-			congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
+			congestion_wait(BLK_RW_ASYNC, HZ/50);
 			goto alloc_transaction;
 		}
 	}

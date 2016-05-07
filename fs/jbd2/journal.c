@@ -362,7 +362,7 @@ retry_alloc:
 		 * Failure is not an option, but __GFP_NOFAIL is going
 		 * away; so we retry ourselves here.
 		 */
-		congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
+		congestion_wait(BLK_RW_ASYNC, HZ/50);
 		goto retry_alloc;
 	}
 
@@ -1080,7 +1080,7 @@ static journal_t * journal_init_common (void)
 	spin_lock_init(&journal->j_list_lock);
 	rwlock_init(&journal->j_state_lock);
 
-	journal->j_commit_interval = (msecs_to_jiffies(1000) * JBD2_DEFAULT_MAX_COMMIT_AGE);
+	journal->j_commit_interval = (HZ * JBD2_DEFAULT_MAX_COMMIT_AGE);
 	journal->j_min_batch_time = 0;
 	journal->j_max_batch_time = 15000; /* 15ms */
 

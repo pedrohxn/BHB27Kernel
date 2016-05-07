@@ -94,11 +94,11 @@
 /* Define the timeout for waiting for a DHCP/BOOTP/RARP reply */
 #define CONF_OPEN_RETRIES 	2	/* (Re)open devices twice */
 #define CONF_SEND_RETRIES 	6	/* Send six requests per open */
-#define CONF_INTER_TIMEOUT	(msecs_to_jiffies(500))	/* Inter-device timeout: 1/2 second */
-#define CONF_BASE_TIMEOUT	(msecs_to_jiffies(2000))	/* Initial timeout: 2 seconds */
-#define CONF_TIMEOUT_RANDOM	(msecs_to_jiffies(1000))	/* Maximum amount of randomization */
+#define CONF_INTER_TIMEOUT	(HZ/2)	/* Inter-device timeout: 1/2 second */
+#define CONF_BASE_TIMEOUT	(HZ*2)	/* Initial timeout: 2 seconds */
+#define CONF_TIMEOUT_RANDOM	(HZ)	/* Maximum amount of randomization */
 #define CONF_TIMEOUT_MULT	*7/4	/* Rate of timeout growth */
-#define CONF_TIMEOUT_MAX	(msecs_to_jiffies(30000))	/* Maximum allowed timeout */
+#define CONF_TIMEOUT_MAX	(HZ*30)	/* Maximum allowed timeout */
 #define CONF_NAMESERVERS_MAX   3       /* Maximum number of nameservers
 					   - '3' from resolv.h */
 
@@ -840,7 +840,7 @@ static void __init ic_bootp_send_if(struct ic_device *d, unsigned long jiffies_d
 	/* server_ip and your_ip address are both already zero per RFC2131 */
 	b->hlen = dev->addr_len;
 	memcpy(b->hw_addr, dev->dev_addr, dev->addr_len);
-	b->secs = htons(jiffies_diff / msecs_to_jiffies(1000));
+	b->secs = htons(jiffies_diff / HZ);
 	b->xid = d->xid;
 
 	/* add DHCP options or BOOTP extensions */

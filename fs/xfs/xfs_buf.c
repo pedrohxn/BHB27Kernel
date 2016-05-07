@@ -412,7 +412,7 @@ retry:
 					__func__, gfp_mask);
 
 			XFS_STATS_INC(xb_page_retries);
-			congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
+			congestion_wait(BLK_RW_ASYNC, HZ/50);
 			goto retry;
 		}
 

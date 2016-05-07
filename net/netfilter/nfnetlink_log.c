@@ -716,7 +716,7 @@ nfulnl_log_packet(struct net *net,
 	 * is no chance of a race here */
 	else if (!timer_pending(&inst->timer)) {
 		instance_get(inst);
-		inst->timer.expires = jiffies + (inst->flushtimeout*msecs_to_jiffies(100));
+		inst->timer.expires = jiffies + (inst->flushtimeout*HZ/100);
 		add_timer(&inst->timer);
 	}
 

@@ -1118,7 +1118,7 @@ static void seq_drain_midi_queues(void)
 
  		if (n)
  			interruptible_sleep_on_timeout(&seq_sleeper,
-						       msecs_to_jiffies(100));
+						       HZ/10);
 	}
 }
 
@@ -1141,7 +1141,7 @@ void sequencer_release(int dev, struct file *file)
 		{
   			seq_sync();
  			interruptible_sleep_on_timeout(&seq_sleeper,
-						       msecs_to_jiffies(3000));
+						       3*HZ);
  			/* Extra delay */
 		}
 	}
@@ -1196,7 +1196,7 @@ static int seq_sync(void)
 		seq_startplay();
 
  	if (qlen > 0)
- 		interruptible_sleep_on_timeout(&seq_sleeper, msecs_to_jiffies(1000));
+ 		interruptible_sleep_on_timeout(&seq_sleeper, HZ);
 	return qlen;
 }
 
@@ -1215,11 +1215,11 @@ static void midi_outc(int dev, unsigned char data)
 	 * is space in the queue
 	 */
 
-	n = msecs_to_jiffies(3000);		/* Timeout */
+	n = 3 * HZ;		/* Timeout */
 
 	spin_lock_irqsave(&lock,flags);
  	while (n && !midi_devs[dev]->outputc(dev, data)) {
- 		interruptible_sleep_on_timeout(&seq_sleeper, msecs_to_jiffies(40));
+ 		interruptible_sleep_on_timeout(&seq_sleeper, HZ/25);
   		n--;
   	}
 	spin_unlock_irqrestore(&lock,flags);
@@ -1414,7 +1414,7 @@ int sequencer_ioctl(int dev, struct file *file, unsigned int cmd, void __user *a
 				return -EFAULT;
 			if (val != 0)
 				return -EINVAL;
-			val = msecs_to_jiffies(1000);
+			val = HZ;
 			break;
 
 		case SNDCTL_SEQ_RESETSAMPLES:
@@ -1507,7 +1507,7 @@ int sequencer_ioctl(int dev, struct file *file, unsigned int cmd, void __user *a
 				return -EFAULT;
 			if (val < 0)
 				val = 0;
-			val = (msecs_to_jiffies(1000) * val) / 10;
+			val = (HZ * val) / 10;
 			pre_event_timeout = val;
 			break;
 

@@ -1054,7 +1054,7 @@ static struct fb_ops broadsheetfb_ops = {
 };
 
 static struct fb_deferred_io broadsheetfb_defio = {
-	.delay		= msecs_to_jiffies(250),
+	.delay		= HZ/4,
 	.deferred_io	= broadsheetfb_dpy_deferred_io,
 };
 

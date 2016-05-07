@@ -49,7 +49,7 @@ void br_stp_enable_bridge(struct net_bridge *br)
 
 	spin_lock_bh(&br->lock);
 	mod_timer(&br->hello_timer, jiffies + br->hello_time);
-	mod_timer(&br->gc_timer, jiffies + msecs_to_jiffies(100));
+	mod_timer(&br->gc_timer, jiffies + HZ/10);
 
 	br_config_bpdu_generation(br);
 

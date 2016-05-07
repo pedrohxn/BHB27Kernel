@@ -172,7 +172,7 @@ int drm_err(const char *func, const char *format, ...);
 #define DRM_KERNEL_CONTEXT    0	 /**< Change drm_resctx if changed */
 #define DRM_RESERVED_CONTEXTS 1	 /**< Change drm_resctx if changed */
 #define DRM_LOOPING_LIMIT     5000000
-#define DRM_TIME_SLICE	      (msecs_to_jiffies(50))  /**< Time slice for GLXContexts */
+#define DRM_TIME_SLICE	      (HZ/20)  /**< Time slice for GLXContexts */
 #define DRM_LOCK_SLICE	      1	/**< Time slice for lock, in jiffies */
 
 #define DRM_FLAG_DEBUG	  0x01

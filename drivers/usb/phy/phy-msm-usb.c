@@ -71,7 +71,7 @@
 #define USB_PHY_VDD_DIG_VOL_MIN	1045000 /* uV */
 #define USB_PHY_VDD_DIG_VOL_MAX	1320000 /* uV */
 
-#define USB_SUSPEND_DELAY_TIME	(msecs_to_jiffies(500)) /* 500 msec */
+#define USB_SUSPEND_DELAY_TIME	(500 * HZ/1000) /* 500 msec */
 
 enum msm_otg_phy_reg_mode {
 	USB_PHY_REG_OFF,
@@ -2393,10 +2393,10 @@ static const char *chg_to_string(enum usb_chg_type chg_type)
 	}
 }
 
-#define MSM_CHG_DCD_TIMEOUT		(msecs_to_jiffies(750)) /* 750 msec */
-#define MSM_CHG_DCD_POLL_TIME		(msecs_to_jiffies(50)) /* 50 msec */
-#define MSM_CHG_PRIMARY_DET_TIME	(msecs_to_jiffies(50)) /* TVDPSRC_ON */
-#define MSM_CHG_SECONDARY_DET_TIME	(msecs_to_jiffies(50)) /* TVDMSRC_ON */
+#define MSM_CHG_DCD_TIMEOUT		(750 * HZ/1000) /* 750 msec */
+#define MSM_CHG_DCD_POLL_TIME		(50 * HZ/1000) /* 50 msec */
+#define MSM_CHG_PRIMARY_DET_TIME	(50 * HZ/1000) /* TVDPSRC_ON */
+#define MSM_CHG_SECONDARY_DET_TIME	(50 * HZ/1000) /* TVDMSRC_ON */
 static void msm_chg_detect_work(struct work_struct *w)
 {
 	struct msm_otg *motg = container_of(w, struct msm_otg, chg_work.work);

@@ -83,7 +83,7 @@
 	 SD_CONFIG_CR | SD_CONFIG_I)
 
 /* The poll event (looking for insert/remove events runs twice a second. */
-#define AU1XMMC_DETECT_TIMEOUT (msecs_to_jiffies(500))
+#define AU1XMMC_DETECT_TIMEOUT (HZ/2)
 
 struct au1xmmc_host {
 	struct mmc_host *mmc;

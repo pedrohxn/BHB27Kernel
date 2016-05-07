@@ -1339,7 +1339,7 @@ udc_set_halt(struct usb_ep *usbep, int halt)
 			/* setup poll timer */
 			if (!timer_pending(&udc_pollstall_timer)) {
 				udc_pollstall_timer.expires = jiffies +
-					msecs_to_jiffies(1000) * UDC_POLLSTALL_TIMER_USECONDS
+					HZ * UDC_POLLSTALL_TIMER_USECONDS
 					/ (1000 * 1000);
 				if (!stop_pollstall_timer) {
 					DBG(ep->dev, "start polltimer\n");
@@ -1712,7 +1712,7 @@ static void udc_timer_function(unsigned long v)
 			 * if fifo empty setup polling, do not just
 			 * open the fifo
 			 */
-			udc_timer.expires = jiffies + msecs_to_jiffies(1000)/UDC_RDE_TIMER_DIV;
+			udc_timer.expires = jiffies + HZ/UDC_RDE_TIMER_DIV;
 			if (!stop_timer)
 				add_timer(&udc_timer);
 		} else {
@@ -1725,7 +1725,7 @@ static void udc_timer_function(unsigned long v)
 			 */
 			set_rde++;
 			/* debug: lhadmot_timer_start = 221070 */
-			udc_timer.expires = jiffies + msecs_to_jiffies(1000)*UDC_RDE_TIMER_SECONDS;
+			udc_timer.expires = jiffies + HZ*UDC_RDE_TIMER_SECONDS;
 			if (!stop_timer)
 				add_timer(&udc_timer);
 		}
@@ -1792,7 +1792,7 @@ static void udc_pollstall_timer_function(unsigned long v)
 	/* setup timer again when still halted */
 	if (!stop_pollstall_timer && halted) {
 		udc_pollstall_timer.expires = jiffies +
-					msecs_to_jiffies(1000) * UDC_POLLSTALL_TIMER_USECONDS
+					HZ * UDC_POLLSTALL_TIMER_USECONDS
 					/ (1000 * 1000);
 		add_timer(&udc_pollstall_timer);
 	}
@@ -2031,7 +2031,7 @@ static void udc_ep0_set_rde(struct udc *dev)
 			 */
 			if (set_rde != 0 && !timer_pending(&udc_timer)) {
 				udc_timer.expires =
-					jiffies + msecs_to_jiffies(1000)/UDC_RDE_TIMER_DIV;
+					jiffies + HZ/UDC_RDE_TIMER_DIV;
 				set_rde = 1;
 				if (!stop_timer)
 					add_timer(&udc_timer);
@@ -2220,7 +2220,7 @@ static irqreturn_t udc_data_out_isr(struct udc *dev, int ep_ix)
 						&& !timer_pending(&udc_timer)) {
 					udc_timer.expires =
 						jiffies
-						+ msecs_to_jiffies(1000)*UDC_RDE_TIMER_SECONDS;
+						+ HZ*UDC_RDE_TIMER_SECONDS;
 					set_rde = 1;
 					if (!stop_timer)
 						add_timer(&udc_timer);
@@ -2506,7 +2506,7 @@ __acquires(dev->lock)
 			set_rde = 1;
 			if (!timer_pending(&udc_timer)) {
 				udc_timer.expires = jiffies +
-							msecs_to_jiffies(1000)/UDC_RDE_TIMER_DIV;
+							HZ/UDC_RDE_TIMER_DIV;
 				if (!stop_timer)
 					add_timer(&udc_timer);
 			}

@@ -333,7 +333,7 @@ loop_lock:
 			 * it makes assumptions about how batching works.
 			 */
 			if (ioc && ioc->nr_batch_requests > 0 &&
-			    time_before(jiffies, ioc->last_waited + msecs_to_jiffies(1000)/50UL) &&
+			    time_before(jiffies, ioc->last_waited + HZ/50UL) &&
 			    (last_waited == 0 ||
 			     ioc->last_waited == last_waited)) {
 				/*

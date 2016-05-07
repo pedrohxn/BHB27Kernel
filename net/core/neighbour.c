@@ -276,7 +276,7 @@ static struct neighbour *neigh_alloc(struct neigh_table *tbl, struct net_device 
 	entries = atomic_inc_return(&tbl->entries) - 1;
 	if (entries >= tbl->gc_thresh3 ||
 	    (entries >= tbl->gc_thresh2 &&
-	     time_after(now, tbl->last_flush + msecs_to_jiffies(5000)))) {
+	     time_after(now, tbl->last_flush + 5 * HZ))) {
 		if (!neigh_forced_gc(tbl) &&
 		    entries >= tbl->gc_thresh3)
 			goto out_entries;
@@ -768,7 +768,7 @@ static void neigh_periodic_work(struct work_struct *work)
 	 *	periodically recompute ReachableTime from random function
 	 */
 
-	if (time_after(jiffies, tbl->last_rand + msecs_to_jiffies(300000))) {
+	if (time_after(jiffies, tbl->last_rand + 300 * HZ)) {
 		struct neigh_parms *p;
 		tbl->last_rand = jiffies;
 		for (p = &tbl->parms; p; p = p->next)
@@ -890,7 +890,7 @@ static void neigh_timer_handler(unsigned long arg)
 
 	state = neigh->nud_state;
 	now = jiffies;
-	next = now + msecs_to_jiffies(1000);
+	next = now + HZ;
 
 	if (!(state & NUD_IN_TIMER))
 		goto out;
@@ -944,8 +944,8 @@ static void neigh_timer_handler(unsigned long arg)
 	}
 
 	if (neigh->nud_state & NUD_IN_TIMER) {
-		if (time_before(next, jiffies + msecs_to_jiffies(500)))
-			next = jiffies + msecs_to_jiffies(500);
+		if (time_before(next, jiffies + HZ/2))
+			next = jiffies + HZ/2;
 		if (!mod_timer(&neigh->timer, next))
 			neigh_hold(neigh);
 	}
@@ -980,7 +980,7 @@ int __neigh_event_send(struct neighbour *neigh, struct sk_buff *skb)
 			atomic_set(&neigh->probes, neigh->parms->ucast_probes);
 			neigh->nud_state     = NUD_INCOMPLETE;
 			neigh->updated = now;
-			next = now + max(neigh->parms->retrans_time, 500);
+			next = now + max(neigh->parms->retrans_time, HZ/2);
 			neigh_add_timer(neigh, next);
 			immediate_probe = true;
 		} else {

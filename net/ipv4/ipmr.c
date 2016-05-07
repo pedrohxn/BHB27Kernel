@@ -655,7 +655,7 @@ static void ipmr_expire_process(unsigned long arg)
 	struct mfc_cache *c, *next;
 
 	if (!spin_trylock(&mfc_unres_lock)) {
-		mod_timer(&mrt->ipmr_expire_timer, jiffies+msecs_to_jiffies(100));
+		mod_timer(&mrt->ipmr_expire_timer, jiffies+HZ/10);
 		return;
 	}
 
@@ -663,7 +663,7 @@ static void ipmr_expire_process(unsigned long arg)
 		goto out;
 
 	now = jiffies;
-	expires = msecs_to_jiffies(10000);
+	expires = 10*HZ;
 
 	list_for_each_entry_safe(c, next, &mrt->mfc_unres_queue, list) {
 		if (time_after(c->mfc_un.unres.expires, now)) {
@@ -892,7 +892,7 @@ static struct mfc_cache *ipmr_cache_alloc_unres(void)
 
 	if (c) {
 		skb_queue_head_init(&c->mfc_un.unres.unresolved);
-		c->mfc_un.unres.expires = jiffies + msecs_to_jiffies(10000);
+		c->mfc_un.unres.expires = jiffies + 10*HZ;
 	}
 	return c;
 }

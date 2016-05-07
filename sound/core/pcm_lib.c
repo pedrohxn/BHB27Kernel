@@ -418,7 +418,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		jdelta = curr_jiffies - runtime->hw_ptr_jiffies;
 		if (jdelta < runtime->hw_ptr_buffer_jiffies / 2)
 			goto no_delta_check;
-		hdelta = jdelta - delta * msecs_to_jiffies(1000) / runtime->rate;
+		hdelta = jdelta - delta * HZ / runtime->rate;
 		xrun_threshold = runtime->hw_ptr_buffer_jiffies / 2 + 1;
 		while (hdelta > xrun_threshold) {
 			delta += runtime->buffer_size;
@@ -460,10 +460,10 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 		goto no_jiffies_check;
 	hdelta -= runtime->delay;
 	jdelta = curr_jiffies - runtime->hw_ptr_jiffies;
-	if (((hdelta * msecs_to_jiffies(1000)) / runtime->rate) > jdelta + msecs_to_jiffies(10)) {
+	if (((hdelta * HZ) / runtime->rate) > jdelta + HZ/100) {
 		delta = jdelta /
-			(((runtime->period_size * msecs_to_jiffies(1000)) / runtime->rate)
-								+ msecs_to_jiffies(10));
+			(((runtime->period_size * HZ) / runtime->rate)
+								+ HZ/100);
 		/* move new_hw_ptr according jiffies not pos variable */
 		new_hw_ptr = old_hw_ptr;
 		hw_base = delta;
@@ -485,7 +485,7 @@ static int snd_pcm_update_hw_ptr0(struct snd_pcm_substream *substream,
 			     in_interrupt ? "[Q] " : "",
 			     (long)pos, (long)hdelta,
 			     (long)runtime->period_size, jdelta,
-			     ((hdelta * msecs_to_jiffies(1000)) / runtime->rate), hw_base,
+			     ((hdelta * HZ) / runtime->rate), hw_base,
 			     (unsigned long)old_hw_ptr,
 			     (unsigned long)new_hw_ptr);
 		/* reset values to proper state */

@@ -1859,13 +1859,13 @@ int __l2cap_wait_ack(struct sock *sk)
 	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
 	DECLARE_WAITQUEUE(wait, current);
 	int err = 0;
-	int timeo = msecs_to_jiffies(200);
+	int timeo = HZ/5;
 
 	add_wait_queue(sk_sleep(sk), &wait);
 	set_current_state(TASK_INTERRUPTIBLE);
 	while (chan->unacked_frames > 0 && chan->conn) {
 		if (!timeo)
-			timeo = msecs_to_jiffies(200);
+			timeo = HZ/5;
 
 		if (signal_pending(current)) {
 			err = sock_intr_errno(timeo);

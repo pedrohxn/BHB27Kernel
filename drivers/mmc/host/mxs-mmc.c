@@ -57,7 +57,7 @@
 				 BM_SSP_CTRL1_FIFO_OVERRUN_IRQ)
 
 /* card detect polling timeout */
-#define MXS_MMC_DETECT_TIMEOUT			(msecs_to_jiffies(500))
+#define MXS_MMC_DETECT_TIMEOUT			(HZ/2)
 
 struct mxs_mmc_host {
 	struct mxs_ssp			ssp;

@@ -44,7 +44,7 @@
 /*
  * Sleep at most 200ms at a time in balance_dirty_pages().
  */
-#define MAX_PAUSE		max(200, 1)
+#define MAX_PAUSE		max(HZ/5, 1)
 
 /*
  * Try to keep balance_dirty_pages() call intervals higher than this many pages
@@ -55,7 +55,7 @@
 /*
  * Estimate write bandwidth at 200ms intervals.
  */
-#define BANDWIDTH_INTERVAL	max(200, 1)
+#define BANDWIDTH_INTERVAL	max(HZ/5, 1)
 
 #define RATELIMIT_CALC_SHIFT	10
 
@@ -153,7 +153,7 @@ static unsigned long writeout_period_time = 0;
  * arbitrarily chosen number. The longer the period, the slower fractions will
  * reflect changes in current writeout rate.
  */
-#define VM_COMPLETIONS_PERIOD_LEN (msecs_to_jiffies(3000))
+#define VM_COMPLETIONS_PERIOD_LEN (3*HZ)
 
 /*
  * Work out the current dirty-memory clamping and background writeout
@@ -785,13 +785,13 @@ static void bdi_update_write_bandwidth(struct backing_dev_info *bdi,
 				       unsigned long elapsed,
 				       unsigned long written)
 {
-	const unsigned long period = roundup_pow_of_two(msecs_to_jiffies(3000));
+	const unsigned long period = roundup_pow_of_two(3 * HZ);
 	unsigned long avg = bdi->avg_write_bandwidth;
 	unsigned long old = bdi->write_bandwidth;
 	u64 bw;
 
 	/*
-	 * bw = written * msecs_to_jiffies(1000) / elapsed
+	 * bw = written * HZ / elapsed
 	 *
 	 *                   bw * elapsed + write_bandwidth * (period - elapsed)
 	 * write_bandwidth = ---------------------------------------------------
@@ -801,7 +801,7 @@ static void bdi_update_write_bandwidth(struct backing_dev_info *bdi,
 	 * Avoid underflowing @bw calculation.
 	 */
 	bw = written - min(written, bdi->written_stamp);
-	bw *= msecs_to_jiffies(1000);
+	bw *= HZ;
 	if (unlikely(elapsed > period)) {
 		do_div(bw, elapsed);
 		avg = bw;
@@ -911,7 +911,7 @@ static void bdi_update_dirty_ratelimit(struct backing_dev_info *bdi,
 	 * The dirty rate will match the writeout rate in long term, except
 	 * when dirty pages are truncated by userspace or re-dirtied by FS.
 	 */
-	dirty_rate = (dirtied - bdi->dirtied_stamp) * msecs_to_jiffies(1000) / elapsed;
+	dirty_rate = (dirtied - bdi->dirtied_stamp) * HZ / elapsed;
 
 	pos_ratio = bdi_position_ratio(bdi, thresh, bg_thresh, dirty,
 				       bdi_thresh, bdi_dirty);
@@ -1055,7 +1055,7 @@ void __bdi_update_bandwidth(struct backing_dev_info *bdi,
 	 * Skip quiet periods when disk bandwidth is under-utilized.
 	 * (at least 1s idle time between two flusher runs)
 	 */
-	if (elapsed > msecs_to_jiffies(1000) && time_before(bdi->bw_time_stamp, start_time))
+	if (elapsed > HZ && time_before(bdi->bw_time_stamp, start_time))
 		goto snapshot;
 
 	if (thresh) {
@@ -1118,7 +1118,7 @@ static unsigned long bdi_max_pause(struct backing_dev_info *bdi,
 	 *
 	 * 8 serves as the safety ratio.
 	 */
-	t = bdi_dirty / (1 + bw / roundup_pow_of_two(1 + msecs_to_jiffies(125)));
+	t = bdi_dirty / (1 + bw / roundup_pow_of_two(1 + HZ / 8));
 	t++;
 
 	return min_t(unsigned long, t, MAX_PAUSE);
@@ -1137,7 +1137,7 @@ static long bdi_min_pause(struct backing_dev_info *bdi,
 	int pages;	/* target nr_dirtied_pause */
 
 	/* target for 10ms pause on 1-dd case */
-	t = max(1, 10);
+	t = max(1, HZ / 100);
 
 	/*
 	 * Scale up pause time for concurrent dirtiers in order to reduce CPU
@@ -1146,7 +1146,7 @@ static long bdi_min_pause(struct backing_dev_info *bdi,
 	 * (N * 10ms) on 2^N concurrent tasks.
 	 */
 	if (hi > lo)
-		t += (hi - lo) * (msecs_to_jiffies(10000)) / 1024;
+		t += (hi - lo) * (10 * HZ) / 1024;
 
 	/*
 	 * This is a bit convoluted. We try to base the next nr_dirtied_pause
@@ -1167,7 +1167,7 @@ static long bdi_min_pause(struct backing_dev_info *bdi,
 	 *    nr_dirtied_pause will remain as stable as dirty_ratelimit.
 	 */
 	t = min(t, 1 + max_pause / 2);
-	pages = dirty_ratelimit * t / roundup_pow_of_two(msecs_to_jiffies(1000));
+	pages = dirty_ratelimit * t / roundup_pow_of_two(HZ);
 
 	/*
 	 * Tiny nr_dirtied_pause is found to hurt I/O performance in the test
@@ -1179,17 +1179,17 @@ static long bdi_min_pause(struct backing_dev_info *bdi,
 	 */
 	if (pages < DIRTY_POLL_THRESH) {
 		t = max_pause;
-		pages = dirty_ratelimit * t / roundup_pow_of_two(msecs_to_jiffies(1000));
+		pages = dirty_ratelimit * t / roundup_pow_of_two(HZ);
 		if (pages > DIRTY_POLL_THRESH) {
 			pages = DIRTY_POLL_THRESH;
-			t = msecs_to_jiffies(1000) * DIRTY_POLL_THRESH / dirty_ratelimit;
+			t = HZ * DIRTY_POLL_THRESH / dirty_ratelimit;
 		}
 	}
 
-	pause = msecs_to_jiffies(1000) * pages / (task_ratelimit + 1);
+	pause = HZ * pages / (task_ratelimit + 1);
 	if (pause > max_pause) {
 		t = max_pause;
-		pages = task_ratelimit * t / roundup_pow_of_two(msecs_to_jiffies(1000));
+		pages = task_ratelimit * t / roundup_pow_of_two(HZ);
 	}
 
 	*nr_dirtied_pause = pages;
@@ -1322,7 +1322,7 @@ static void balance_dirty_pages(struct address_space *mapping,
 			pause = max_pause;
 			goto pause;
 		}
-		period = msecs_to_jiffies(1000) * pages_dirtied / task_ratelimit;
+		period = HZ * pages_dirtied / task_ratelimit;
 		pause = period;
 		if (current->dirty_paused_when)
 			pause -= now - current->dirty_paused_when;
@@ -1346,7 +1346,7 @@ static void balance_dirty_pages(struct address_space *mapping,
 						  period,
 						  min(pause, 0L),
 						  start_time);
-			if (pause < -msecs_to_jiffies(1000)) {
+			if (pause < -HZ) {
 				current->dirty_paused_when = now;
 				current->nr_dirtied = 0;
 			} else if (period) {
@@ -1532,7 +1532,7 @@ void throttle_vm_writeout(gfp_t gfp_mask)
                 if (global_page_state(NR_UNSTABLE_NFS) +
 			global_page_state(NR_WRITEBACK) <= dirty_thresh)
                         	break;
-                congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(100));
+                congestion_wait(BLK_RW_ASYNC, HZ/10);
 
 		/*
 		 * The caller might hold locks which can prevent IO completion

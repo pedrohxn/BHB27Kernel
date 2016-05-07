@@ -766,7 +766,7 @@ dc390_DataOut_0(struct dc390_acb* pACB, struct dc390_srb* pSRB, u8 *psstatus)
 
 	if( sstatus & COUNT_2_ZERO )
 	{
-	    unsigned long timeout = jiffies + msecs_to_jiffies(1000);
+	    unsigned long timeout = jiffies + HZ;
 
 	    /* Function called from the ISR with the host_lock held and interrupts disabled */
 	    if (pSRB->SGToBeXferLen)
@@ -825,7 +825,7 @@ dc390_DataIn_0(struct dc390_acb* pACB, struct dc390_srb* pSRB, u8 *psstatus)
 	if( sstatus & COUNT_2_ZERO )
 	{
 	    int dstate = 0;
-	    unsigned long timeout = jiffies + msecs_to_jiffies(1000);
+	    unsigned long timeout = jiffies + HZ;
 
 	    /* Function called from the ISR with the host_lock held and interrupts disabled */
 	    if (pSRB->SGToBeXferLen)
@@ -1863,8 +1863,8 @@ dc390_ScsiRstDetect( struct dc390_acb* pACB )
     /* delay half a second */
     udelay (1000);
     DC390_write8 (ScsiCmd, CLEAR_FIFO_CMD);
-    pACB->pScsiHost->last_reset = jiffies + msecs_to_jiffies(2500)
-		    + msecs_to_jiffies(1000) * dc390_eepromBuf[pACB->AdapterIndex][EE_DELAY];
+    pACB->pScsiHost->last_reset = jiffies + 5*HZ/2
+		    + HZ * dc390_eepromBuf[pACB->AdapterIndex][EE_DELAY];
     pACB->Connected = 0;
 
     if( pACB->ACBFlag & RESET_DEV )
@@ -2048,8 +2048,8 @@ static int DC390_bus_reset (struct scsi_cmnd *cmd)
 
 	dc390_ResetDevParam(pACB);
 	mdelay(1);
-	pACB->pScsiHost->last_reset = jiffies + msecs_to_jiffies(1500) 
-		+ msecs_to_jiffies(1000) * dc390_eepromBuf[pACB->AdapterIndex][EE_DELAY];
+	pACB->pScsiHost->last_reset = jiffies + 3*HZ/2 
+		+ HZ * dc390_eepromBuf[pACB->AdapterIndex][EE_DELAY];
     
 	DC390_write8(ScsiCmd, CLEAR_FIFO_CMD);
 	DC390_read8(INT_Status);		/* Reset Pending INT */
@@ -2383,8 +2383,8 @@ static void dc390_init_hw(struct dc390_acb *pACB, u8 index)
 	if (pACB->Gmode2 & RST_SCSI_BUS) {
 		dc390_ResetSCSIBus(pACB);
 		udelay(1000);
-		shost->last_reset = jiffies + msecs_to_jiffies(500) +
-			msecs_to_jiffies(1000) * dc390_eepromBuf[pACB->AdapterIndex][EE_DELAY];
+		shost->last_reset = jiffies + HZ/2 +
+			HZ * dc390_eepromBuf[pACB->AdapterIndex][EE_DELAY];
 	}
 
 	pACB->ACBFlag = 0;

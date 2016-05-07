@@ -43,8 +43,8 @@ struct lap_cb;
 /* 
  *  Timeout definitions, some defined in IrLAP 6.13.5 - p. 92
  */
-#define POLL_TIMEOUT        (msecs_to_jiffies(450))    /* Must never exceed 500 ms */
-#define FINAL_TIMEOUT       (msecs_to_jiffies(500))    /* Must never exceed 500 ms */
+#define POLL_TIMEOUT        (450*HZ/1000)    /* Must never exceed 500 ms */
+#define FINAL_TIMEOUT       (500*HZ/1000)    /* Must never exceed 500 ms */
 
 /* 
  *  Normally twice of p-timer. Note 3, IrLAP 6.3.11.2 - p. 60 suggests
@@ -52,8 +52,8 @@ struct lap_cb;
  */
 #define WD_TIMEOUT          (POLL_TIMEOUT*2)
 
-#define MEDIABUSY_TIMEOUT   (msecs_to_jiffies(500))    /* 500 msec */
-#define SMALLBUSY_TIMEOUT   (msecs_to_jiffies(100))    /* 100 msec - IrLAP 6.13.4 */
+#define MEDIABUSY_TIMEOUT   (500*HZ/1000)    /* 500 msec */
+#define SMALLBUSY_TIMEOUT   (100*HZ/1000)    /* 100 msec - IrLAP 6.13.4 */
 
 /*
  *  Slot timer must never exceed 85 ms, and must always be at least 25 ms, 
@@ -61,16 +61,16 @@ struct lap_cb;
  *  devices, and other stackes uses a lot more, so it's best we do it as well
  *  (Note : this is the default value and sysctl overides it - Jean II)
  */
-#define SLOT_TIMEOUT            (msecs_to_jiffies(90))
+#define SLOT_TIMEOUT            (90*HZ/1000)
 
 /* 
  *  The latest discovery frame (XID) is longer due to the extra discovery
  *  information (hints, device name...). This is its extra length.
  *  We use that when setting the query timeout. Jean II
  */
-#define XIDEXTRA_TIMEOUT        (msecs_to_jiffies(34))  /* 34 msec */
+#define XIDEXTRA_TIMEOUT        (34*HZ/1000)  /* 34 msec */
 
-#define WATCHDOG_TIMEOUT        (msecs_to_jiffies(20000))       /* 20 sec */
+#define WATCHDOG_TIMEOUT        (20*HZ)       /* 20 sec */
 
 typedef void (*TIMER_CALLBACK)(void *);
 

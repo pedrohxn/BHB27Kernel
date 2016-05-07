@@ -114,7 +114,7 @@ extern void tcp_time_wait(struct sock *sk, int state, int timeo);
 				 * initial RTO.
 				 */
 
-#define TCP_TIMEWAIT_LEN (msecs_to_jiffies(60000)) /* how long to wait to destroy TIME-WAIT
+#define TCP_TIMEWAIT_LEN (60*HZ) /* how long to wait to destroy TIME-WAIT
 				  * state, about 60 seconds	*/
 #define TCP_FIN_TIMEOUT	TCP_TIMEWAIT_LEN
                                  /* BSD style FIN_WAIT2 deadlock breaker.
@@ -123,18 +123,18 @@ extern void tcp_time_wait(struct sock *sk, int state, int timeo);
 				  * TIME-WAIT timer.
 				  */
 
-#define TCP_DELACK_MAX	((unsigned)(msecs_to_jiffies(200)))	/* maximal time to delay before sending an ACK */
+#define TCP_DELACK_MAX	((unsigned)(HZ/5))	/* maximal time to delay before sending an ACK */
 #if HZ >= 100
-#define TCP_DELACK_MIN	((unsigned)(msecs_to_jiffies(40)))	/* minimal time to delay before sending an ACK */
-#define TCP_ATO_MIN	((unsigned)(msecs_to_jiffies(40)))
+#define TCP_DELACK_MIN	((unsigned)(HZ/25))	/* minimal time to delay before sending an ACK */
+#define TCP_ATO_MIN	((unsigned)(HZ/25))
 #else
 #define TCP_DELACK_MIN	4U
 #define TCP_ATO_MIN	4U
 #endif
-#define TCP_RTO_MAX	((unsigned)(msecs_to_jiffies(120000)))
-#define TCP_RTO_MIN	((unsigned)(msecs_to_jiffies(200)))
-#define TCP_TIMEOUT_INIT ((unsigned)(msecs_to_jiffies(1000)))	/* RFC6298 2.1 initial RTO value	*/
-#define TCP_TIMEOUT_FALLBACK ((unsigned)(msecs_to_jiffies(3000)))	/* RFC 1122 initial RTO value, now
+#define TCP_RTO_MAX	((unsigned)(120*HZ))
+#define TCP_RTO_MIN	((unsigned)(HZ/5))
+#define TCP_TIMEOUT_INIT ((unsigned)(1*HZ))	/* RFC6298 2.1 initial RTO value	*/
+#define TCP_TIMEOUT_FALLBACK ((unsigned)(3*HZ))	/* RFC 1122 initial RTO value, now
 						 * used as a fallback RTO for the
 						 * initial data transmission if no
 						 * valid RTT sample has been acquired,
@@ -144,20 +144,20 @@ extern void tcp_time_wait(struct sock *sk, int state, int timeo);
 /* Number of full MSS to receive before Acking RFC2581 */
 #define TCP_DELACK_SEG          1
 
-#define TCP_RESOURCE_PROBE_INTERVAL ((unsigned)(msecs_to_jiffies(1000)/2U)) /* Maximal interval between probes
+#define TCP_RESOURCE_PROBE_INTERVAL ((unsigned)(HZ/2U)) /* Maximal interval between probes
 					                 * for local resources.
 					                 */
 
-#define TCP_KEEPALIVE_TIME	(msecs_to_jiffies(7200000))	/* two hours */
+#define TCP_KEEPALIVE_TIME	(120*60*HZ)	/* two hours */
 #define TCP_KEEPALIVE_PROBES	9		/* Max of 9 keepalive probes	*/
-#define TCP_KEEPALIVE_INTVL	(msecs_to_jiffies(75000))
+#define TCP_KEEPALIVE_INTVL	(75*HZ)
 
 #define MAX_TCP_KEEPIDLE	32767
 #define MAX_TCP_KEEPINTVL	32767
 #define MAX_TCP_KEEPCNT		127
 #define MAX_TCP_SYNCNT		127
 
-#define TCP_SYNQ_INTERVAL	(msecs_to_jiffies(200))	/* Period of SYNACK timer */
+#define TCP_SYNQ_INTERVAL	(HZ/5)	/* Period of SYNACK timer */
 
 #define TCP_PAWS_24DAYS	(60 * 60 * 24 * 24)
 #define TCP_PAWS_MSL	60		/* Per-host timestamps are invalidated
@@ -1201,8 +1201,8 @@ static inline void tcp_mib_init(struct net *net)
 {
 	/* See RFC 2012 */
 	TCP_ADD_STATS_USER(net, TCP_MIB_RTOALGORITHM, 1);
-	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMIN, TCP_RTO_MIN*msecs_to_jiffies(1000000));
-	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMAX, TCP_RTO_MAX*msecs_to_jiffies(1000000));
+	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMIN, TCP_RTO_MIN*1000/HZ);
+	TCP_ADD_STATS_USER(net, TCP_MIB_RTOMAX, TCP_RTO_MAX*1000/HZ);
 	TCP_ADD_STATS_USER(net, TCP_MIB_MAXCONN, -1);
 }
 

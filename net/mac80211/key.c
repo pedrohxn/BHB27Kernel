@@ -421,7 +421,7 @@ static void __ieee80211_key_destroy(struct ieee80211_key *key,
 			/* see ieee80211_delayed_tailroom_dec */
 			sdata->crypto_tx_tailroom_pending_dec++;
 			schedule_delayed_work(&sdata->dec_tailroom_needed_wk,
-					      msecs_to_jiffies(500));
+					      HZ/2);
 		} else {
 			sdata->crypto_tx_tailroom_needed_cnt--;
 		}

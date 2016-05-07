@@ -481,7 +481,7 @@ isolate_migratepages_range(struct zone *zone, struct compact_control *cc,
 		if (!cc->sync)
 			return 0;
 
-		congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(100));
+		congestion_wait(BLK_RW_ASYNC, HZ/10);
 
 		if (fatal_signal_pending(current))
 			return 0;
@@ -1142,7 +1142,7 @@ static void compact_thread_timer_func(unsigned long data)
 {
 	compact_thread_wakeup();
 	mod_timer(&compact_thread.timer,
-			jiffies + (msecs_to_jiffies(1000) * compact_interval_sec));
+			jiffies + (HZ * compact_interval_sec));
 }
 
 static int compact_thread_func(void *data)
@@ -1174,7 +1174,7 @@ static int compact_notifier(struct notifier_block *self,
 		} else if (blank == FB_BLANK_UNBLANK) {
 			if (!timer_pending(&compact_thread.timer))
 				mod_timer(&compact_thread.timer, jiffies +
-						(msecs_to_jiffies(1000) * compact_interval_sec));
+						(HZ * compact_interval_sec));
 			return NOTIFY_OK;
 		}
 	}
