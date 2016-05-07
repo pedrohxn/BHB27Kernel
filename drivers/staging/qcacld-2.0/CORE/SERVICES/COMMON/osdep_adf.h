@@ -433,8 +433,8 @@ OS_GET_TICKS(void)
 
 #define CONVERT_SYSTEM_TIME_TO_MS(_t)        adf_os_ticks_to_msecs(_t)
 #define CONVERT_SYSTEM_TIME_TO_SEC(_t)       (adf_os_ticks_to_msecs(_t) / 1000)
-#define CONVERT_SEC_TO_SYSTEM_TIME(_t)       ((_t) * msecs_to_jiffies(1000))
-#define CONVERT_MS_TO_SYSTEM_TIME(_t)        ((_t) * msecs_to_jiffies(1))
+#define CONVERT_SEC_TO_SYSTEM_TIME(_t)       ((_t) * HZ)
+#define CONVERT_MS_TO_SYSTEM_TIME(_t)        ((_t) * HZ/1000)
 
 struct _NIC_DEV;
 
