@@ -927,7 +927,7 @@ PowerStateChangeNotify(HIF_DEVICE *device, HIF_DEVICE_POWER_CHANGE_TYPE config)
             reset_sdio_on_unload = old_reset_val;
             if (!device->is_suspend) {
                 device->powerConfig = config;
-                mmc_detect_change(device->host, HZ/3);
+                mmc_detect_change(device->host, msecs_to_jiffies(333));
             }
             break;
        case HIF_DEVICE_POWER_UP:
@@ -1514,7 +1514,7 @@ void HIFMaskInterrupt(HIF_DEVICE *device)
     sdio_claim_host(device->func);
     while (atomic_read(&device->irqHandling)) {
         sdio_release_host(device->func);
-        schedule_timeout_interruptible(HZ/10);
+        schedule_timeout_interruptible(msecs_to_jiffies(100));
         sdio_claim_host(device->func);
     }
     ret = sdio_release_irq(device->func);
