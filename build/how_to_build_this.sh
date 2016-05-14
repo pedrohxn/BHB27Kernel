@@ -5,7 +5,7 @@
 # call it from the kernel folder the kernel zip if made correct will be at build/bhbkernel/
 
 #the only thing to edit here is CROSS_COMPILE set yours, the rest is auto if the kernel doesnot build check the log build/build_log.txt
-export CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
+export CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
 
 rm -rf ./build/temp
 rm -rf ./build/bhbkernel/modules/*.ko
