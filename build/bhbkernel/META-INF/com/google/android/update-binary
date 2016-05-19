@@ -56,7 +56,7 @@ fi;
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "                                               ";
-ui_print "         Version - V1.2.9-6                    ";
+ui_print "         Version - V1.2.9-7                    ";
 ui_print "             Marshmallow                       ";
 ui_print "           for CM-Base ROM                     ";
 ui_print "                                               ";
