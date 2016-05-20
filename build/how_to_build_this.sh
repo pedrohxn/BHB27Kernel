@@ -4,6 +4,8 @@
 # to the end of ./bashrc file that is hide under home and just use a command shortcut to call the script
 # call it from the kernel folder the kernel zip if made correct will be at build/bhbkernel/
 
+#make -j4 -C temp M=/home/fella/qcacld-2.0 O=/home/fella/tempp ARCH=arm CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/bin/arm-linux-androideabi- KCFLAGS=-mno-android modules WLAN_ROOT=/home/fella/qcacld-2.0 MODNAME=wlan BOARD_PLATFORM=apq8084 CONFIG_QCA_CLD_WLAN=m WLAN_OPEN_SOURCE=1
+
 #the only thing to edit here is CROSS_COMPILE set yours, the rest is auto if the kernel doesnot build check the log build/build_log.txt
 export CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
 
