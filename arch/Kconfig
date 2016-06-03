@@ -382,7 +382,7 @@ config CC_STACKPROTECTOR_REGULAR
 	  have an 8-byte or larger character array on the stack.
 
 	  This feature requires gcc version 4.2 or above, or a distribution
-	 gcc with the feature backported ("-fstack-protector").
+	  gcc with the feature backported ("-fstack-protector").
 
 	  On an x86 "defconfig" build, this feature adds canary checks to
 	  about 3% of all kernel functions, which increases kernel code size
