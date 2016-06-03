@@ -37,7 +37,7 @@ cd $FOLDER;
 export CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
 
 #kernel zip name
-ZIPNAME="BHB27-Kernel-V129-8-M.zip";
+ZIPNAME="BHB27-Kernel-V129-9-M.zip";
 
 #arch and out folder
 export ARCH=arm
@@ -94,7 +94,7 @@ else
 	rm -rf ./ZipScriptSign/BHB27-Kernel.zip
 	mv ./ZipScriptSign/BHB27-Kernel-signed.zip ./$ZIPNAME
 	cd -
-	echo -e "\nKernel Build OK zip file at... $FOLDER/build/bhbkernel/$ZIPNAME \n";
+	echo -e "\nKernel Build OK zip file at... $FOLDER build/bhbkernel/$ZIPNAME \n";
 fi;
 
 # final time display *cosmetic...
