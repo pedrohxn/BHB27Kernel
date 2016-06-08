@@ -126,7 +126,7 @@ s32 bdev_read(struct super_block *sb, u32 secno, struct buffer_head **bh, u32 nu
 	return FFS_MEDIAERR;
 }
 
-+void bdev_end_buffer_write(struct buffer_head *bh, int uptodate, int sync)
+void bdev_end_buffer_write(struct buffer_head *bh, int uptodate, int sync)
 {
 	if (!uptodate)
 		fs_error(bh->b_private);
