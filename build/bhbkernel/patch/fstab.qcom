@@ -13,3 +13,4 @@
 /dev/block/platform/msm_sdcc.1/by-name/recovery     /recovery        emmc    defaults                                                                              recoveryonly
 
 /devices/*/xhci-hcd.0.auto/usb*                     auto             auto    defaults                                                                              voldmanaged=usb:auto
+/dev/block/zram0                                    none             swap    defaults                                                                              zramsize=536870912
