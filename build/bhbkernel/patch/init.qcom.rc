@@ -57,12 +57,9 @@ on init
     write /proc/sys/kernel/core_pattern "|/system/bin/coredump %e %p %t"
     write /proc/self/coredump_filter "0x7f"
 
-    # Enable thermal control at init to prevent overheat during boot process
+    # Enable thermal control at init to prevent overheat during boot process, limit max temp to 65 minor boost
     write /sys/module/msm_thermal/core_control/enabled 0
     write /sys/module/msm_thermal/core_control/enabled 1
-    #enable intellitermal # it out on stock cm kernel
-    write /sys/module/msm_thermal/core_control/enabled 0
-    write /sys/module/msm_thermal/parameters/enabled Y
     write /sys/module/msm_thermal/parameters/limit_temp_degC 65
 
 on charger
@@ -249,12 +246,6 @@ on boot
     chmod 0660 /dev/ttyHS0
     chown bluetooth bluetooth /sys/devices/platform/msm_serial_hs.0/clock
     chmod 0660 /sys/devices/platform/msm_serial_hs.0/clock
-
-    # update foreground cpuset now that processors are up
-    write /dev/cpuset/foreground/cpus 0-3
-    write /dev/cpuset/foreground/boost/cpus 0-3
-    write /dev/cpuset/background/cpus 0
-    write /dev/cpuset/system-background/cpus 0-1
 
     chmod 0660 /dev/ttyHS2
     chown bluetooth bluetooth /dev/ttyHS2
@@ -494,7 +485,6 @@ service qseecomd /system/bin/qseecomd
 service mpdecision /system/bin/mpdecision --avg_comp
     user root
     disabled
-    writepid /dev/cpuset/system-background/tasks
 
 service mdm_helper /system/bin/mdm_helper
     class core
@@ -508,7 +498,6 @@ service qcamerasvr /system/bin/mm-qcamera-daemon
     class late_start
     user camera
     group camera system inet input graphics
-    writepid /dev/cpuset/system-background/tasks
 
 on property:init.svc.surfaceflinger=stopped
     stop ppd
@@ -530,7 +519,6 @@ service stm401 /system/bin/stm401 boot
     user compass
     group compass misc input
     oneshot
-    writepid /dev/cpuset/system-background/tasks
 
 on property:hw.touch.ready=1
     start stm401
