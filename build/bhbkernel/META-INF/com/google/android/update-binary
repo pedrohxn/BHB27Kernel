@@ -37,20 +37,22 @@ fi;
 # temp place holder to support multi ROM base on build prop
 mount -o ro /system;
 cp -rf /system/build.prop /tmp/anykernel/system/bp.sh;
-getbp="$(file_getprop /tmp/anykernel/anykernel.sh rom.check$i)";
-getbptemp="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.user$i)";
-if [ "$getbptemp" == "$getbp" ]; then
-	  cp -rf /tmp/anykernel/system/stockanykernel.sh /tmp/anykernel/anykernel.sh;
-fi;
-
+getbptemp="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.display.id)";
+  for i in 1 2 3 4 5; do
+	getbp="$(file_getprop /tmp/anykernel/anykernel.sh rom.check$i)";
+	if [ "$getbptemp" == "$getbp" ]; then
+	  cp -rf /tmp/anykernel/system/stockanykernel$i /tmp/anykernel/anykernel.sh;
+	  romv=$getbp;
+	fi;
+  done;
 chmod -R 755 /tmp/anykernel/tools /tmp/anykernel/bin;
 bb=/tmp/anykernel/tools/busybox;
 
 ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
-if [ "$getbptemp" == "$getbp" ]; then
+if [ "$getbptemp" == "$romv" ]; then
 ui_print "     Setting up as Stock ROM";
 fi;
-if [ "$getbptemp" != "$getbp" ]; then
+if [ "$getbptemp" != "$romv" ]; then
 ui_print "     Setting up as CM-Base Custom ROM";
 fi;
 ui_print "                                               ";
@@ -58,7 +60,7 @@ ui_print "-----------------------------------------------";
 ui_print "                                               ";
 ui_print "         Version - V2.0.0-0                    ";
 ui_print "             Marshmallow                       ";
-ui_print "           for CM-Base ROM                     ";
+ui_print "      for CM-Base and Stock ROM                ";
 ui_print "                                               ";
 ui_print "Check XDA Thread, for recommendations help, etc";
 ui_print "                                               ";

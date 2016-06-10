@@ -8,6 +8,8 @@ do.devicecheck=0
 do.initd=0
 do.modules=1
 do.cleanup=1
+rom.check1=MPG24.107-70.2
+rom.check2=temp
 device.name1=quark
 
 # shell variables
@@ -18,10 +20,10 @@ block=/dev/block/platform/msm_sdcc.1/by-name/boot;
 
 ## AnyKernel methods (DO NOT CHANGE)
 # set up extracted files and directories
-ramdisk=/tmp/anykernel/ramdisk;
+ramdisk=/tmp/anykernel/ramdisk/stock1;
 bin=/tmp/anykernel/tools;
 split_img=/tmp/anykernel/split_img;
-patch=/tmp/anykernel/patch;
+patch=/tmp/anykernel/patch/stock1;
 
 chmod -R 755 $bin;
 mkdir -p $ramdisk $split_img;
@@ -214,11 +216,12 @@ dump_boot;
 
 # begin ramdisk changes
 
-#replace files for stock ROM
-replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
-replace_string fstab.qcom "usb:auto" "usbdisk:auto" "usb:auto"
-replace_file init.qcom.power.rc 0750 init.qcom.power.rc
+#replace files for custom CM base
+replace_file file_contexts 0644 file_contexts
+replace_file init.environ.rc 0750 init.environ.rc
 replace_file init.qcom.rc 0750 init.qcom.rc
+replace_file init.rc 0750 init.rc
+replace_file init.target.rc 0750 init.target.rc
 
 # end ramdisk changes
 

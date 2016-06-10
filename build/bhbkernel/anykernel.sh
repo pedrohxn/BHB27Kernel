@@ -8,7 +8,8 @@ do.devicecheck=0
 do.initd=0
 do.modules=1
 do.cleanup=1
-rom.check=temp
+rom.check1=MPG24.107-70.2
+rom.check2=temp
 device.name1=quark
 
 # shell variables
@@ -19,10 +20,10 @@ block=/dev/block/platform/msm_sdcc.1/by-name/boot;
 
 ## AnyKernel methods (DO NOT CHANGE)
 # set up extracted files and directories
-ramdisk=/tmp/anykernel/ramdisk;
+ramdisk=/tmp/anykernel/ramdisk/custom;
 bin=/tmp/anykernel/tools;
 split_img=/tmp/anykernel/split_img;
-patch=/tmp/anykernel/patch;
+patch=/tmp/anykernel/patch/custom;
 
 chmod -R 755 $bin;
 mkdir -p $ramdisk $split_img;
