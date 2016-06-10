@@ -58,9 +58,9 @@ on init
     write /proc/self/coredump_filter "0x7f"
 
     # Enable thermal control at init to prevent overheat during boot process, limit max temp to 65 minor boost
-    write /sys/module/msm_thermal/core_control/enabled 0
-    write /sys/module/msm_thermal/core_control/enabled 1
-    write /sys/module/msm_thermal/parameters/limit_temp_degC 65
+#    write /sys/module/msm_thermal/parameters/enabled N
+#    write /sys/module/msm_thermal/parameters/enabled Y
+#    write /sys/module/msm_thermal/parameters/temp_threshold 65
 
 on charger
     trigger early-fs
@@ -467,7 +467,7 @@ service batt_health /system/bin/batt_health
 on property:sys.boot_completed=1
    start batt_health
 
-service thermal-engine /system/bin/thermal-engine
+service thermal-engine /system/vendor/bin/thermal-engine
     class main
     user root
     group root

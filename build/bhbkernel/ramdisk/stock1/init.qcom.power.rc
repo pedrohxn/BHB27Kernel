@@ -54,12 +54,10 @@ on property:sys.boot_completed=1
     write /sys/module/msm_pm/modes/cpu1/retention/suspend_enabled 1
     write /sys/module/msm_pm/modes/cpu2/retention/suspend_enabled 1
     write /sys/module/msm_pm/modes/cpu3/retention/suspend_enabled 1
-    write /sys/module/msm_thermal/core_control/enabled 0
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu1/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor interactive
     write /sys/devices/system/cpu/cpu3/cpufreq/scaling_governor interactive
-    write /sys/module/msm_thermal/core_control/enabled 1
     write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
 
     # Configure the CPU governor
@@ -71,10 +69,7 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 30000
     write /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor 100000
     write /dev/cpuctl/cpu.notify_on_migrate 0
-	
-    setprop ro.qualcomm.perf.cores_online 2
-    rm /data/system/default_values
-    start mpdecision
+
 	
     # Configure the cpu-boost module
     write /sys/module/cpu_boost/parameters/input_boost_freq 1497600
@@ -82,7 +77,7 @@ on property:sys.boot_completed=1
 
     # BHB27 mod
     # Set io ahead for better performance, sync_threshold to 300 less heat
-    # Dis stock thermal, Use prop to ena bfq
+    #Use prop to ena bfq
     write /sys/module/cpu_boost/parameters/sync_threshold 300000
     setprop sys.io.scheduler bfq
 
