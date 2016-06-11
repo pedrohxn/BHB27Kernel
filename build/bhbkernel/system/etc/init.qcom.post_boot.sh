@@ -510,12 +510,12 @@ case "$target" in
         echo 1497600 > /sys/module/cpu_boost/parameters/input_boost_freq
         echo 500 > /sys/module/cpu_boost/parameters/input_boost_ms
         echo 1 > /dev/cpuctl/apps/cpu.notify_on_migrate
-        echo 300000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
-        echo 300000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
-        echo 300000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
-        echo 300000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
+        echo 268000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
+        echo 268000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
+        echo 268000 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq
+        echo 268000 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq
         echo 1 > /sys/module/msm_thermal/core_control/enabled
-        setprop ro.qualcomm.perf.cores_online 4
+        setprop ro.qualcomm.perf.cores_online 2
         chown -h  system /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
         chown -h system /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
         chown -h root.system /sys/devices/system/cpu/mfreq
