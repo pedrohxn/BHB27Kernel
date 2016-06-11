@@ -295,10 +295,10 @@ case "$target" in
                 echo "85 1500000:90 1800000:70" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
                 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
                 echo 20 > /sys/module/cpu_boost/parameters/boost_ms
-                echo 1728000 > /sys/module/cpu_boost/parameters/sync_threshold
+                echo 300000 > /sys/module/cpu_boost/parameters/sync_threshold
                 echo 100000 > /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor
                 echo 1497600 > /sys/module/cpu_boost/parameters/input_boost_freq
-                echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
+                echo 500 > /sys/module/cpu_boost/parameters/input_boost_ms
                 setprop ro.qualcomm.perf.cores_online 2
             ;;
             *)
@@ -506,9 +506,9 @@ case "$target" in
         chown -h system.power /sys/module/cpu_boost/parameters/sync_threshold
         chmod -h 0660 /sys/module/cpu_boost/parameters/sync_threshold
         echo 20 > /sys/module/cpu_boost/parameters/boost_ms
-        echo 1728000 > /sys/module/cpu_boost/parameters/sync_threshold
+        echo 300000 > /sys/module/cpu_boost/parameters/sync_threshold
         echo 1497600 > /sys/module/cpu_boost/parameters/input_boost_freq
-        echo 40 > /sys/module/cpu_boost/parameters/input_boost_ms
+        echo 500 > /sys/module/cpu_boost/parameters/input_boost_ms
         echo 1 > /dev/cpuctl/apps/cpu.notify_on_migrate
         echo 300000 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq
         echo 300000 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq
@@ -526,6 +526,8 @@ case "$target" in
         chmod -h 664 /sys/devices/system/cpu/cpu1/online
         chmod -h 664 /sys/devices/system/cpu/cpu2/online
         chmod -h 664 /sys/devices/system/cpu/cpu3/online
+	/sbin/busybox --install -s /sbin
+	/sbin/busybox run-parts /system/etc/init.d
     ;;
 esac
 
@@ -629,20 +631,20 @@ case "$target" in
     ;;
     "msm8974")
         start mpdecision
-        echo 512 > /sys/block/mmcblk0/bdi/read_ahead_kb
+        echo 1536 > /sys/block/mmcblk0/bdi/read_ahead_kb
     ;;
     "apq8084")
         rm /data/system/default_values
         start mpdecision
-        echo 512 > /sys/block/mmcblk0/bdi/read_ahead_kb
-        echo 512 > /sys/block/sda/bdi/read_ahead_kb
-        echo 512 > /sys/block/sdb/bdi/read_ahead_kb
-        echo 512 > /sys/block/sdc/bdi/read_ahead_kb
-        echo 512 > /sys/block/sdd/bdi/read_ahead_kb
-        echo 512 > /sys/block/sde/bdi/read_ahead_kb
-        echo 512 > /sys/block/sdf/bdi/read_ahead_kb
-        echo 512 > /sys/block/sdg/bdi/read_ahead_kb
-        echo 512 > /sys/block/sdh/bdi/read_ahead_kb
+        echo 1536 > /sys/block/mmcblk0/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sda/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sdb/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sdc/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sdd/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sde/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sdf/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sdg/bdi/read_ahead_kb
+        echo 1536 > /sys/block/sdh/bdi/read_ahead_kb
     ;;
     "msm7627a")
         if [ -f /sys/devices/soc0/soc_id ]; then
