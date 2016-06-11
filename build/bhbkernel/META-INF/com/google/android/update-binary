@@ -50,7 +50,7 @@ bb=/tmp/anykernel/tools/busybox;
 
 ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 if [ "$getbptemp" == "$romv" ]; then
-ui_print "     Setting up as Stock ROM";
+ui_print "     Setting up as Stock ROM $(file_getprop /tmp/anykernel/system/bp.sh ro.build.display.id)";
 fi;
 if [ "$getbptemp" != "$romv" ]; then
 ui_print "     Setting up as CM-Base Custom ROM";
