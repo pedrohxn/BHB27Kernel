@@ -20,9 +20,6 @@ echo "BHB27-Kernel Boot initiated on $(date)" > /tmp/bootcheck-bhb;
 
 #enable, disable and tweak some features of the kernel by default for better performance vs battery
 
-# Thremal - Disable msm core cotrol it doesnot work with intellitermal
-echo 0 > /sys/module/msm_thermal/core_control/enabled
-
 # CPU - Disable hotplug boost
 echo 0 > /sys/module/cpu_boost/parameters/hotplug_boost
 
@@ -48,3 +45,4 @@ echo 600000000 > /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk
 echo Y > /sys/module/adreno_idler/parameters/adreno_idler_active
 
 exit;
+

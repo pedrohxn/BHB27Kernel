@@ -119,6 +119,10 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   cp -rf /tmp/anykernel/system/bin/thermal-engine /system/bin/thermal-engine;
   rm -rf /system/vendor/bin/*;
   set_perm_recursive 0 2000 0755 0755 /system/bin/thermal-engine;
+  if [ "$getbptemp" == "$romv" ]; then
+	cp -rf /tmp/anykernel/system/etc/init.qcom.post_boot.sh /system/etc/init.qcom.post_boot.sh;
+	set_perm_recursive 0 0 0755 0644 /system/etc/init.qcom.post_boot.sh;
+  fi;
   mount -o remount,ro /system;
 fi;
 
