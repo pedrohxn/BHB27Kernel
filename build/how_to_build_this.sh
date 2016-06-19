@@ -37,7 +37,7 @@ cd $FOLDER;
 export CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
 
 #kernel zip name
-ZIPNAME="BHB27-Kernel-V200-3-M.zip";
+ZIPNAME="BHB27-Kernel-V200-4-M.zip";
 
 #arch and out folder
 export ARCH=arm
