@@ -231,6 +231,7 @@ service batt_health /system/bin/batt_health
     user mot_pwric
     group log mot_pwric cache net_admin
     disabled
+    writepid /dev/cpuset/system-background/tasks
 
 on property:sys.boot_completed=1
    start batt_health
@@ -239,6 +240,7 @@ service thermal-com /system/bin/thermal-engine --minimode
     class main
     user root
     disabled
+    writepid /dev/cpuset/system-background/tasks
 
 service charge_only_mode /system/bin/charge_only_mode
     user root
