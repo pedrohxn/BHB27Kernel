@@ -365,6 +365,7 @@ service stm401 /system/bin/stm401 boot
     user compass
     group compass misc input
     oneshot
+    writepid /dev/cpuset/system-background/tasks
 
 on property:hw.touch.ready=1
     start stm401
