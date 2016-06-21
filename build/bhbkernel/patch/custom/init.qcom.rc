@@ -490,7 +490,7 @@ service qseecomd /system/bin/qseecomd
     user root
     group root
 
-service mpdecision /system/bin/mpdecision --avg_comp
+service mpdecision /system/bin/mpdecision --avg_comp --min_cores=1
     user root
     disabled
     writepid /dev/cpuset/system-background/tasks
