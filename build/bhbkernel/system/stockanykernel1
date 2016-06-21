@@ -222,7 +222,6 @@ replace_file init.environ.rc 0750 init.environ.rc
 replace_file init.qcom.rc 0750 init.qcom.rc
 replace_file init.rc 0750 init.rc
 replace_file init.target.rc 0750 init.target.rc
-replace_file init.mmi.rc 0750 init.mmi.rc
 
 # end ramdisk changes
 
