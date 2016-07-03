@@ -274,7 +274,7 @@ static struct kobj_attribute _attr_all_time_in_state = __ATTR(all_time_in_state,
 		0444, show_all_time_in_state, NULL);
 
 static struct kobj_attribute _attr_current_in_state = __ATTR(current_in_state,
-		0444, show_current_in_state, NULL);
+		0664, show_current_in_state, NULL);
 
 static int freq_table_get_index(struct cpufreq_stats *stat, unsigned int freq)
 {
