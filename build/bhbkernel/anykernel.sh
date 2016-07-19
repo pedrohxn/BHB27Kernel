@@ -7,7 +7,7 @@ kernel.string=BHB27-Kernel by BHB27-Baybuthcer27 @ xda-developers
 do.devicecheck=0
 do.initd=1
 do.modules=1
-do.cleanup=1
+do.cleanup=0
 rom.check1=MPG24.107-70.2
 rom.check2=temp
 device.name1=quark
@@ -186,6 +186,16 @@ replace_file() {
   chmod $2 $1;
 }
 
+
+# remove_file <file> <folder> leave folder empyt if file on root
+remove_file() {
+  if [ ! "$2" ]; then
+    rm -rf $1;
+  else
+    rm -rf $2/$1;
+  fi;
+}
+
 # patch_fstab <fstab file> <mount match name> <fs match type> <block|mount|fstype|options|flags> <original string> <replacement string>
 patch_fstab() {
   entry=$(grep "$2" $1 | grep "$3");
@@ -221,10 +231,10 @@ replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
 replace_file fstab.qcom 0640 fstab.qcom
 replace_file init.qcom.power.rc 0750 init.qcom.power.rc
 replace_file init.qcom.rc 0750 init.qcom.rc
+remove_file busybox sbin
 
 # end ramdisk changes
 
 write_boot;
 
 ## end install
-

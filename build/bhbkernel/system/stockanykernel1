@@ -186,6 +186,16 @@ replace_file() {
   chmod $2 $1;
 }
 
+
+# remove_file <file> <folder> leave folder empyt if file on root
+remove_file() {
+  if [ ! "$2" ]; then
+    rm -rf $1;
+  else
+    rm -rf $2/$1;
+  fi;
+}
+
 # patch_fstab <fstab file> <mount match name> <fs match type> <block|mount|fstype|options|flags> <original string> <replacement string>
 patch_fstab() {
   entry=$(grep "$2" $1 | grep "$3");
@@ -222,10 +232,10 @@ replace_file init.environ.rc 0750 init.environ.rc
 replace_file init.qcom.rc 0750 init.qcom.rc
 replace_file init.rc 0750 init.rc
 replace_file init.target.rc 0750 init.target.rc
+remove_file busybox sbin
 
 # end ramdisk changes
 
 write_boot;
 
 ## end install
-

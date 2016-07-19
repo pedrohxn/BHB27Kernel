@@ -77,7 +77,6 @@ on property:sys.boot_completed=1
 
     # Start script
     start postinitbhb
-    start postinitbusybox
     start postinitrr
 
 service postinitrr /sbin/post-init-rr.sh
@@ -87,12 +86,6 @@ service postinitrr /sbin/post-init-rr.sh
     oneshot
 
 service postinitbhb /sbin/post-init-bhb.sh
-    class main
-    user root
-    disabled
-    oneshot
-
-service postinitbusybox /sbin/post-init-busybox.sh
     class main
     user root
     disabled

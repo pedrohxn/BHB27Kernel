@@ -30,7 +30,7 @@ START2="$(date)";
 echo -e "\nBHB27-Kernel build start $(date)\n";
 
 #kernel folder yours folder
-FOLDER=/home/fella/new-bhb/;
+FOLDER=/home/fella/apq8084/;
 cd $FOLDER;
 
 # CROSS_COMPILE toolchain folder
