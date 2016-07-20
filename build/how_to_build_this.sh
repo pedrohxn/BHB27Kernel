@@ -15,6 +15,12 @@
 # alias bk='/home/fella/m/kernel1/motorola/apq8084/build/how_to_build_this.sh'
 # place it to the end of ./bashrc file that is hide under home *after save ./bashrc restart the terminal
 #
+# Is need the below lib and bin on the build machine so "sudo apt-get install" the below if you don't, most ROM need this also, if you use the machine for ROM build you must have it
+#
+#sudo apt-get update
+#sudo apt-get install ccache lzop liblz4-* lzma* liblzma*
+# + is need java 
+#sudo apt-get install  openjdk-7-jre openjdk-7-jdk
 # Check the /build/build_log.txt for error and warning...
 #
 # Extras...
@@ -30,11 +36,11 @@ START2="$(date)";
 echo -e "\nBHB27-Kernel build start $(date)\n";
 
 #kernel folder yours folder
-FOLDER=/home/fella/apq8084/;
+FOLDER=/home/bhb27/android/apq8084/;
 cd $FOLDER;
 
 # CROSS_COMPILE toolchain folder
-export CROSS_COMPILE=/home/fella/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
+export CROSS_COMPILE=/home/bhb27/android/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
 
 #kernel zip name
 ZIPNAME="BHB27-Kernel-V200-7-M.zip";
@@ -69,7 +75,9 @@ else if [ ! -e ./build/temp/arch/arm/boot/dt.img.lz4 ]; then
 	exit 1;
 else
 	# moving modules to zip folder
-	find  -iname '*.ko' -exec cp -rf '{}' ./build/bhbkernel/modules/ \;
+	cd ./build/temp
+	find  -iname '*.ko' -exec cp -rf '{}' ../bhbkernel/modules/ \;
+	cd -
 	# strip modules 
 	${CROSS_COMPILE}strip --strip-unneeded ./build/bhbkernel/modules/*
 	mkdir ./build/bhbkernel/modules/qca_cld
