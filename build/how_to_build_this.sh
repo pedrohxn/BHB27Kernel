@@ -40,7 +40,7 @@ FOLDER=/home/bhb27/android/apq8084/;
 cd $FOLDER;
 
 # CROSS_COMPILE toolchain folder
-export CROSS_COMPILE=/home/bhb27/android/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8.1/bin/arm-eabi-
+export CROSS_COMPILE=/home/bhb27/android/m/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
 
 #kernel zip name
 ZIPNAME="BHB27-Kernel-V200-8-M.zip";
