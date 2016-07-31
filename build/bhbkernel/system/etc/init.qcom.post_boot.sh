@@ -295,7 +295,7 @@ case "$target" in
                 echo "85 1500000:90 1800000:70" > /sys/devices/system/cpu/cpufreq/interactive/target_loads
                 echo 40000 > /sys/devices/system/cpu/cpufreq/interactive/min_sample_time
                 echo 20 > /sys/module/cpu_boost/parameters/boost_ms
-                echo 300000 > /sys/module/cpu_boost/parameters/sync_threshold
+                echo 1728000 > /sys/module/cpu_boost/parameters/sync_threshold
                 echo 100000 > /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor
                 echo 1497600 > /sys/module/cpu_boost/parameters/input_boost_freq
                 echo 500 > /sys/module/cpu_boost/parameters/input_boost_ms
@@ -506,7 +506,7 @@ case "$target" in
         chown -h system.power /sys/module/cpu_boost/parameters/sync_threshold
         chmod -h 0660 /sys/module/cpu_boost/parameters/sync_threshold
         echo 20 > /sys/module/cpu_boost/parameters/boost_ms
-        echo 300000 > /sys/module/cpu_boost/parameters/sync_threshold
+        echo 1728000 > /sys/module/cpu_boost/parameters/sync_threshold
         echo 1497600 > /sys/module/cpu_boost/parameters/input_boost_freq
         echo 500 > /sys/module/cpu_boost/parameters/input_boost_ms
         echo 1 > /dev/cpuctl/apps/cpu.notify_on_migrate
