@@ -718,11 +718,13 @@ static int __init cpufreq_stats_init(void)
 		return ret;
 	}
 
-	ret = cpufreq_sysfs_create_file(&_attr_all_time_in_state.attr);
+	ret = sysfs_create_file(cpufreq_global_kobject,
+				&_attr_all_time_in_state.attr);
 	if (ret)
 		pr_warn("Cannot create sysfs file for cpufreq stats\n");
 
-	ret = cpufreq_sysfs_create_file(&_attr_current_in_state.attr);
+	ret = sysfs_create_file(cpufreq_global_kobject,
+				&_attr_current_in_state.attr);
 	if (ret)
 		pr_warn("Cannot create sysfs file for cpufreq current stats\n");
 
