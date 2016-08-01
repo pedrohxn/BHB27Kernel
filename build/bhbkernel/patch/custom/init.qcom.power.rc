@@ -77,9 +77,10 @@ on property:sys.boot_completed=1
     write /sys/module/cpu_boost/parameters/boost_ms 20
     write /sys/module/cpu_boost/parameters/input_boost_ms 40
 
-    # BHB27 mod
-    # Set io ahead for better performance, sync_threshold to 300 less heat
-    # Dis stock thermal, Use prop to ena bfq
+   #sync_threshold use stock value
+   write /sys/module/cpu_boost/parameters/sync_threshold 1728000
+
+    # Set io ahead for better performance
     setprop sys.io.scheduler bfq
 
     # Start script
