@@ -1299,11 +1299,11 @@ endif
 # Some kernel include files are being moved.  Check to see if
 # the old version of the files are present
 
-ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/mach-msm/include/mach/msm_smd.h),)
+ifneq ($(wildcard $(srctree)/include/soc/qcom/smd.h),)
 CDEFINES += -DEXISTS_MSM_SMD
 endif
 
-ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/mach-msm/include/mach/msm_smsm.h),)
+ifneq ($(wildcard $(srctree)/include/soc/qcom/smsm.h),)
 CDEFINES += -DEXISTS_MSM_SMSM
 endif
 

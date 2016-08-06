@@ -12,7 +12,7 @@
  */
 
 #include <linux/module.h>
-#include <mach/msm_smsm.h>
+#include <soc/qcom/smsm.h>
 #include <linux/apanic_mmc.h>
 #include <linux/pstore.h>
 
