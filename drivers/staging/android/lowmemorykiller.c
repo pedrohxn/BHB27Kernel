@@ -190,16 +190,6 @@ static struct notifier_block lmk_vmpr_nb = {
 	.notifier_call = lmk_vmpressure_notifier,
 };
 
-static bool protected_apps(char *comm)
-{
-	if (strcmp(comm, "d.process.acore") == 0 ||
-			strcmp(comm, "ndroid.systemui") == 0 ||
-			strcmp(comm, "ndroid.contacts") == 0 ||
-			strcmp(comm, "system:ui") == 0)
-		return 1;
-	return 0;
-}
-
 static int test_task_flag(struct task_struct *p, int flag)
 {
 	struct task_struct *t;
