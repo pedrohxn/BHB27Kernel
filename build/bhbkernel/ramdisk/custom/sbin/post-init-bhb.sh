@@ -22,7 +22,7 @@ fi
 # CPU - Disable hotplug boost
 echo 0 > /sys/module/cpu_boost/parameters/hotplug_boost
 
-# CPU - set max clock to sotck value
+# CPU - set max clock to stock value
 chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 echo 2649600 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
 chmod 444 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
@@ -43,6 +43,9 @@ chmod 444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
 echo 600000000 > /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk
 echo Y > /sys/module/adreno_idler/parameters/adreno_idler_active
 
+# Ena adaptive lmk Tune LMK
+echo 1 > /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk
+echo 4096,8192,16640,29184,47104,52224 > /sys/module/lowmemorykiller/parameters/minfree
 
 echo "Post init Kernel Boot initiated on $(date)" >> /tmp/bootcheck.txt
 
