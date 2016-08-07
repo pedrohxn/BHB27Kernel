@@ -158,6 +158,7 @@ struct dentry_operations {
 	char *(*d_dname)(struct dentry *, char *, int);
 	struct vfsmount *(*d_automount)(struct path *);
 	int (*d_manage)(struct dentry *, bool);
+	struct inode *(*d_select_inode)(struct dentry *, unsigned);
 } ____cacheline_aligned;
 
 /*
@@ -211,6 +212,12 @@ struct dentry_operations {
 #define DCACHE_DENTRY_KILLED	0x100000
 
 #define DCACHE_ENCRYPTED_WITH_KEY	0x04000000 /* dir is encrypted with a valid key */
+
+#define DCACHE_OP_SELECT_INODE		0x02000000 /* Unioned entry: dcache op selects inode */
+
+#define DCACHE_ENTRY_TYPE	0x00700000
+#define DCACHE_DIRECTORY_TYPE		0x00100000 /* Normal directory */
+#define DCACHE_AUTODIR_TYPE	0x00200000 /* Lookupless directory (presumed automount) */
 
 extern seqlock_t rename_lock;
 
@@ -412,6 +419,30 @@ static inline bool d_mountpoint(struct dentry *dentry)
 	return dentry->d_flags & DCACHE_MOUNTED;
 }
 
+/*
+ * Directory cache entry type accessor functions.
+ */
+static inline unsigned __d_entry_type(const struct dentry *dentry)
+{
+	return dentry->d_flags & DCACHE_ENTRY_TYPE;
+}
+
+static inline bool d_can_lookup(const struct dentry *dentry)
+{
+	return __d_entry_type(dentry) == DCACHE_DIRECTORY_TYPE;
+}
+
+static inline bool d_is_autodir(const struct dentry *dentry)
+{
+	return __d_entry_type(dentry) == DCACHE_AUTODIR_TYPE;
+}
+
+static inline bool d_is_dir(const struct dentry *dentry)
+{
+	return d_can_lookup(dentry) || d_is_autodir(dentry);
+}
+
+
 /**
  * d_inode - Get the actual inode of this dentry
  * @dentry: The dentry to query
@@ -422,6 +453,38 @@ static inline bool d_mountpoint(struct dentry *dentry)
 static inline struct inode *d_inode(const struct dentry *dentry)
 {
 	return dentry->d_inode;
+}
+
+/**
+ * d_backing_inode - Get upper or lower inode we should be using
+ * @upper: The upper layer
+ *
+ * This is the helper that should be used to get at the inode that will be used
+ * if this dentry were to be opened as a file.  The inode may be on the upper
+ * dentry or it may be on a lower dentry pinned by the upper.
+ *
+ * Normal filesystems should not use this to access their own inodes.
+ */
+static inline struct inode *d_backing_inode(const struct dentry *upper)
+{
+	struct inode *inode = upper->d_inode;
+
+	return inode;
+}
+
+/**
+ * d_backing_dentry - Get upper or lower dentry we should be using
+ * @upper: The upper layer
+ *
+ * This is the helper that should be used to get the dentry of the inode that
+ * will be used if this dentry were opened as a file.  It may be the upper
+ * dentry or it may be a lower dentry pinned by the upper.
+ *
+ * Normal filesystems should not use this to access their own dentries.
+ */
+static inline struct dentry *d_backing_dentry(struct dentry *upper)
+{
+	return upper;
 }
 
 static inline bool d_is_negative(const struct dentry *dentry)
