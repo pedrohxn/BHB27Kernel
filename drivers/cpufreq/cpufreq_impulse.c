@@ -1335,6 +1335,7 @@ static int cpufreq_governor_impulse(struct cpufreq_policy *policy,
 
 		tunables->usage_count = 1;
 		policy->governor_data = tunables;
+		common_tunables = tunables;
 
 		rc = sysfs_create_group(get_governor_parent_kobj(policy),
 				get_sysfs_attr());
