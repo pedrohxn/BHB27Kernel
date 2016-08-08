@@ -43,6 +43,9 @@ chmod 444 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
 echo 600000000 > /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk
 echo Y > /sys/module/adreno_idler/parameters/adreno_idler_active
 
+# Ena adaptive lmk Tune LMK
+echo 1 > /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk
+echo 4096,8192,16640,29184,47104,52224 > /sys/module/lowmemorykiller/parameters/minfree
 
 echo "Post init Kernel Boot initiated on $(date)" >> /tmp/bootcheck.txt
 
