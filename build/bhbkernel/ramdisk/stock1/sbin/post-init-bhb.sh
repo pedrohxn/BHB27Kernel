@@ -45,6 +45,7 @@ echo Y > /sys/module/adreno_idler/parameters/adreno_idler_active
 
 # Ena adaptive lmk Tune LMK
 echo 1 > /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk
+echo 53059 > /sys/module/lowmemorykiller/parameters/vmpressure_file_min
 echo 4096,8192,16640,29184,47104,52224 > /sys/module/lowmemorykiller/parameters/minfree
 
 echo "Post init Kernel Boot initiated on $(date)" >> /tmp/bootcheck.txt
