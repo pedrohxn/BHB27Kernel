@@ -140,12 +140,6 @@ struct scan_control {
 int vm_swappiness = 70;
 unsigned long vm_total_pages;	/* The total number of pages which the VM controls */
 
-#ifdef CONFIG_KSWAPD_CPU_AFFINITY_MASK
-char *kswapd_cpu_mask = CONFIG_KSWAPD_CPU_AFFINITY_MASK;
-#else
-char *kswapd_cpu_mask = NULL;
-#endif
-
 static LIST_HEAD(shrinker_list);
 static DECLARE_RWSEM(shrinker_rwsem);
 
@@ -3411,7 +3405,7 @@ static int kswapd(void *p)
 
 	lockdep_set_current_reclaim_state(GFP_KERNEL);
 
-	if (kswapd_cpu_mask == NULL && !cpumask_empty(cpumask))
+	if (!cpumask_empty(cpumask))
 		set_cpus_allowed_ptr(tsk, cpumask);
 	current->reclaim_state = &reclaim_state;
 
@@ -3585,22 +3579,6 @@ static int cpu_callback(struct notifier_block *nfb, unsigned long action,
 	return NOTIFY_OK;
 }
 
-static int set_kswapd_cpu_mask(pg_data_t *pgdat)
-{
-	int ret = 0;
-	cpumask_t tmask;
-
-	if (!kswapd_cpu_mask)
-		return 0;
-
-	cpus_clear(tmask);
-	ret = cpumask_parse(kswapd_cpu_mask, &tmask);
-	if (ret)
-		return ret;
-
-	return set_cpus_allowed_ptr(pgdat->kswapd, &tmask);
-}
-
 /*
  * This kswapd start function will be called by init and node-hot-add.
  * On node-hot-add, kswapd will moved to proper cpus if cpus are hot-added.
@@ -3620,9 +3598,6 @@ int kswapd_run(int nid)
 		pr_err("Failed to start kswapd on node %d\n", nid);
 		ret = PTR_ERR(pgdat->kswapd);
 		pgdat->kswapd = NULL;
-	} else if (kswapd_cpu_mask) {
-		if (set_kswapd_cpu_mask(pgdat))
-			pr_warn("error setting kswapd cpu affinity mask\n");
 	}
 	return ret;
 }
@@ -3648,8 +3623,7 @@ static int __init kswapd_init(void)
 	swap_setup();
 	for_each_node_state(nid, N_MEMORY)
  		kswapd_run(nid);
-	if (kswapd_cpu_mask == NULL)
-		hotcpu_notifier(cpu_callback, 0);
+	hotcpu_notifier(cpu_callback, 0);
 	return 0;
 }
 
