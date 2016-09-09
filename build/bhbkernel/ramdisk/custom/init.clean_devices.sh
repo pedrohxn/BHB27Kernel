@@ -14,9 +14,6 @@ fsgid=`getprop ro.boot.fsg-id`;
 
 ## Clean Verizon blobs on others devices
 if  [ "$fsgid" != verizon ]; then
-	# stop IMS services
-	stop imsqmidaemon;
-	stop imsdatadaemon;
 
 	# delete main folders
 	app="system/app";
@@ -31,7 +28,6 @@ if  [ "$fsgid" != verizon ]; then
 	#apps
 	rm -rf $app/ims;
 	rm -rf $app/VZWAPNLib;
-	rm -rf $priv_app/atfwd;
 	rm -rf $priv_app/AppDirectedSMSProxy;
 	rm -rf $priv_app/BuaContactAdapter;
 	rm -rf $priv_app/VZWAPNService;

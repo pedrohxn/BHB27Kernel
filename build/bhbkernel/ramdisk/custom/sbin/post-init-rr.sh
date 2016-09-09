@@ -26,6 +26,18 @@ if [ -e /system/app/Adaway/lib/arm/libtcpdump_exec.so ]; then
 	chmod 755 /system/app/Adaway/lib/arm/libtcpdump_exec.so
 fi
 
+fsgid=`getprop ro.boot.fsg-id`;
+
+if  [ "$fsgid" != verizon ]; then
+	# stop IMS services Not need for others then VZW users
+	stop imsqmidaemon;
+	stop imsdatadaemon;
+	echo "services stop okay device fsgid = $fsgid" >> /tmp/bootcheck.txt;
+
+else
+	echo "services not stoped for fsgid = $fsgid" >> /tmp/bootcheck.txt;
+fi;
+
 echo "post-init-ROM Boot initiated on $(date)" >> /tmp/bootcheck.txt
 
 exit
