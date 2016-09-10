@@ -10,6 +10,9 @@ chmod -R 777 /tmp/
 chmod 6755 /sbin/*
 chmod 6755 /system/xbin/*
 
+# give su root:root to adb su work
+chown root:root /system/xbin/su
+
 # Make tmp folder
 if [ -e /tmp ]; then
 	echo "tmp already exist"
