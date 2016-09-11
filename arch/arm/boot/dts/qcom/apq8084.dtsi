@@ -5033,11 +5033,10 @@
 		qcom,bcl-enable;
 		qcom,ibat-vadc = <&pma8084_vadc>;
 		qcom,ibat-threshold-adc_tm = <&pma8084_adc_tm>;
-		qcom,bcl-hotplug-list = <&CPU2 &CPU3>;
 		qcom,ibat-monitor {
 			high-threshold-uamp = <3000000>;
 			low-threshold-uamp = <1000000>;
-			mitigation-freq-khz = <2419200>;
+			mitigation-freq-khz = <2496000>;
 			mitigation-gpu-freq-khz = <350000>;
 			max-gpu-freq-khz = <800000>;
 			ibat-channel = <0x15>;
@@ -5045,7 +5044,7 @@
 			uv-to-ua-numerator = <2>;
 			uv-to-ua-denominator = <1>;
 			vph-channel = <0x07>;
-			vph-high-threshold-uv = <3650000>;
+			vph-high-threshold-uv = <3800000>;
 			vph-low-threshold-uv = <3150000>;
 			thermal-handle = <&msm_thermal_freq>;
 			smb135x-handle = <&smb1357_otg_vreg>;
@@ -5088,6 +5087,7 @@
 		qcom,freq-mitigation-temp-hysteresis = <20>;
 		qcom,freq-mitigation-value = <960000>;
 		qcom,freq-mitigation-control-mask = <0x01>;
+		qcom,online-hotplug-core;
 		qcom,rpm-phase-resource-type = "misc";
 		qcom,rpm-phase-resource-id = <0>;
 		qcom,cx-phase-resource-key = "tmpc";
