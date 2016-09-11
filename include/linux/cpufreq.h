@@ -260,6 +260,9 @@ int cpufreq_unregister_driver(struct cpufreq_driver *driver_data);
 
 const char *cpufreq_get_current_driver(void);
 
+void cpufreq_notify_utilization(struct cpufreq_policy *policy,
+		unsigned int load);
+
 static inline void cpufreq_verify_within_limits(struct cpufreq_policy *policy,
 		unsigned int min, unsigned int max)
 {
@@ -544,6 +547,10 @@ static inline int cpufreq_generic_exit(struct cpufreq_policy *policy)
 	cpufreq_frequency_table_put_attr(policy->cpu);
 	return 0;
 }
+
+#ifdef CONFIG_BLU_PLUG
+unsigned int cpufreq_quick_get_util(unsigned int cpu);
+#endif
 
 /*********************************************************************
  *                         CPUFREQ STATS                             *

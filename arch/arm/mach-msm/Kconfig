@@ -736,6 +736,12 @@ config MSM_CPU_FREQ_MIN
 
 endif # CPU_FREQ_MSM
 
+config BLU_PLUG
+ 	bool "Dynamic hotplug driver"
+ 	depends on HOTPLUG_CPU
+ 	help
+	  The Dynamic hotplug driver automatically online/offline CPUs proportional to system load.
+
 config ZEN_DECISION
 	bool "Zen Decision: MSM Userspace Handler"
 	depends on SMP && FB

@@ -448,6 +448,7 @@ static void cpufreq_impulse_timer(unsigned long data)
 
 	spin_lock_irqsave(&ppol->target_freq_lock, flags);
 	cpu_load = loadadjfreq / ppol->policy->cur;
+	cpufreq_notify_utilization(ppol->policy, cpu_load);
 	tunables->boosted = cpu_load >= tunables->go_hispeed_load;
 
 	this_hispeed_freq = max(tunables->hispeed_freq, ppol->policy->min);
