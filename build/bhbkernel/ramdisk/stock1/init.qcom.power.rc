@@ -69,6 +69,7 @@ on property:sys.boot_completed=1
     write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 30000
     write /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor 100000
     write /dev/cpuctl/cpu.notify_on_migrate 0
+    write /sys/module/state_notifier/parameters/enabled 1
 
     # BHB27 mod
     # Set io ahead for better performance, sync_threshold to 300 less heat
