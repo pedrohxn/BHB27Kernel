@@ -20,3 +20,4 @@ obj-$(CONFIG_MEM_SHARE_QMI_SERVICE)		+= memshare/
 obj-y		+= socinfo.o
 
 obj-$(CONFIG_STATE_NOTIFIER)		+= state_notifier.o
+obj-y 					+= hotplug/
