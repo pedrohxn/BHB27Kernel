@@ -827,7 +827,7 @@ static int mdss_dsi_panel_on(struct mdss_panel_data *pdata)
 			return 0;
 	}
 
-	pr_info("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
+	pr_debug("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	if (ctrl->panel_config.bare_board == true) {
 		pr_warn("%s: This is bare_board configuration\n", __func__);
@@ -881,7 +881,7 @@ end:
 	} else
 		dropbox_count = 0;
 
-	pr_info("%s-. Pwr_mode(0x0A) = 0x%x\n", __func__, pwr_mode);
+	pr_debug("%s-. Pwr_mode(0x0A) = 0x%x\n", __func__, pwr_mode);
 
 	return 0;
 }
@@ -909,7 +909,7 @@ static int mdss_dsi_panel_off(struct mdss_panel_data *pdata)
 			return 0;
 	}
 
-	pr_info("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
+	pr_debug("%s: ctrl=%p ndx=%d\n", __func__, ctrl, ctrl->ndx);
 
 	mipi  = &pdata->panel_info.mipi;
 
