@@ -84,6 +84,10 @@ config CPU_FREQ_DEFAULT_GOV_USERSPACE
 	  program shall be able to set the CPU dynamically without having
 	  to enable the userspace governor manually.
 
+config CPU_FREQ_DEFAULT_GOV_SMARTMAX_EPS
+	bool "smartmax_eps"
+	select CPU_FREQ_GOV_SMARTMAX_EPS
+
 config CPU_FREQ_DEFAULT_GOV_ONDEMAND
 	bool "ondemand"
 	select CPU_FREQ_GOV_ONDEMAND
@@ -213,6 +217,10 @@ config CPU_FREQ_DEFAULT_GOV_NIGHTMARE
 	bool "nightmare"
 	select CPU_FREQ_GOV_NIGHTMARE
 	help
+
+config CPU_FREQ_GOV_SMARTMAX_EPS
+        tristate "'smartmax_eps' cpufreq governor"
+        depends on CPU_FREQ
 
 config CPU_FREQ_DEFAULT_GOV_DARKNESS
 	bool "darkness"
