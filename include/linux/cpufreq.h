@@ -463,6 +463,9 @@ extern struct cpufreq_governor cpufreq_gov_kraken;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ONDEMAND_EPS)
 extern struct cpufreq_governor cpufreq_gov_ondemand_eps;
 #define CPUFREQ_DEFAULT_GOVERNOR (&cpufreq_gov_ondemand_eps)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_HELLSACTIVE)
+extern struct cpufreq_governor cpufreq_gov_hellsactive;
+#define CPUFREQ_DEFAULT_GOVERNOR (&cpufreq_gov_hellsactive)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX_EPS)
 extern struct cpufreq_governor cpufreq_gov_smartmax_eps;
 #define CPUFREQ_DEFAULT_GOVERNOR (&cpufreq_gov_smartmax_eps)
