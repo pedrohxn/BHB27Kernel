@@ -66,6 +66,11 @@ config CPU_FREQ_DEFAULT_GOV_POWERSAVE
 	  the frequency statically to the lowest frequency supported by
 	  the CPU.
 
+
+config CPU_FREQ_DEFAULT_GOV_ONDEMAND_EPS
+	bool "ondemand_eps"
+	select CPU_FREQ_GOV_ONDEMAND_EPS
+
 config CPU_FREQ_DEFAULT_GOV_DYNAMIC_INTERACTIVE
 	bool "dynamic_interactive"
 	select CPU_FREQ_GOV_DYNAMIC_INTERACTIVE
@@ -288,6 +293,10 @@ config CPU_FREQ_GOV_POWERSAVE
 
 config CPU_FREQ_GOV_MYTHX_PLUG
         tristate "'mythx_plug' cpufreq governor"
+        depends on CPU_FREQ
+
+config CPU_FREQ_GOV_ONDEMAND_EPS
+        tristate "'ondemand_eps' cpufreq governor"
         depends on CPU_FREQ
 
 config CPU_FREQ_GOV_USERSPACE
