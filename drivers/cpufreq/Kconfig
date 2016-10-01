@@ -103,6 +103,10 @@ config CPU_FREQ_DEFAULT_GOV_CHILL
 	  governor. If unsure have a look at the help section of the
 	  driver. Fallback governor will be the interactive governor.
 
+config CPU_FREQ_DEFAULT_GOV_MYTHX_PLUG
+	bool "mythx_plug"
+	select CPU_FREQ_GOV_MYTHX_PLUG
+
 config CPU_FREQ_DEFAULT_GOV_CAFACTIVE
  	bool "cafactive"
  	select CPU_FREQ_GOV_CAFACTIVE
@@ -281,6 +285,10 @@ config CPU_FREQ_GOV_POWERSAVE
 	  module will be called cpufreq_powersave.
 
 	  If in doubt, say Y.
+
+config CPU_FREQ_GOV_MYTHX_PLUG
+        tristate "'mythx_plug' cpufreq governor"
+        depends on CPU_FREQ
 
 config CPU_FREQ_GOV_USERSPACE
 	tristate "'userspace' governor for userspace frequency scaling"
