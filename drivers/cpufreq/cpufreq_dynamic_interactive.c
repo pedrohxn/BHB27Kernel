@@ -94,6 +94,7 @@ static enum tune_values {
 #define MAX_MIN_SAMPLE_TIME (80 * USEC_PER_MSEC)
 
 /* Hi speed to bump to from lo speed when load burst (default max) */
+#define DEFAULT_HISPEED_FREQ	1728000
 static u64 hispeed_freq;
 
 /* Go to hi speed when CPU load at or above this value. */
@@ -131,7 +132,7 @@ static int cpufreq_governor_dynamic_interactive(struct cpufreq_policy *policy,
 static
 #endif
 struct cpufreq_governor cpufreq_gov_dynamic_interactive = {
-	.name = "dyninteractive",
+	.name = "dynamic_itc",
 	.governor = cpufreq_governor_dynamic_interactive,
 	.max_transition_latency = 10000000,
 	.owner = THIS_MODULE,
@@ -913,7 +914,7 @@ static struct attribute *dynamic_interactive_attributes[] = {
 
 static struct attribute_group dynamic_interactive_attr_group = {
 	.attrs = dynamic_interactive_attributes,
-	.name = "dynamic_interactive",
+	.name = "dynamic_itc",
 };
 
 static int cpufreq_dynamic_interactive_idle_notifier(struct notifier_block *nb,
@@ -978,7 +979,7 @@ static int cpufreq_governor_dynamic_interactive(struct cpufreq_policy *policy,
 		}
 
 		if (!hispeed_freq)
-			hispeed_freq = policy->max;
+			hispeed_freq = DEFAULT_HISPEED_FREQ;
 
 		/*
 		 * Do not register the idle hook and create sysfs
