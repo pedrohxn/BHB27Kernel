@@ -99,7 +99,7 @@ static unsigned long down_differential;
 #define DEFAULT_MIN_FREQ 268800
 static u64 allowed_min;
 
-#define DEFAULT_MAX_FREQ 2265600
+#define DEFAULT_MAX_FREQ 2649600
 static u64 allowed_max;
 
 #define DEFAULT_INTER_HIFREQ 1728000
