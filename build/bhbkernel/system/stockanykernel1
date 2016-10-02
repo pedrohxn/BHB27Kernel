@@ -231,12 +231,9 @@ dump_boot;
 
 # begin ramdisk changes
 
-#replace files for custom CM base
-replace_file file_contexts 0644 file_contexts
-replace_file init.environ.rc 0750 init.environ.rc
-replace_file init.qcom.rc 0750 init.qcom.rc
-replace_file init.rc 0750 init.rc
-replace_file init.target.rc 0750 init.target.rc
+#replace files for stock ROM
+replace_string init.qcom.rc  "min_cores=1" "min_cores=4" "min_cores=1"
+insert_line  init.target.rc "init.qcom.power.rc" after "import init.target.rc" "import init.qcom.power.rc";
 remove_file busybox sbin
 
 # end ramdisk changes
