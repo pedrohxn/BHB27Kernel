@@ -234,6 +234,9 @@ dump_boot;
 #replace files for stock ROM
 replace_string init.target.rc  "min_cores=1" "min_cores=4" "min_cores=1"
 insert_line init.qcom.rc "init.qcom.power.rc" after "import init.target.rc" "import init.qcom.power.rc"
+replace_file file_contexts 0644 file_contexts
+replace_file init.environ.rc 0750 init.environ.rc
+replace_file init.rc 0750 init.rc
 remove_file busybox sbin
 
 # end ramdisk changes
