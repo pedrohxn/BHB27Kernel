@@ -50,7 +50,22 @@ bb=/tmp/anykernel/tools/busybox;
 
 ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 if [ "$getbptemp" == "$romv" ]; then
+ui_print "                                               ";
+ui_print "-----------------------------------------------";
+ui_print "                                               ";
 ui_print "     Setting up as Stock ROM $(file_getprop /tmp/anykernel/system/bp.sh ro.build.display.id)";
+ui_print "                                               ";
+ui_print "     In Stock ROM is need to Reflash ROOT      ";
+ui_print "             After a kernel Update             ";
+ui_print "      Demanding! First install Su Version:     ";
+ui_print "     BETA-SuperSU-v2.62-3-20151211162651_3     ";
+ui_print "       Then Update Su if you wanna             ";
+ui_print "                                               ";
+ui_print "       Is possible to do all in one queue      ";
+ui_print "         Kernel, BETA-Su then Update Su        ";
+ui_print "                                               ";
+ui_print "-----------------------------------------------";
+ui_print "                                               ";
 fi;
 if [ "$getbptemp" != "$romv" ]; then
 ui_print "     Setting up as CM-Base Custom ROM";
