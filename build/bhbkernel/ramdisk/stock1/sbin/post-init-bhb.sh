@@ -12,19 +12,6 @@ fi
 # CPU - Disable hotplug boost
 echo 0 > /sys/module/cpu_boost/parameters/hotplug_boost
 
-# CPU - set max clock to stock value
-chmod 644 /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-echo 2649600 > /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-echo 1 > /sys/devices/system/cpu/cpu1/online
-chmod 644 /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
-echo 2649600 > /sys/devices/system/cpu/cpu1/cpufreq/scaling_max_freq
-echo 1 > /sys/devices/system/cpu/cpu2/online
-chmod 644 /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
-echo 2649600 > /sys/devices/system/cpu/cpu2/cpufreq/scaling_max_freq
-echo 1 > /sys/devices/system/cpu/cpu3/online
-chmod 644 /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
-echo 2649600 > /sys/devices/system/cpu/cpu3/cpufreq/scaling_max_freq
-
 # GPU max clock to stock value, enable adreno_idler
 echo 600000000 > /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk
 echo Y > /sys/module/adreno_idler/parameters/adreno_idler_active
