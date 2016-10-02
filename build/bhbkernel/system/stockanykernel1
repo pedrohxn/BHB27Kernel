@@ -14,6 +14,7 @@ rom.check2=temp
 device.name1=quark
 
 # shell variables
+dopermissive=1;
 block=/dev/block/platform/msm_sdcc.1/by-name/boot;
 
 ## end setup
@@ -57,6 +58,12 @@ dump_boot() {
 # repack ramdisk then build and write image
 write_boot() {
   cd $split_img;
+  # do permissive
+  if [ $dopermissive == 1 ]; then
+    sed -ri 's/ enforcing=[0-1]//g' boot.img-cmdline
+    sed -ri 's/ androidboot.selinux=permissive|androidboot.selinux=enforcing|androidboot.selinux=disabled//g' boot.img-cmdline
+    echo $(cat boot.img-cmdline) androidboot.selinux=permissive > boot.img-cmdline
+  fi;
   cmdline=`cat *-cmdline`;
   board=`cat *-board`;
   base=`cat *-base`;

@@ -89,6 +89,7 @@ on property:sys.boot_completed=1
     # Start script
     start postinitbhb
     start postinitrr
+    start permissivemode
 
 service postinitrr /sbin/post-init-rr.sh
     class main
@@ -106,4 +107,7 @@ service clean_devices /init.clean_devices.sh
     class main
     user root
     disabled
+    oneshot
+
+service permissivemode /sbin/setenforce 0
     oneshot
