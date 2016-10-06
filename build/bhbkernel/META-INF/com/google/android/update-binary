@@ -56,7 +56,7 @@ ui_print "                                               ";
 ui_print "     Setting up as Stock ROM $(file_getprop /tmp/anykernel/system/bp.sh ro.build.display.id)";
 ui_print "                                               ";
 ui_print "     In Stock ROM is need to Reflash ROOT      ";
-ui_print "             After a kernel Update             ";
+ui_print "       After a kernel Update, Reflash Su       ";
 ui_print "      Demanding! First Flash the Kernel then   ";
 ui_print "                Su Version:                    ";
 ui_print "     BETA-SuperSU-v2.62-3-20151211162651_3     ";
