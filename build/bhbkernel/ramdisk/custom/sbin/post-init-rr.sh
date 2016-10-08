@@ -25,13 +25,12 @@ if [ -e /system/xbin/isu ]; then
 	if [ ! -e /system/bin/su ]; then
 		ln -s -f /system/xbin/su /system/bin/su
 	fi
-fi
-
 # give su root:root to adb su work optional/recommended
 if [ -e /system/xbin/su ]; then
 	chown root:root /system/xbin/su
 fi
 # Isu end
+fi
 
 fsgid=`getprop ro.boot.fsg-id`;
 device=`getprop ro.boot.hardware.sku`

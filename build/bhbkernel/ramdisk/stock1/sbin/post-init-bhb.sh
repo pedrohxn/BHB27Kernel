@@ -1,11 +1,11 @@
 #!/system/bin/sh
-
-# Make tmp folder
-if [ -e /data/tmp ]; then
-	echo "data/tmp already exist"
+mount -o rw,remount /system
+if [ ! -e /data/tmp ]; then
+	mkdir /data/tmp;
+	echo "boot start $(date)" > /data/tmp/bootcheck.txt;
 else
-mkdir /data/tmp
-fi
+	echo "boot start $(date)" > /data/tmp/bootcheck.txt;
+fi;
 
 #enable, disable and tweak some features of the kernel by default for better performance vs battery
 
@@ -22,5 +22,5 @@ echo 52992 > /sys/module/lowmemorykiller/parameters/vmpressure_file_min
 echo 4096,8192,16640,29184,47104,52224 > /sys/module/lowmemorykiller/parameters/minfree
 
 echo "Post init Kernel Boot initiated on $(date)" >> /data/tmp/bootcheck.txt
-
+umount /system;
 exit
