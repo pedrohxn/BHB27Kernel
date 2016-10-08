@@ -1,10 +1,31 @@
 #!/system/bin/sh
 
-if [ -e /data/tmp ]; then
-	echo "tmp folder already exist";
+if [ ! -e /data/tmp ]; then
+	mkdir /data/tmp;
+	echo "boot start $(date)" > /data/tmp/bootcheck.txt;
 else
-mkdir /data/tmp;
+	echo "boot start $(date)" > /data/tmp/bootcheck.txt;
 fi;
+
+# Isu support
+mount -o rw,remount /system
+if [ -e /system/bin/temp_su ]; then
+	mv /system/bin/temp_su /system/bin/su
+fi
+
+if [ -e /system/xbin/isu ]; then
+	mv /system/xbin/isu /system/xbin/su
+	if [ ! -e /system/bin/su ]; then
+		ln -s -f /system/xbin/su /system/bin/su
+	fi
+# give su root:root to adb su work optional/recommended
+if [ -e /system/xbin/su ]; then
+	chown root:root /system/xbin/su
+fi
+reboot
+fi
+umount /system;
+# Isu end
 
 fsgid=`getprop ro.boot.fsg-id`;
 device=`getprop ro.boot.hardware.sku`
@@ -73,8 +94,8 @@ if  [ "$device" == XT1225 ] ||  [ "$fsgid" == emea ] || [ "$fsgid" == singlela ]
 	rm -rf $vendor_lib/lib-rtpsl.so;
 	rm -rf $vendor_lib/libvcel.so;
 	umount /system;
-	echo "init.clean_devices file deleted for device = $device fsgid = $fsgid" >> /data/tmp/bootcheck.txt;
+	echo "init.clean_devices $(date) file deleted for device = $device fsgid = $fsgid" >> /data/tmp/bootcheck.txt;
 else
-	echo "init.clean_devices bn file deleted for device = $device fsgid = $fsgid" >> /data/tmp/bootcheck.txt;
+	echo "init.clean_devices $(date) file not deleted for device = $device fsgid = $fsgid" >> /data/tmp/bootcheck.txt;
 fi;
 

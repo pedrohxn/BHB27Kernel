@@ -1,12 +1,5 @@
 #!/system/bin/sh
 
-# Make tmp folder
-if [ -e /data/tmp ]; then
-	echo "data/tmp already exist"
-else
-mkdir /data/tmp
-fi
-
 #enable, disable and tweak some features of the kernel by default for better performance vs battery
 
 # CPU - Disable hotplug boost
