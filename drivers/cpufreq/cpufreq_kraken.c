@@ -23,7 +23,11 @@
 #define DEF_GBOOST_MIN_FREQ			(0)
 #define DEF_MAX_SCREEN_OFF_FREQ			(1036800)
 #define MIN_SAMPLING_RATE			(10000)
+#ifdef CONFIG_ZEN_INTERACTIVE
+#define DEF_SAMPLING_DOWN_FACTOR		(10)
+#else
 #define DEF_SAMPLING_DOWN_FACTOR		(8)
+#endif
 #define MAX_SAMPLING_DOWN_FACTOR		(20)
 #define FREQ_NEED_BURST(x)			(x < 600000 ? 1 : 0)
 #define MAX(x,y)				(x > y ? x : y)
