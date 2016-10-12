@@ -5,7 +5,7 @@
 # EDIFY properties
 kernel.string=BHB27-Kernel by BHB27-Baybuthcer27 @ xda-developers
 do.devicecheck=0
-do.initd=1
+do.initd=0
 do.modules=1
 do.cleanup=0
 do.buildprop=1
