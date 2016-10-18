@@ -100,17 +100,22 @@ on property:sys.boot_completed=1
     # Set io ahead for better performance
     setprop sys.io.scheduler maple
 
+    # GPU max clock to stock value, enable adreno_idler
+    write /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk 600000000
+    write /sys/module/adreno_idler/parameters/adreno_idler_active Y
+
+    # Ena adaptive lmk Tune LMK
+    write /sys/module/lowmemorykiller/parameters/enable_adaptive_lmk 1
+    write /sys/module/lowmemorykiller/parameters/vmpressure_file_min 52992
+    write /sys/module/lowmemorykiller/parameters/minfree 4096,8192,16640,29184,47104,52224
+
+    # CPU - Disable hotplug boost
+    write /sys/module/cpu_boost/parameters/hotplug_boost 0
+
     # Start script
-    start postinitbhb
     start postinitrr
 
 service postinitrr /sbin/post-init-rr.sh
-    class main
-    user root
-    disabled
-    oneshot
-
-service postinitbhb /sbin/post-init-bhb.sh
     class main
     user root
     disabled
@@ -121,20 +126,3 @@ service clean_devices /init.clean_devices.sh
     user root
     disabled
     oneshot
-
-# isu daemon
-service isu_daemon /system/xbin/isu --daemon
-    seclabel u:r:sudaemon:s0
-
-on property:persist.sys.root_access=0
-    stop isu_daemon
-
-on property:persist.sys.root_access=2
-    start isu_daemon
-
-on property:persist.sys.root_access=1
-    start isu_daemon
-
-on property:persist.sys.root_access=3
-    start isu_daemon
-# isu daemon end

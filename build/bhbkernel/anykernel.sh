@@ -237,6 +237,8 @@ replace_string fstab.qcom "usb:auto" "usbdisk:auto" "usb:auto"
 replace_file init.qcom.power.rc 0750 init.qcom.power.rc
 replace_file init.qcom.rc 0750 init.qcom.rc
 remove_file busybox sbin
+remove_file post-init-bhb.sh sbin
+prepend_file init.superuser.rc "isu_daemon" init.superuser;
 
 # end ramdisk changes
 

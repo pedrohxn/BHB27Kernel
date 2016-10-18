@@ -238,6 +238,8 @@ replace_file file_contexts 0644 file_contexts
 replace_file init.environ.rc 0750 init.environ.rc
 replace_file init.rc 0750 init.rc
 remove_file busybox sbin
+remove_file post-init-bhb.sh sbin
+remove_file post-init-rr.sh sbin
 
 # end ramdisk changes
 
