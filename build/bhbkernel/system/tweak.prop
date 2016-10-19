@@ -1,19 +1,5 @@
 ro.sys.sdcardfs=true
-# remove Duplicated this here because some prop may have be duplicated make shore it is set...
-
-!audio.offload.buffer.size.kb
-!av.offload.enable
-!av.streaming.offload.enable
-!audio.offload.multiple.enabled
-!audio.offload.gapless.enabled
-!audio.offload.pcm.16bit.enable
-!audio.offload.pcm.24bit.enable
-
-!persist.audio.dualmic.config
-!ro.qc.sdk.audio.fluencetype
-!persist.audio.fluence.voicecall
-!persist.audio.fluence.voicerec
-!persist.audio.fluence.speaker
+# remove this here because some prop may have be duplicated make shore it is set ok by removing all first...
 
 !audio.offload.buffer.size.kb
 !av.offload.enable
