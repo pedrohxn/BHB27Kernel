@@ -103,17 +103,45 @@ fi;
 ## credits for tweakprop @kl3 http://forum.xda-developers.com/showthread.php?t=2664332 | https://notabug.org/kl3/tweakprop
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.buildprop)" == 1 ]; then
 mount -o remount,rw /system;
-ui_print " ";
-ui_print "Patching build.prop";
-build=/system/build.prop;
-chmod 0666 $build;
 tweak="/tmp/anykernel/system/tweak.prop";
 ## abort tweak if tweak.prop is not found or is empty
 	if [ -s $tweak ]; then
 
+		build=/system/build.prop;
+		chmod 0666 $build;
+
 		if [ ! -e $build.bak ]; then
 			cp /system/build.prop /system/build.prop.bak;
 		fi
+
+		## only print Patching build.prop if something will be patched
+		sed -r '/(^#|^ *$|^BACKUP=)/d;/(.*=.*|^\!|^\@.*\|.*|^\$.*\|.*)/!d' "$tweak" | while read line
+		do
+			## remove entry
+			if echo "$line" | grep -q '^\!';
+			then
+				echo_Patching=1;
+			elif echo "$line" | grep -q '^\@';
+			then
+				echo_Patching=1;
+			elif echo "$line" | grep -q '^\$';
+			then
+				echo_Patching=1;
+			else
+				var=$(echo "$line" | cut -d= -f1);
+				if grep -q "$var" "$build";
+				then
+					grep -q $(grep "$var" "$tweak") "$build" || echo_Patching=1;
+				else
+					echo_Patching=1;
+				fi;
+			fi;
+		if [ "$echo_Patching" == 1 ]; then
+			ui_print " ";
+			ui_print "Patching build.prop";
+			break;
+		fi;
+		done;
 
 		## read only lines matching valid entry pattern (someVAR=someVAL, !someSTR, @someENTR|someSTR, $someVAR=someVAL)
 		sed -r '/(^#|^ *$|^BACKUP=)/d;/(.*=.*|^\!|^\@.*\|.*|^\$.*\|.*)/!d' "$tweak" | while read line
@@ -163,10 +191,8 @@ $line" >> "$build" && ui_print "..entry \"$line\" added";
 		sed '/^ *$/d' -i "$build";
 
 		chmod 0644 "$build";
-
 	fi;
-#build prop editor end
-fi;
+fi;#build prop editor end
 
 if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.cleanup)" == 1 ]; then
   rm -rf /tmp/anykernel;
@@ -176,4 +202,3 @@ umount /system;
 umount /data;
 ui_print " ";
 ui_print "Done!";
-
