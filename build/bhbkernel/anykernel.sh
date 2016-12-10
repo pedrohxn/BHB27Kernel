@@ -270,6 +270,7 @@ replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
 replace_string fstab.qcom "usb:auto" "usbdisk:auto" "usb:auto"
 replace_file init.qcom.power.rc 0750 init.qcom.power.rc
 replace_file init.qcom.rc 0750 init.qcom.rc
+replace_file fstab.qcom 0640 fstab.qcom
 remove_file busybox sbin
 
 # end ramdisk changes
