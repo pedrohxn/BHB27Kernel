@@ -106,7 +106,7 @@ on property:sys.boot_completed=1
     write /sys/module/state_notifier/parameters/enabled 1
 
     # Set io ahead for better performance
-    setprop sys.io.scheduler maple
+    setprop sys.io.scheduler bfq
 
     # Tune LMK
     write /sys/module/lowmemorykiller/parameters/minfree 44032,48640,53248,57856,62464,71680
