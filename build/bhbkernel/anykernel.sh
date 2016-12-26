@@ -12,8 +12,7 @@ do.buildprop=1
 device.name1=quark
 
 # shell variables
-dopermissive=1;
-
+docmdline=1;
 is_slot_device=0;
 
 ## end setup
@@ -73,11 +72,16 @@ dump_boot() {
 # repack ramdisk then build and write image
 write_boot() {
   cd $split_img;
-  # do permissive
-  if [ $dopermissive == 1 ]; then
+  # Here I set the cmdline, selinux to permissive so I can boot and run my .sh with no problems
+  # I also do some safety net related those help me to pass the verification running CM base ROM
+  if [ $docmdline == 1 ]; then
     sed -ri 's/ enforcing=[0-1]//g' boot.img-cmdline
+    sed -ri 's/ androidboot.flash.locked=[0-1]//g' boot.img-cmdline
+    sed -ri 's/ androidboot.bl_state=[0-2]//g' boot.img-cmdline
+    sed -ri 's/ androidboot.verifiedbootstate=green|androidboot.verifiedbootstate=yellow|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=red//g' boot.img-cmdline
+    sed -ri 's/ buildvariant=eng|buildvariant=user|buildvariant=userdebug//g' boot.img-cmdline
     sed -ri 's/ androidboot.selinux=permissive|androidboot.selinux=enforcing|androidboot.selinux=disabled//g' boot.img-cmdline
-    echo $(cat boot.img-cmdline) androidboot.selinux=permissive > boot.img-cmdline
+    echo $(cat boot.img-cmdline) buildvariant=user androidboot.selinux=permissive androidboot.verifiedbootstate=green androidboot.bl_state=0 androidboot.flash.locked=1 > boot.img-cmdline
   fi;
   cmdline=`cat *-cmdline`;
   board=`cat *-board`;
