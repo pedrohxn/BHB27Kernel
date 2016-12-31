@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -309,7 +309,7 @@ struct hfi_buffer_info {
 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x01B)
 #define HFI_PROPERTY_PARAM_VENC_LTRMODE		\
 	 (HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x01C)
-#define HFI_PROPERTY_PARAM_VENC_VIDEO_FULL_RANGE	\
+#define HFI_PROPERTY_PARAM_VENC_VIDEO_SIGNAL_INFO	\
 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x01D)
 #define HFI_PROPERTY_PARAM_VENC_H264_VUI_TIMING_INFO	\
 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x01E)
@@ -325,7 +325,8 @@ struct hfi_buffer_info {
 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x026)
 #define HFI_PROPERTY_PARAM_VENC_INITIAL_QP	\
 	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x028)
-
+#define HFI_PROPERTY_PARAM_VENC_CONSTRAINED_INTRA_PRED	\
+	(HFI_PROPERTY_PARAM_VENC_COMMON_START + 0x02B)
 #define HFI_PROPERTY_CONFIG_VENC_COMMON_START				\
 	(HFI_DOMAIN_BASE_VENC + HFI_ARCH_COMMON_OFFSET + 0x6000)
 #define HFI_PROPERTY_CONFIG_VENC_TARGET_BITRATE				\
@@ -577,6 +578,16 @@ struct hfi_frame_size {
 	u32 buffer_type;
 	u32 width;
 	u32 height;
+};
+
+struct hfi_video_signal_metadata {
+	u32 enable;
+	u32 video_format;
+	u32 video_full_range;
+	u32 color_description;
+	u32 color_primaries;
+	u32 transfer_characteristics;
+	u32 matrix_coeffs;
 };
 
 struct hfi_h264_vui_timing_info {
