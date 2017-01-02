@@ -353,7 +353,7 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 MODFLAGS	= -pipe -DNDEBUG -mtune=cortex-a15 -mcpu=cortex-a15 \
 		  --param l1-cache-size=16 --param l1-cache-line-size=16 \
-		  --param l2-cache-size=2048 -std=gnu89
+		  --param l2-cache-size=2048 -std=gnu89 -Wno-maybe-uninitialized
 CFLAGS_MODULE   = -DMODULE $(MODFLAGS)
 AFLAGS_MODULE   = -DMODULE $(MODFLAGS)
 LDFLAGS_MODULE  = --strip-debug
