@@ -53,7 +53,7 @@ cleanup(void)
 	close(fd_map);
 }
 
-static void __attribute__((noreturn))
+static void __attribute__((noreturn,used))
 fail_file(void)
 {
 	cleanup();
