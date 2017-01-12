@@ -41,7 +41,7 @@ ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "                                               ";
-ui_print "            Version - V3.4 - Nougat            ";
+ui_print "            Version - V3.5 - Nougat            ";
 ui_print "                 For CM-Base                   ";
 ui_print "                                               ";
 ui_print "Check XDA Thread, for recommendations help, etc";
