@@ -22,10 +22,10 @@ is_slot_device=0;
 
 ## AnyKernel methods (DO NOT CHANGE)
 # set up extracted files and directories
-ramdisk=/tmp/anykernel/ramdisk/custom;
+ramdisk=/tmp/anykernel/ramdisk/mcustom;
 bin=/tmp/anykernel/tools;
 split_img=/tmp/anykernel/split_img;
-patch=/tmp/anykernel/patch/custom;
+patch=/tmp/anykernel/patch/mcustom;
 
 chmod -R 755 $bin;
 mkdir -p $ramdisk $split_img;

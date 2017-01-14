@@ -43,7 +43,7 @@ cd $FOLDER;
 #export CROSS_COMPILE=$HOME/android/n/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
 export CROSS_COMPILE=$HOME/android/temp/arm-eabi-4.9/bin/arm-eabi-
 #kernel zip name
-ZIPNAME="BHB27-Kernel-V35-N.zip";
+ZIPNAME="BHB27-Kernel-V35.zip";
 
 #arch and out folder
 export ARCH=arm

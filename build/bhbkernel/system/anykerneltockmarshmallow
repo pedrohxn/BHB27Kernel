@@ -22,10 +22,10 @@ is_slot_device=0;
 
 ## AnyKernel methods (DO NOT CHANGE)
 # set up extracted files and directories
-ramdisk=/tmp/anykernel/ramdisk/custom;
+ramdisk=/tmp/anykernel/ramdisk/stock;
 bin=/tmp/anykernel/tools;
 split_img=/tmp/anykernel/split_img;
-patch=/tmp/anykernel/patch/custom;
+patch=/tmp/anykernel/patch/stock;
 
 chmod -R 755 $bin;
 mkdir -p $ramdisk $split_img;
@@ -272,12 +272,9 @@ dump_boot;
 
 # begin ramdisk changes
 
-#replace files for custom CM base
-replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
-replace_file init.qcom.power.rc 0750 init.qcom.power.rc
-replace_file init.qcom.rc 0750 init.qcom.rc
-replace_file fstab.qcom 0640 fstab.qcom
-
+#replace files for stock ROM
+replace_string init.target.rc  "min_cores=1" "min_cores=4" "min_cores=1"
+insert_line init.qcom.rc "init.qcom.power.rc" after "import init.target.rc" "import init.qcom.power.rc"
 # end ramdisk changes
 
 write_boot;

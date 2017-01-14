@@ -34,15 +34,45 @@ if [ $? != 0 -o -z "$(ls /tmp/anykernel/tools)" ]; then
   abort "Unzip failed. Aborting...";
 fi;
 
+# temp place holder to support multi ROM base on build prop
+mount -o ro /system;
+cp -rf /system/build.prop /tmp/anykernel/system/bp.sh;
+getbptemp="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
+sdk="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.version.sdk)";
+for i in 1 2 3 4 5; do
+	getbp="$(file_getprop /tmp/anykernel/anykernel.sh rom.check$i)";
+	if [ "$getbptemp" == "$getbp" ]; then
+	  cp -rf /tmp/anykernel/system/anykerneltockmarshmallow /tmp/anykernel/anykernel.sh;
+	  romv=$getbp;
+	  break;
+	fi;
+done;
+
+if [ "$sdk" != "25" ] && [ "$getbptemp" != "$romv" ]; then
+  cp -rf /tmp/anykernel/system/anykernelcustommarshmallow /tmp/anykernel/anykernel.sh;
+fi;
+
 chmod -R 755 /tmp/anykernel/tools /tmp/anykernel/bin;
 bb=/tmp/anykernel/tools/busybox;
+ui_print "                                               ";
+ui_print "-----------------------------------------------";
+ui_print "     $(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 
-ui_print "$(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
+if [ "$getbptemp" == "$romv" ]; then
+ui_print "                                               ";
+ui_print "-----------------------------------------------";
+ui_print "     Setting up as Stock ROM $(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
+else
+ui_print "                                               ";
+ui_print "-----------------------------------------------";
+ui_print "     Setting up as CM-Base Custom ROM SDK $sdk";
+fi;
+
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "                                               ";
-ui_print "            Version - V3.5 - Nougat            ";
-ui_print "                 For CM-Base                   ";
+ui_print "    Version - V3.5 - Marshmallow and Nougat    ";
+ui_print "          For CM-Base and Stock ROM            ";
 ui_print "                                               ";
 ui_print "Check XDA Thread, for recommendations help, etc";
 ui_print "                                               ";
@@ -96,15 +126,27 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   set_perm_recursive 0 0 0755 0644 /system/lib/modules;
   set_perm_recursive 0 0 0755 0644 /system/lib/modules/qca_cld;
 
-  if [ ! -e /system/lib/libshims_thermal.so ]; then
-    cp /tmp/anykernel/system/libshims_thermal /system/lib/libshims_thermal.so;
-    set_perm_recursive 0 0 0755 0644 /system/lib/libshims_thermal.so;
-  fi
+  cp -rf /tmp/anykernel/system/etc/wifi/* /system/etc/wifi/;
+  set_perm_recursive 0 0 0755 0644 /system/etc/wifi/;
 
-  if [ ! -e /system/lib/libshim_qcopt.so ]; then
-    cp /tmp/anykernel/system/libshim_qcopt /system/lib/libshim_qcopt.so;
-    set_perm_recursive 0 0 0755 0644 /system/lib/libshim_qcopt.so;
-  fi
+  cp -rf /tmp/anykernel/system/etc/firmware/wlan/qca_cld/* /system/etc/firmware/wlan/qca_cld/;
+  set_perm_recursive 0 0 0755 0644 /system/etc/firmware/wlan/qca_cld/;
+
+  if [ "$getbptemp" == "$romv" ]; then
+	cp -rf /tmp/anykernel/system/etc/init.qcom.post_boot.sh /system/etc/init.qcom.post_boot.sh;
+	set_perm_recursive 0 0 0755 0644 /system/etc/init.qcom.post_boot.sh;
+	rm -rf /system/lib/hw/power.apq8084.so
+  elif [ "$sdk" == "25" ]; then
+	  if [ ! -e /system/lib/libshims_thermal.so ]; then
+	    cp /tmp/anykernel/system/libshims_thermal /system/lib/libshims_thermal.so;
+	    set_perm_recursive 0 0 0755 0644 /system/lib/libshims_thermal.so;
+	  fi
+
+	  if [ ! -e /system/lib/libshim_qcopt.so ]; then
+	    cp /tmp/anykernel/system/libshim_qcopt /system/lib/libshim_qcopt.so;
+	    set_perm_recursive 0 0 0755 0644 /system/lib/libshim_qcopt.so;
+	  fi
+  fi;
 
   mount -o remount,ro /system;
 fi;
