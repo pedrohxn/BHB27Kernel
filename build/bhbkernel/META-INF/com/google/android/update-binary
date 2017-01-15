@@ -97,7 +97,7 @@ fi;
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "                                               ";
-ui_print "    Version - V3.5 - Marshmallow and Nougat    ";
+ui_print "    Version - V3.6 - Marshmallow and Nougat    ";
 ui_print "          For CM-Base and Stock ROM            ";
 ui_print "                                               ";
 ui_print "Check XDA Thread, for recommendations help, etc";
