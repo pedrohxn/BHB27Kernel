@@ -5,7 +5,6 @@
 OUTFD=/proc/self/fd/$2;
 ZIP="$3";
 DIR=`dirname "$ZIP"`;
-
 ui_print() {
   until [ ! "$1" ]; do
     echo -e "ui_print $1\nui_print" > $OUTFD;
@@ -34,31 +33,43 @@ if [ $? != 0 -o -z "$(ls /tmp/anykernel/tools)" ]; then
   abort "Unzip failed. Aborting...";
 fi;
 
-# temp place holder to support multi ROM base on build prop
-mount -o ro /system;
-cp -rf /system/build.prop /tmp/anykernel/system/bp.sh;
-getbptemp="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
-sdk="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.version.sdk)";
-for i in 1 2 3 4 5; do
-	getbp="$(file_getprop /tmp/anykernel/anykernel.sh rom.check$i)";
-	if [ "$getbptemp" == "$getbp" ]; then
-	  cp -rf /tmp/anykernel/system/anykerneltockmarshmallow /tmp/anykernel/anykernel.sh;
-	  romv=$getbp;
-	  break;
-	fi;
-done;
 
-if [ "$sdk" != "25" ] && [ "$getbptemp" != "$romv" ]; then
-  cp -rf /tmp/anykernel/system/anykernelcustommarshmallow /tmp/anykernel/anykernel.sh;
-fi;
-
+contains() {
+    string="$1"
+    substring="$2"
+    if test "${string#*$substring}" != "$string"
+    then
+        return 0    # $substring is in $string
+    else
+        return 1    # $substring is not in $string
+    fi
+}
 chmod -R 755 /tmp/anykernel/tools /tmp/anykernel/bin;
 bb=/tmp/anykernel/tools/busybox;
+
+# Support for multi ROM base on build prop
+mount -o ro /system;
+cp -rf /system/build.prop /tmp/anykernel/system/bp.sh;
+
+fingerprint="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.fingerprint)";
+sdk="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.version.sdk)";
+
+motorola=0;
+marhsmallow=0;
+stock=0
+contains $fingerprint "motorola" && contains $fingerprint "6.0.1" && stock=1;
+
+if [ "$stock" == "1" ]; then
+	sed -i '/romtype=0/c\romtype=2\;' /tmp/anykernel/anykernel.sh;
+elif [ "$sdk" == "23" ]; then
+	sed -i '/romtype=0/c\romtype=1\;' /tmp/anykernel/anykernel.sh;
+fi;
+
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "     $(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 
-if [ "$getbptemp" == "$romv" ]; then
+if [ "$stock" == "1" ]; then
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "     Setting up as Stock ROM $(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
@@ -132,7 +143,7 @@ if [ "$(file_getprop /tmp/anykernel/anykernel.sh do.modules)" == 1 ]; then
   cp -rf /tmp/anykernel/system/etc/firmware/wlan/qca_cld/* /system/etc/firmware/wlan/qca_cld/;
   set_perm_recursive 0 0 0755 0644 /system/etc/firmware/wlan/qca_cld/;
 
-  if [ "$getbptemp" == "$romv" ]; then
+  if [ "$stock" == "1" ]; then
 	cp -rf /tmp/anykernel/system/etc/init.qcom.post_boot.sh /system/etc/init.qcom.post_boot.sh;
 	set_perm_recursive 0 0 0755 0644 /system/etc/init.qcom.post_boot.sh;
 	rm -rf /system/lib/hw/power.apq8084.so

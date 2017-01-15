@@ -7,25 +7,30 @@ kernel.string=BHB27-Kernel by BHB27 @ xda-developers
 do.devicecheck=0
 do.initd=0
 do.modules=1
-do.cleanup=0
+do.cleanup=1
 do.buildprop=1
 device.name1=quark
-rom.check1=MPG24.107-70.2
-rom.check2=MPGS24.107-70.2-2
-rom.check3=MCG24.251-5
 
 # shell variables
 docmdline=1;
 is_slot_device=0;
-
+romtype=0;
 ## end setup
 
 ## AnyKernel methods (DO NOT CHANGE)
 # set up extracted files and directories
-ramdisk=/tmp/anykernel/ramdisk/custom;
+if [ "$romtype" == 0 ]; then
+	ramdisk=/tmp/anykernel/ramdisk/custom;
+	patch=/tmp/anykernel/patch/custom;
+elif [ "$romtype" == 1 ]; then
+	ramdisk=/tmp/anykernel/ramdisk/mcustom;
+	patch=/tmp/anykernel/patch/mcustom;
+elif [ "$romtype" == 2 ]; then
+	ramdisk=/tmp/anykernel/ramdisk/stock;
+	patch=/tmp/anykernel/patch/stock;
+fi
 bin=/tmp/anykernel/tools;
 split_img=/tmp/anykernel/split_img;
-patch=/tmp/anykernel/patch/custom;
 
 chmod -R 755 $bin;
 mkdir -p $ramdisk $split_img;
@@ -272,12 +277,20 @@ dump_boot;
 
 # begin ramdisk changes
 
-#replace files for custom CM base
-replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
-replace_file init.qcom.power.rc 0750 init.qcom.power.rc
-replace_file init.qcom.rc 0750 init.qcom.rc
-replace_file fstab.qcom 0640 fstab.qcom
-
+if [ "$romtype" == 0 ]; then
+	replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
+	replace_file init.qcom.power.rc 0750 init.qcom.power.rc
+	replace_file init.qcom.rc 0750 init.qcom.rc
+	replace_file fstab.qcom 0640 fstab.qcom
+elif [ "$romtype" == 1 ]; then
+	replace_string init.recovery.qcom.rc "interactive" "ondemand" "interactive"
+	replace_file init.qcom.power.rc 0750 init.qcom.power.rc
+	replace_file init.qcom.rc 0750 init.qcom.rc
+	replace_file fstab.qcom 0640 fstab.qcom
+elif [ "$romtype" == 2 ]; then
+	replace_string init.target.rc  "min_cores=1" "min_cores=4" "min_cores=1"
+	insert_line init.qcom.rc "init.qcom.power.rc" after "import init.target.rc" "import init.qcom.power.rc"
+fi
 # end ramdisk changes
 
 write_boot;
