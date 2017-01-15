@@ -65,7 +65,14 @@ cp -rf /system/build.prop /tmp/anykernel/system/bp.sh;
 fingerprint="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.fingerprint)";
 sdk="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.version.sdk)";
 
-if [ "$sdk" -lt 23 ]; then
+quark=0;
+device="$(getprop ro.product.device)";
+sku="$(getprop ro.boot.hardware.sku)";
+contains $device "quark" && quark=1;
+
+if [ "$quark" == "0" ]; then
+    abort "Unsupported device, this kernel is only for device Quark, yours device is: $device $sku. Aborting...";
+elif [ "$sdk" -lt 23 ]; then
     abort "Min SDK Supported 23, current SDK = $sdk. Aborting...";
 fi
 
@@ -80,21 +87,22 @@ elif [ "$sdk" == "23" ]; then
 	sed -i '/romtype=0/c\romtype=1\;' /tmp/anykernel/anykernel.sh;
 fi;
 
-ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "     $(file_getprop /tmp/anykernel/anykernel.sh kernel.string)";
 
 if [ "$stock" == "1" ]; then
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
-ui_print "     Setting up as Stock ROM $(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
+ui_print "     Setting up as Stock ROM                   ";
+ui_print "     Device: $device $sku ROM: Motorola $(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
+
 else
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
-ui_print "     Setting up as CM-Base Custom ROM SDK $sdk";
+ui_print "     Setting up as CM-Base Custom ROM          ";
+ui_print "     Device: $device $sku SDK: $sdk            ";
 fi;
 
-ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "                                               ";
 ui_print "    Version - V3.6 - Marshmallow and Nougat    ";
