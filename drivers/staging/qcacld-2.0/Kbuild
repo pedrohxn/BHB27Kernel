@@ -884,8 +884,9 @@ CDEFINES :=	-DANI_LITTLE_BYTE_ENDIAN \
 		-DANI_LOGDUMP \
 		-DWLAN_PERF \
 		-DPTT_SOCK_SVC_ENABLE \
-		-Wall\
-		-Werror\
+		-Wno-unused-const-variable \
+		-Wno-discarded-array-qualifiers \
+		-std=gnu90 \
 		-D__linux__ \
 		-DHAL_SELF_STA_PER_BSS=1 \
 		-DWLAN_FEATURE_VOWIFI_11R \
@@ -1129,7 +1130,7 @@ CDEFINES += -DCONFIG_HL_SUPPORT
 endif
 
 #Enable FW logs through ini
-#CDEFINES += -DCONFIG_FW_LOGS_BASED_ON_INI
+CDEFINES += -DCONFIG_FW_LOGS_BASED_ON_INI
 
 #Enable pci read/write config functions
 ifeq ($(CONFIG_ATH_PCI), 1)
