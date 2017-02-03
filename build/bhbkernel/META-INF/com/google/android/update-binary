@@ -94,7 +94,8 @@ if [ "$stock" == "1" ]; then
 ui_print "                                               ";
 ui_print "-----------------------------------------------";
 ui_print "     Setting up as Stock ROM                   ";
-ui_print "     Device: $device $sku ROM: Motorola $(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
+ui_print "     Device: $device $sku                      ";
+ui_print "     ROM: Motorola $(file_getprop /tmp/anykernel/system/bp.sh ro.build.id)";
 
 else
 ui_print "                                               ";
