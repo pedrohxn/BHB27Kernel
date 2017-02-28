@@ -348,7 +348,7 @@ elif [ "$romtype" == 1 ]; then
 	replace_file init.qcom.rc 0750 init.qcom.rc
 	replace_file fstab.qcom 0640 fstab.qcom
 elif [ "$romtype" == 2 ]; then
-	replace_string init.target.rc  "min_cores=1" "min_cores=4" "min_cores=1"
+	replace_string init.target.rc  "min_cores=4" "min_cores=1" "min_cores=4"
 	insert_line init.qcom.rc "init.qcom.power.rc" after "import init.target.rc" "import init.qcom.power.rc"
 fi
 # end ramdisk changes
