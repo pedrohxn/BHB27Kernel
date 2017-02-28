@@ -93,6 +93,7 @@ if [ ! -e ./build/bhbkernel/modules/qca_cld/qca_cld_wlan.ko ]; then
 	grep -B 3 -C 6 -r warn build/build_log.txt
 	exit 1;
 else
+	cp -rf ./drivers/staging/qcacld-2.0/firmware_bin/WCNSS_qcom_cfg.ini ./build/bhbkernel/system/etc/wifi/WCNSS_qcom_cfg.ini
 	cp -rf ./build/temp/arch/arm/boot/zImage ./build/bhbkernel/zImage
 	cp -rf ./build/temp/arch/arm/boot/dt.img.lz4 ./build/bhbkernel/dtb
 	rm -rf ./build/bhbkernel/*.zip
@@ -103,6 +104,7 @@ else
 	rm -rf ./ZipScriptSign/BHB27-Kernel.zip
 	mv ./ZipScriptSign/BHB27-Kernel-signed.zip ./$ZIPNAME
 	cd -
+        rm -rf ./build/bhbkernel/system/etc/wifi/WCNSS_qcom_cfg.ini
 	echo -e "\nKernel Build OK zip file at... $FOLDER build/bhbkernel/$ZIPNAME \n";
 fi;
 
