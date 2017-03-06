@@ -64,6 +64,7 @@ cp -rf /system/build.prop /tmp/anykernel/system/bp.sh;
 
 fingerprint="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.fingerprint)";
 sdk="$(file_getprop /tmp/anykernel/system/bp.sh ro.build.version.sdk)";
+sed -i '/sdk=24/c\sdk=$sdk\;' /tmp/anykernel/anykernel.sh;
 
 quark=0;
 device="$(getprop ro.product.device)";
