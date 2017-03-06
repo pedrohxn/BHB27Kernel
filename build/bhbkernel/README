@@ -58,6 +58,35 @@ You may also use ui_print "<text>" to write messages back to the recovery during
 
 Note: the "begin search string" and "end search string" arguments of replace_section and remove_section require any forward slashes (/) to be escaped.
 
+## seinject
+
+	Injecting a rule:
+	seinject " -s shell -t system -c file -p read -P "
+
+	Injecting multiple permissions:
+	seinject " -s shell -t system -c file -p read,write,open -P "
+
+	Add a type_attribute to a domain:
+	seinject " -s su -a mlstrustedsubject -P sepolicy "
+
+	Injecting a permissive domain:
+	seinject " -Z shell -P "
+
+	Change a permissive domain to non-permissive:
+	seinject " -z shell -P "
+
+	Test a SELinux type exists:
+	seinject " -e -s shell -P "
+
+	Test a SELinux class exists:
+	seinject " -e -c service_manager -P "
+
+	Add a transition:
+	seinject " -s su_daemon -f device -c file -t su_device -P "
+
+	Add a filename transition:
+	seinject " -s su_daemon -f device -c file -g "socket" -t su_device -P "
+
 // Instructions
 
 1- Place zImage in the root (dtb should also go here for devices that require a custom one, both will fallback to the original if not included)

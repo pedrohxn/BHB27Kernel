@@ -15,6 +15,7 @@ device.name1=quark
 docmdline=1;
 is_slot_device=0;
 romtype=0;
+sdk=24;
 ## end setup
 
 ## AnyKernel methods (DO NOT CHANGE)
@@ -323,6 +324,15 @@ patch_fstab() {
     esac;
     newentry=$(echo "$entry" | sed "s;${part};${6};");
     sed -i "s;${entry};${newentry};" $1;
+  fi;
+}
+
+# check readme example tools arm only
+seinject() {
+  if [ "$sdk" -lt 24 ]; then
+    $bin/sepolicy-inject $1 $ramdisk/sepolicy;
+  else
+    $bin/sepolicy-inject-N $1 $ramdisk/sepolicy;
   fi;
 }
 
