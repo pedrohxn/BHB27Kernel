@@ -4051,9 +4051,9 @@ SYSCALL_DEFINE2(rename, const char __user *, oldname, const char __user *, newna
 	return sys_renameat(AT_FDCWD, oldname, AT_FDCWD, newname);
 }
 
-int vfs_whiteout(struct inode *dir, struct dentry *dentry)
+int vfs_whiteout(struct vfsmount *mnt, struct inode *dir, struct dentry *dentry)
 {
-	int error = may_create(dir, dentry);
+	int error = may_create(mnt,dir, dentry);
 	if (error)
 		return error;
 
