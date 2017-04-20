@@ -31,10 +31,6 @@ static bool enable_bluedroid_timer_ws = true;
 module_param(enable_bluedroid_timer_ws, bool, 0644);
 static bool enable_bluesleep_ws = true;
 module_param(enable_bluesleep_ws, bool, 0644);
-static bool enable_timerfd_ws = true;
-module_param(enable_timerfd_ws, bool, 0644);
-static bool enable_netlink_ws = true;
-module_param(enable_netlink_ws, bool, 0644);
 
 #include "power.h"
 
@@ -435,43 +431,6 @@ static void wakeup_source_deactivate(struct wakeup_source *ws)
                 wake_up(&wakeup_count_wait_queue);
 }
 
-static bool wakeup_source_blocker(struct wakeup_source *ws)
-{
-	unsigned int wslen = 0;
-
-	if (ws) {
-		wslen = strlen(ws->name);
-
-		if ((!enable_si_ws && !strncmp(ws->name, "sensor_ind", wslen)) ||
-			(!enable_msm_hsic_ws &&
-				!strncmp(ws->name, "msm_hsic_host", wslen)) ||
-			(!enable_wlan_rx_wake_ws &&
-				!strncmp(ws->name, "wlan_rx_wake", wslen)) ||
-			(!enable_wlan_ctrl_wake_ws &&
-				!strncmp(ws->name, "wlan_ctrl_wake", wslen)) ||
-			(!enable_wlan_wake_ws &&
-				!strncmp(ws->name, "wlan_wake", wslen)) ||
-			(!enable_bluedroid_timer_ws &&
-				!strncmp(ws->name, "bluedroid_timer", wslen)) ||
-			(!enable_timerfd_ws &&
-				!strncmp(ws->name, "[timerfd]", wslen)) ||
-			(!enable_netlink_ws &&
-				!strncmp(ws->name, "NETLINK", wslen)) ||
-			(!enable_bluesleep_ws &&
-				!strcmp(ws->name, "bluesleep"))) {
-			if (ws->active) {
-				wakeup_source_deactivate(ws);
-				pr_info("forcefully deactivate wakeup source: %s\n",
-					ws->name);
-			}
-
-			return true;
-		}
-	}
-
-	return false;
-}
-
 /*
  * The functions below use the observation that each wakeup event starts a
  * period in which the system should not be suspended.  The moment this period
@@ -512,6 +471,27 @@ static void wakeup_source_activate(struct wakeup_source *ws)
 {
 	unsigned int cec;
 
+	if (((!enable_si_ws && !strcmp(ws->name, "sensor_ind")) ||
+		(!enable_wlan_rx_wake_ws &&
+			!strcmp(ws->name, "wlan_rx_wake")) ||
+		(!enable_wlan_ctrl_wake_ws &&
+			!strcmp(ws->name, "wlan_ctrl_wake")) ||
+		(!enable_wlan_wake_ws &&
+			!strcmp(ws->name, "wlan_wake")) ||
+		(!enable_bluedroid_timer_ws &&
+			!strcmp(ws->name, "bluedroid_timer")) ||
+		(!enable_bluesleep_ws &&
+			!strcmp(ws->name, "bluesleep")))) {
+		/*
+		 * let's try and deactivate this wakeup source since the user
+		 * clearly doesn't want it. The user is responsible for any
+		 * adverse effects and has been warned about it
+		 */
+		if (ws->active)
+			wakeup_source_deactivate(ws);
+		return;
+	}
+
 	/*
 	 * active wakeup source should bring the system
 	 * out of PM_SUSPEND_FREEZE state
@@ -536,15 +516,13 @@ static void wakeup_source_activate(struct wakeup_source *ws)
  */
 static void wakeup_source_report_event(struct wakeup_source *ws)
 {
-	if (!wakeup_source_blocker(ws)) {
-		ws->event_count++;
-		/* This is racy, but the counter is approximate anyway. */
-		if (events_check_enabled)
-			ws->wakeup_count++;
+	ws->event_count++;
+	/* This is racy, but the counter is approximate anyway. */
+	if (events_check_enabled)
+		ws->wakeup_count++;
 
-		if (!ws->active)
-			wakeup_source_activate(ws);
-	}
+	if (!ws->active)
+		wakeup_source_activate(ws);
 }
 
 /**
