@@ -98,3 +98,19 @@ on property:sys.boot_completed=1
 
     # Set io ahead for better performance
     setprop sys.io.scheduler bfq
+
+     # enable adreno_idler
+     write /sys/module/adreno_idler/parameters/adreno_idler_active Y
+ 
+    # Ena state notifier
+    write /sys/module/state_notifier/parameters/enabled 1
+
+    # GPU max clock 500hz
+    write /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk 500000000
+
+service postinitrr_sh /system/bin/sh /sbin/post_init_rr.sh
+    class main
+    user root
+    seclabel u:r:sudaemon:s0
+    disabled
+    oneshot
