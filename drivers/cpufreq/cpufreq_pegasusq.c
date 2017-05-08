@@ -66,8 +66,6 @@
 #define FREQ_FOR_FAST_DOWN			(1036800)
 #define UP_THRESHOLD_AT_FAST_DOWN		(80)
 
-static unsigned int min_sampling_rate;
-
 static void do_dbs_timer(struct work_struct *work);
 static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				unsigned int event);
@@ -115,6 +113,7 @@ static struct workqueue_struct *dbs_wq;
 
 static struct dbs_tuners {
 	unsigned int sampling_rate;
+	unsigned int min_sampling_rate;
 	unsigned int up_threshold;
 	unsigned int down_differential;
 	unsigned int ignore_nice;
@@ -148,14 +147,6 @@ static inline u64 get_cpu_iowait_time(unsigned int cpu, u64 *wall)
 
 /************************** sysfs interface ************************/
 
-static ssize_t show_sampling_rate_min(struct kobject *kobj,
-				      struct attribute *attr, char *buf)
-{
-	return sprintf(buf, "%u\n", min_sampling_rate);
-}
-
-define_one_global_ro(sampling_rate_min);
-
 /* cpufreq_pegasusq Governor Tunables */
 #define show_one(file_name, object)					\
 static ssize_t show_##file_name						\
@@ -164,6 +155,7 @@ static ssize_t show_##file_name						\
 	return sprintf(buf, "%u\n", dbs_tuners_ins.object);		\
 }
 show_one(sampling_rate, sampling_rate);
+show_one(min_sampling_rate, min_sampling_rate);
 show_one(io_is_busy, io_is_busy);
 show_one(up_threshold, up_threshold);
 show_one(sampling_down_factor, sampling_down_factor);
@@ -172,6 +164,25 @@ show_one(down_differential, down_differential);
 show_one(freq_step, freq_step);
 show_one(up_threshold_at_min_freq, up_threshold_at_min_freq);
 show_one(freq_for_responsiveness, freq_for_responsiveness);
+
+static ssize_t store_min_sampling_rate(struct kobject *a, struct attribute *b,
+				   const char *buf, size_t count)
+{
+	unsigned int input;
+	int ret = 0;
+	int mpd = strcmp(current->comm, "mpdecision");
+
+	if (mpd == 0)
+		return ret;
+
+	ret = sscanf(buf, "%u", &input);
+	if (ret != 1)
+		return -EINVAL;
+
+	dbs_tuners_ins.min_sampling_rate = min(input, dbs_tuners_ins.sampling_rate);
+
+	return count;
+}
 
 static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 				   const char *buf, size_t count)
@@ -187,7 +198,7 @@ static ssize_t store_sampling_rate(struct kobject *a, struct attribute *b,
 	if (ret != 1)
 		return -EINVAL;
 
-	dbs_tuners_ins.sampling_rate = max(input, min_sampling_rate);
+	dbs_tuners_ins.sampling_rate = max(input, dbs_tuners_ins.min_sampling_rate);
 
 	return count;
 }
@@ -336,6 +347,7 @@ static ssize_t store_freq_for_responsiveness(struct kobject *a, struct attribute
 }
 
 define_one_global_rw(sampling_rate);
+define_one_global_rw(min_sampling_rate);
 define_one_global_rw(io_is_busy);
 define_one_global_rw(up_threshold);
 define_one_global_rw(sampling_down_factor);
@@ -346,7 +358,7 @@ define_one_global_rw(up_threshold_at_min_freq);
 define_one_global_rw(freq_for_responsiveness);
 
 static struct attribute *dbs_attributes[] = {
-	&sampling_rate_min.attr,
+	&min_sampling_rate.attr,
 	&sampling_rate.attr,
 	&up_threshold.attr,
 	&sampling_down_factor.attr,
@@ -620,7 +632,7 @@ static int cpufreq_governor_dbs(struct cpufreq_policy *policy,
 				return rc;
 			}
 
-			min_sampling_rate = MIN_SAMPLING_RATE;
+			dbs_tuners_ins.min_sampling_rate = MIN_SAMPLING_RATE;
 			dbs_tuners_ins.sampling_rate = DEF_SAMPLING_RATE;
 			dbs_tuners_ins.io_is_busy = 0;
 		}
