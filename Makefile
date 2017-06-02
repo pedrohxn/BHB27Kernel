@@ -352,6 +352,7 @@ CC		= $(srctree)/scripts/gcc-wrapper.py $(REAL_CC)
 CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 MODFLAGS	= -pipe -DNDEBUG -mtune=cortex-a15 -mcpu=cortex-a15 \
+                  -mfpu=neon-vfpv4 -mvectorize-with-neon-quad \
 		  --param l1-cache-size=16 --param l1-cache-line-size=16 \
 		  --param l2-cache-size=2048 -std=gnu89
 CFLAGS_MODULE   = -DMODULE $(MODFLAGS)
