@@ -69,6 +69,8 @@ on moto-charger
     setprop ro.board.platform apq8084
     start qcom-post-boot
     start thermal-com
+    write /sys/android_touch/doubletap2wake 1
+    write /sys/android_touch/sweep2wake 15
     start charge_only_mode
 
 on fs
