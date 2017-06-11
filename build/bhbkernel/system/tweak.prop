@@ -2,4 +2,4 @@
 ro.com.android.mobiledata=false
 
 # Storage
-ro.sys.sdcardfs=true
+ro.sys.sdcardfs=false
