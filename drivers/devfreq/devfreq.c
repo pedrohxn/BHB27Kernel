@@ -25,7 +25,7 @@
 #include <linux/list.h>
 #include <linux/printk.h>
 #include <linux/hrtimer.h>
-#include <linux/state_notifier.h>
+#include <linux/fb.h>
 #include "governor.h"
 
 static struct class *devfreq_class;
@@ -42,8 +42,6 @@ static LIST_HEAD(devfreq_governor_list);
 /* The list of all device-devfreq */
 static LIST_HEAD(devfreq_list);
 static DEFINE_MUTEX(devfreq_list_lock);
-
-static struct notifier_block notif;
 
 /* List of devices to boost when the screen is woken */
 static const char *boost_devices[] = {
@@ -1094,29 +1092,36 @@ static void wake_unboost_fn(struct work_struct *work)
 	set_wake_boost(false);
 }
 
-static int state_notifier_callback(struct notifier_block *this,
-				unsigned long event, void *data)
+static int fb_notifier_callback(struct notifier_block *nb,
+		unsigned long action, void *data)
 {
-	switch (event) {
-		case STATE_NOTIFIER_ACTIVE:
-			schedule_work(&wake_boost_work);
-			break;
-		case STATE_NOTIFIER_SUSPEND:
-			cancel_work_sync(&wake_boost_work);
-			if (cancel_delayed_work_sync(&wake_unboost_work))
-				set_wake_boost(false);
-			break;
-		default:
-			break;
+	struct fb_event *evdata = data;
+	int *blank = evdata->data;
+
+	/* Parse framebuffer events as soon as they occur */
+	if (action != FB_EARLY_EVENT_BLANK)
+		return NOTIFY_OK;
+
+	switch (*blank) {
+	case FB_BLANK_UNBLANK:
+		schedule_work(&wake_boost_work);
+		break;
+	default:
+		cancel_work_sync(&wake_boost_work);
+		if (cancel_delayed_work_sync(&wake_unboost_work))
+			set_wake_boost(false);
 	}
 
 	return NOTIFY_OK;
 }
 
+static struct notifier_block fb_notifier_callback_nb = {
+	.notifier_call = fb_notifier_callback,
+	.priority = INT_MAX,
+};
+
 static int __init devfreq_init(void)
 {
-	int ret = 0;
-
 	devfreq_class = class_create(THIS_MODULE, "devfreq");
 	if (IS_ERR(devfreq_class)) {
 		pr_err("%s: couldn't create class\n", __FILE__);
@@ -1133,11 +1138,9 @@ static int __init devfreq_init(void)
 
 	INIT_WORK(&wake_boost_work, wake_boost_fn);
 	INIT_DELAYED_WORK(&wake_unboost_work, wake_unboost_fn);
-	notif.notifier_call = state_notifier_callback;
-	notif.priority = INT_MAX;
-	ret = state_register_client(&notif);
+	fb_register_client(&fb_notifier_callback_nb);
 
-	return ret;
+	return 0;
 }
 subsys_initcall(devfreq_init);
 
