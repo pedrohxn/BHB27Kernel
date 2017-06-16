@@ -101,16 +101,15 @@ on property:sys.boot_completed=1
     write /sys/module/msm_thermal/core_control/enabled 1
     write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
 
-    # Configure the CPU governor
 
+    # Configure the CPU governor
     write /sys/devices/system/cpu/cpufreq/interactive/above_hispeed_delay "20000 1400000:40000 1700000:20000"
     write /sys/devices/system/cpu/cpufreq/interactive/go_hispeed_load 90
     write /sys/devices/system/cpu/cpufreq/interactive/hispeed_freq 1497600
-    write /sys/devices/system/cpu/cpufreq/interactive/io_is_busy 1
     write /sys/devices/system/cpu/cpufreq/interactive/target_loads "85 1500000:90 1800000:70"
     write /sys/devices/system/cpu/cpufreq/interactive/min_sample_time 40000
     write /sys/devices/system/cpu/cpufreq/interactive/timer_rate 30000
-    write /sys/devices/system/cpu/cpufreq/interactive/max_freq_hysteresis 100000
+    write /sys/devices/system/cpu/cpufreq/interactive/sampling_down_factor 100000
     write /dev/cpuctl/cpu.notify_on_migrate 0
 
     # Configure the cpu-boost module
@@ -127,14 +126,8 @@ on property:sys.boot_completed=1
     # enable adreno_idler
     write /sys/module/adreno_idler/parameters/adreno_idler_active Y
 
-    # Ena state notifier
-    write /sys/module/state_notifier/parameters/enabled 1
-
     # Set io ahead for better performance
     setprop sys.io.scheduler bfq
-
-    # Tune LMK
-    write /sys/module/lowmemorykiller/parameters/minfree 44032,48640,53248,57856,62464,71680
 
     # GPU max clock 500hz
     write /sys/devices/fdb00000.qcom,kgsl-3d0/kgsl/kgsl-3d0/max_gpuclk 500000000
