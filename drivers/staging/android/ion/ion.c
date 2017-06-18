@@ -698,7 +698,7 @@ static void user_ion_free_nolock(struct ion_client *client, struct ion_handle *h
 		WARN(1, "%s: invalid handle passed to free.\n", __func__);
 		return;
 	}
-	if (!handle->user_ref_count > 0) {
+	if (handle->user_ref_count == 0) {
 		WARN(1, "%s: User does not have access!\n", __func__);
 		return;
 	}
@@ -840,68 +840,6 @@ void ion_unmap_kernel(struct ion_client *client, struct ion_handle *handle)
 	mutex_unlock(&client->lock);
 }
 EXPORT_SYMBOL(ion_unmap_kernel);
-
-static int ion_debug_client_show(struct seq_file *s, void *unused)
-{
-	struct ion_client *client = s->private;
-	struct rb_node *n, *cnode;
-	bool found = false;
-
-	down_write(&ion_dev->lock);
-
-	if (!client || (client->dev != ion_dev)) {
-		up_write(&ion_dev->lock);
-		return -EINVAL;
-	}
-
-	cnode = rb_first(&ion_dev->clients);
-	for ( ; cnode; cnode = rb_next(cnode)) {
-		struct ion_client *c = rb_entry(cnode,
-				struct ion_client, node);
-		if (client == c) {
-			found = true;
-			break;
-		}
-	}
-
-	if (!found) {
-		up_write(&ion_dev->lock);
-		return -EINVAL;
-	}
-
-	seq_printf(s, "%16.16s: %16.16s : %16.16s : %12.12s\n",
-			"heap_name", "size_in_bytes", "handle refcount",
-			"buffer");
-
-	mutex_lock(&client->lock);
-	for (n = rb_first(&client->handles); n; n = rb_next(n)) {
-		struct ion_handle *handle = rb_entry(n, struct ion_handle,
-						     node);
-
-		seq_printf(s, "%16.16s: %16zx : %16d : %12pK",
-				handle->buffer->heap->name,
-				handle->buffer->size,
-				atomic_read(&handle->ref.refcount),
-				handle->buffer);
-
-		seq_printf(s, "\n");
-	}
-	mutex_unlock(&client->lock);
-	up_write(&ion_dev->lock);
-	return 0;
-}
-
-static int ion_debug_client_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, ion_debug_client_show, inode->i_private);
-}
-
-static const struct file_operations debug_client_fops = {
-	.open = ion_debug_client_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
-};
 
 static int ion_get_client_serial(const struct rb_root *root,
 					const unsigned char *name)
