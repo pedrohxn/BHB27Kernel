@@ -42,7 +42,8 @@ cd $FOLDER;
 # CROSS_COMPILE toolchain folder
 #export CROSS_COMPILE=$HOME/android/n/prebuilts/gcc/linux-x86/arm/arm-eabi-4.8/bin/arm-eabi-
 #export CROSS_COMPILE=$HOME/android/temp/arm-eabi-4.9/bin/arm-eabi-
-export CROSS_COMPILE=$HOME/android/temp/arm-eabi-4.9-ubertc/bin/arm-eabi-
+#export CROSS_COMPILE=$HOME/android/temp/arm-eabi-4.9-ubertc/bin/arm-eabi-
+export CROSS_COMPILE=$HOME/android/temp/arm-linaro-linux-gnueabi-7.x/bin/arm-linaro-linux-gnueabi-
 #kernel zip name
 ZIPNAME="BHB27-Kernel-V51.zip";
 
