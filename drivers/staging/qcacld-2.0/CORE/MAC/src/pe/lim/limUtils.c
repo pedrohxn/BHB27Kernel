@@ -70,17 +70,6 @@
  * this information. */
 static tAniBool glimTriggerBackgroundScanDuringQuietBss_Status = eSIR_TRUE;
 
-/* 11A Channel list to decode RX BD channel information */
-
-#define abChannelSize (sizeof(abChannel)/  \
-        sizeof(abChannel[0]))
-
-#ifdef WLAN_FEATURE_ROAM_SCAN_OFFLOAD
-
-#define aUnsortedChannelListSize (sizeof(aUnsortedChannelList)/  \
-        sizeof(aUnsortedChannelList[0]))
-#endif
-
 #define SUCCESS 1
 
 #define MAX_BA_WINDOW_SIZE_FOR_CISCO 25
