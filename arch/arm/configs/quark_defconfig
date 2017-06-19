@@ -2452,10 +2452,7 @@ CONFIG_VIDEOBUF2_VMALLOC=y
 CONFIG_VIDEOBUF2_DMA_SG=y
 CONFIG_VIDEOBUF2_MSM_MEM=y
 # CONFIG_VIDEO_V4L2_INT_DEVICE is not set
-CONFIG_DVB_CORE=y
-CONFIG_DVB_NET=y
 # CONFIG_TTPCI_EEPROM is not set
-CONFIG_DVB_MAX_ADAPTERS=8
 # CONFIG_DVB_DYNAMIC_MINORS is not set
 
 #
@@ -2608,7 +2605,7 @@ CONFIG_MSM_VPU=y
 # Supported MMC/SDIO adapters
 #
 # CONFIG_SMS_SDIO_DRV is not set
-CONFIG_RADIO_ADAPTERS=y
+# CONFIG_RADIO_ADAPTERS is not set
 # CONFIG_RADIO_SI470X is not set
 # CONFIG_USB_MR800 is not set
 # CONFIG_USB_DSBR is not set
@@ -2674,59 +2671,6 @@ CONFIG_MEDIA_ATTACH=y
 #
 
 #
-# Sensors used on soc_camera driver
-#
-CONFIG_MEDIA_TUNER=y
-CONFIG_MEDIA_TUNER_SIMPLE=y
-CONFIG_MEDIA_TUNER_TDA8290=y
-CONFIG_MEDIA_TUNER_TDA827X=y
-CONFIG_MEDIA_TUNER_TDA18271=y
-CONFIG_MEDIA_TUNER_TDA9887=y
-CONFIG_MEDIA_TUNER_TEA5761=y
-CONFIG_MEDIA_TUNER_TEA5767=y
-CONFIG_MEDIA_TUNER_MT20XX=y
-CONFIG_MEDIA_TUNER_XC2028=y
-CONFIG_MEDIA_TUNER_XC5000=y
-CONFIG_MEDIA_TUNER_XC4000=y
-CONFIG_MEDIA_TUNER_MC44S803=y
-
-#
-# Multistandard (satellite) frontends
-#
-
-#
-# Multistandard (cable + terrestrial) frontends
-#
-
-#
-# DVB-S (satellite) frontends
-#
-
-#
-# DVB-T (terrestrial) frontends
-#
-
-#
-# DVB-C (cable) frontends
-#
-
-#
-# ATSC (North American/Korean Terrestrial/Cable DTV) frontends
-#
-
-#
-# ISDB-T (terrestrial) frontends
-#
-
-#
-# Digital terrestrial only tuners/PLL
-#
-
-#
-# SEC control devices for DVB-S
-#
-
-#
 # Tools to develop new frontends
 #
 # CONFIG_DVB_DUMMY_FE is not set
@@ -2734,8 +2678,7 @@ CONFIG_MEDIA_TUNER_MC44S803=y
 #
 # Graphics support
 #
-CONFIG_VGA_ARB=y
-CONFIG_VGA_ARB_MAX_GPUS=16
+# CONFIG_VGA_ARB is not set
 # CONFIG_DRM is not set
 CONFIG_MSM_KGSL=y
 # CONFIG_MSM_KGSL_CFF_DUMP is not set
@@ -2900,7 +2843,7 @@ CONFIG_SND_DRIVERS=y
 # CONFIG_SND_MTPAV is not set
 # CONFIG_SND_SERIAL_U16550 is not set
 # CONFIG_SND_MPU401 is not set
-CONFIG_SND_PCI=y
+# CONFIG_SND_PCI is not set
 # CONFIG_SND_AD1889 is not set
 # CONFIG_SND_ALS300 is not set
 # CONFIG_SND_ALI5451 is not set
