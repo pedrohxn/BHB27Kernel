@@ -1442,7 +1442,7 @@ CONFIG_ATA_SFF=y
 # CONFIG_PDC_ADMA is not set
 # CONFIG_SATA_QSTOR is not set
 # CONFIG_SATA_SX4 is not set
-CONFIG_ATA_BMDMA=y
+# CONFIG_ATA_BMDMA is not set
 
 #
 # SATA SFF controllers with BMDMA
