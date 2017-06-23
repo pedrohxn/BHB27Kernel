@@ -1278,7 +1278,7 @@ qup_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[], int num)
 					|| dev->pdata->extended_recovery & 0x2){
 					timeout =
 					wait_for_completion_timeout(&complete,
-									HZ);
+									msecs_to_jiffies(2000));
 					if (timeout)
 						goto timeout_err;
 					/* Try to recover, since either we are
