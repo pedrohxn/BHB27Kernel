@@ -113,13 +113,11 @@ write_boot() {
   # Here I set the cmdline, selinux to permissive so I can boot and run my .sh with no problems
   # I also do some safety net related those help me to pass the verification running CM base ROM
   if [ $docmdline == 1 ]; then
-    sed -ri 's/ enforcing=[0-1]//g' boot.img-cmdline
     sed -ri 's/ androidboot.flash.locked=[0-1]//g' boot.img-cmdline
     sed -ri 's/ androidboot.bl_state=[0-2]//g' boot.img-cmdline
     sed -ri 's/ androidboot.verifiedbootstate=green|androidboot.verifiedbootstate=yellow|androidboot.verifiedbootstate=orange|androidboot.verifiedbootstate=red//g' boot.img-cmdline
     sed -ri 's/ buildvariant=eng|buildvariant=user|buildvariant=userdebug//g' boot.img-cmdline
-    sed -ri 's/ androidboot.selinux=permissive|androidboot.selinux=enforcing|androidboot.selinux=disabled//g' boot.img-cmdline
-    echo $(cat boot.img-cmdline) buildvariant=user androidboot.selinux=permissive androidboot.verifiedbootstate=green androidboot.bl_state=0 androidboot.flash.locked=1 > boot.img-cmdline
+    echo $(cat boot.img-cmdline) buildvariant=user androidboot.verifiedbootstate=green androidboot.bl_state=0 androidboot.flash.locked=1 > boot.img-cmdline
   fi;
   if [ -f *-cmdline ]; then
     cmdline=`cat *-cmdline`;
