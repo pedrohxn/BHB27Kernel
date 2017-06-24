@@ -40,12 +40,6 @@
 
 #define F2FS_XATTR_NAME_ENCRYPTION_CONTEXT	"c"
 
-#ifdef CONFIG_F2FS_EMULATED_SD
-/* user.nocase xattribute for case-insensitive dir support */
-#define F2FS_XATTR_DIR_NOCASE			"nocase"
-#define F2FS_XATTR_DIR_NOCASE_LEN		6
-#endif
-
 struct f2fs_xattr_header {
 	__le32  h_magic;        /* magic number for identification */
 	__le32  h_refcount;     /* reference count */
@@ -134,7 +128,8 @@ extern ssize_t f2fs_listxattr(struct dentry *, char *, size_t);
 
 #define f2fs_xattr_handlers	NULL
 static inline int f2fs_setxattr(struct inode *inode, int index,
-		const char *name, const void *value, size_t size, int flags)
+		const char *name, const void *value, size_t size,
+		struct page *page, int flags)
 {
 	return -EOPNOTSUPP;
 }
