@@ -331,9 +331,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_ACC_DELAY:
@@ -353,9 +353,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_MAG_DELAY:
@@ -375,9 +375,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_GYRO_DELAY:
@@ -397,9 +397,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_STEP_COUNTER_DELAY:
@@ -419,9 +419,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_PRES_DELAY:
@@ -441,9 +441,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_WAKESENSORS:
@@ -463,9 +463,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_ALGOS:
@@ -485,9 +485,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_MAG_CAL:
@@ -507,9 +507,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_MOTION_DUR:
@@ -526,9 +526,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 		}
 		ioctl_ws->data.bytes[1] = addr & 0xFF;
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_ZRMOTION_DUR:
@@ -545,9 +545,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 		}
 		ioctl_ws->data.bytes[1] = addr & 0xFF;
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_POSIX_TIME:
@@ -577,9 +577,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			(unsigned char)((current_posix_time >> 8) & 0xff);
 		ioctl_ws->data.bytes[4] =
 			(unsigned char)((current_posix_time) & 0xff);
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_wake_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	case STM401_IOCTL_SET_ALGO_REQ:
@@ -647,9 +647,9 @@ long stm401_misc_ioctl(struct file *file, unsigned int cmd,
 			kfree(ioctl_ws);
 			return -EFAULT;
 		}
-		queue_work(
-			ps_stm401->irq_work_queue,
-			(struct work_struct *)ioctl_ws
+		queue_kthread_work(
+			&ps_stm401->irq_worker,
+			(struct kthread_work *)ioctl_ws
 		);
 		return 0;
 	}

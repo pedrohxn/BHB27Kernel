@@ -51,14 +51,13 @@ irqreturn_t stm401_isr(int irq, void *dev)
 		return IRQ_HANDLED;
 	}
 
-	queue_work(ps_stm401->irq_work_queue, &ps_stm401->irq_work);
-	if (ps_stm401->irq_wake == -1)
-		queue_work(ps_stm401->irq_work_queue,
-			&ps_stm401->irq_wake_work);
+	queue_kthread_work(&ps_stm401->irq_worker, &ps_stm401->irq_work);
+	queue_kthread_work(&ps_stm401->irq_worker,
+		&ps_stm401->irq_wake_work);
 	return IRQ_HANDLED;
 }
 
-void stm401_irq_work_func(struct work_struct *work)
+void stm401_irq_thread_func(struct kthread_work *work)
 {
 	int err;
 	u32 irq_status;
@@ -67,7 +66,7 @@ void stm401_irq_work_func(struct work_struct *work)
 	unsigned char cmdbuff[STM401_MAXDATA_LENGTH];
 	unsigned char readbuff[STM401_MAXDATA_LENGTH];
 
-	dev_dbg(&ps_stm401->client->dev, "stm401_irq_work_func\n");
+	dev_dbg(&ps_stm401->client->dev, "stm401_irq_thread_func\n");
 	mutex_lock(&ps_stm401->lock);
 
 	stm401_wake(ps_stm401);

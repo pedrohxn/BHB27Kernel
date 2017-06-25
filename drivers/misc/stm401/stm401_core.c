@@ -942,14 +942,14 @@ static void stm401_gpio_free(struct stm401_platform_data *pdata)
 		gpio_free(pdata->gpio_sh_wake_resp);
 }
 
-void clear_interrupt_status_work_func(struct work_struct *work)
+void clear_interrupt_status_thread_func(struct kthread_work *work)
 {
 	struct stm401_data *ps_stm401 = container_of(work,
 			struct stm401_data, clear_interrupt_status_work);
 	unsigned char cmdbuff[1];
 	unsigned char readbuff[3];
 
-	dev_dbg(&ps_stm401->client->dev, "clear_interrupt_status_work_func\n");
+	dev_dbg(&ps_stm401->client->dev, "clear_interrupt_status_thread_func\n");
 	mutex_lock(&ps_stm401->lock);
 
 	if (ps_stm401->mode == BOOTMODE)
@@ -1111,17 +1111,34 @@ static int stm401_probe(struct i2c_client *client,
 	/* clear the interrupt mask */
 	ps_stm401->intp_mask = 0x00;
 
-	INIT_WORK(&ps_stm401->irq_work, stm401_irq_work_func);
-	INIT_WORK(&ps_stm401->irq_wake_work, stm401_irq_wake_work_func);
-	INIT_WORK(&ps_stm401->clear_interrupt_status_work,
-		clear_interrupt_status_work_func);
+	ps_stm401->wake_work_delay = 0;
+	init_kthread_worker(&ps_stm401->irq_worker);
+	init_kthread_worker(&ps_stm401->irq_wake_worker);
+	init_kthread_worker(&ps_stm401->clear_interrupt_status_worker);
 
-	ps_stm401->irq_work_queue = create_singlethread_workqueue("stm401_wq");
-	if (!ps_stm401->irq_work_queue) {
-		err = -ENOMEM;
-		dev_err(&client->dev, "cannot create work queue: %d\n", err);
+	ps_stm401->irq_task = kthread_run(kthread_worker_fn,
+			&ps_stm401->irq_worker,
+			dev_name(&client->dev));
+
+	ps_stm401->irq_wake_task = kthread_run(kthread_worker_fn,
+			&ps_stm401->irq_wake_worker,
+			dev_name(&client->dev));
+
+	ps_stm401->clear_interrupt_status_task = kthread_run(kthread_worker_fn,
+			&ps_stm401->clear_interrupt_status_worker,
+			dev_name(&client->dev));
+
+	if (IS_ERR(ps_stm401->irq_task) || IS_ERR(ps_stm401->irq_wake_task)) {
+		dev_err(&client->dev, "failed to create sensor threads\n");
 		goto err1;
 	}
+
+	init_kthread_work(&ps_stm401->irq_work, stm401_irq_thread_func);
+	init_kthread_work(&ps_stm401->irq_wake_work,
+			stm401_irq_wake_thread_func);
+	init_kthread_work(&ps_stm401->clear_interrupt_status_work,
+			clear_interrupt_status_thread_func);
+
 	ps_stm401->ioctl_work_queue =
 		create_singlethread_workqueue("stm401_ioctl_wq");
 	if (!ps_stm401->ioctl_work_queue) {
@@ -1335,7 +1352,6 @@ err4:
 err_pdata_init:
 	destroy_workqueue(ps_stm401->ioctl_work_queue);
 err2:
-	destroy_workqueue(ps_stm401->irq_work_queue);
 err1:
 	mutex_unlock(&ps_stm401->lock);
 	mutex_destroy(&ps_stm401->lock);
@@ -1371,8 +1387,6 @@ static int stm401_remove(struct i2c_client *client)
 	if (ps_stm401->pdata->exit)
 		ps_stm401->pdata->exit();
 	stm401_gpio_free(ps_stm401->pdata);
-	destroy_workqueue(ps_stm401->irq_work_queue);
-	destroy_workqueue(ps_stm401->ioctl_work_queue);
 	mutex_destroy(&ps_stm401->lock);
 	wake_unlock(&ps_stm401->wakelock);
 	wake_lock_destroy(&ps_stm401->wakelock);
@@ -1402,7 +1416,7 @@ static void stm401_process_ignored_interrupts_locked(
 	if (ps_stm401->ignored_interrupts) {
 		ps_stm401->ignored_interrupts = 0;
 		wake_lock_timeout(&ps_stm401->wakelock, HZ);
-		queue_work(ps_stm401->irq_work_queue,
+		queue_kthread_work(&ps_stm401->irq_wake_worker,
 			&ps_stm401->irq_wake_work);
 	}
 }
@@ -1425,13 +1439,13 @@ static int stm401_resume(struct device *dev)
 	ps_stm401->is_suspended = false;
 
 	if (ps_stm401->pending_wake_work) {
-		queue_work(ps_stm401->irq_work_queue,
+		queue_kthread_work(&ps_stm401->irq_wake_worker,
 			&ps_stm401->irq_wake_work);
 		ps_stm401->pending_wake_work = false;
 	}
 
 	if (stm401_irq_disable == 0)
-		queue_work(ps_stm401->irq_work_queue,
+		queue_kthread_work(&ps_stm401->irq_wake_worker,
 			&ps_stm401->clear_interrupt_status_work);
 
 	mutex_unlock(&ps_stm401->lock);

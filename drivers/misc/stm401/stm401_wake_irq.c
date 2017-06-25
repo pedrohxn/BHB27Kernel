@@ -55,11 +55,25 @@ irqreturn_t stm401_wake_isr(int irq, void *dev)
 
 	wake_lock_timeout(&ps_stm401->wakelock, HZ);
 
-	queue_work(ps_stm401->irq_work_queue, &ps_stm401->irq_wake_work);
+	if (ps_stm401->mode == NORMALMODE) {
+		/* No delay if boot completed */
+		ps_stm401->wake_work_delay = 0;
+	} else if (ps_stm401->wake_work_delay == 0) {
+		/* First interrupt prior to boot complete */
+		ps_stm401->wake_work_delay = 1;
+	} else {
+		/* Increase delay, set within allowed min/max range */
+		ps_stm401->wake_work_delay =
+			clamp(ps_stm401->wake_work_delay * 2,
+				100U, 600000U);
+	}
+
+	queue_kthread_work(&ps_stm401->irq_wake_worker,
+		&ps_stm401->irq_wake_work);
 	return IRQ_HANDLED;
 }
 
-void stm401_irq_wake_work_func(struct work_struct *work)
+void stm401_irq_wake_thread_func(struct kthread_work *work)
 {
 	int err;
 	unsigned short irq_status;
@@ -70,7 +84,14 @@ void stm401_irq_wake_work_func(struct work_struct *work)
 	unsigned char cmdbuff[STM401_MAXDATA_LENGTH];
 	unsigned char readbuff[STM401_MAXDATA_LENGTH];
 
-	dev_dbg(&ps_stm401->client->dev, "stm401_irq_wake_work_func\n");
+	/* If there is a specified delay for this thread.
+	 * This is used to back off attempting to initialization
+	 * on bad firmware. For normal operations this will be
+	 * set to 0. (See motosh_wake_isr() above) */
+	if (ps_stm401->wake_work_delay != 0)
+		msleep(ps_stm401->wake_work_delay);
+
+	dev_dbg(&ps_stm401->client->dev, "stm401_irq_wake_thread_func\n");
 	mutex_lock(&ps_stm401->lock);
 
 	if (ps_stm401->is_suspended) {
