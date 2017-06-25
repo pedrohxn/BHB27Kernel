@@ -73,6 +73,13 @@ void stm401_irq_wake_work_func(struct work_struct *work)
 	dev_dbg(&ps_stm401->client->dev, "stm401_irq_wake_work_func\n");
 	mutex_lock(&ps_stm401->lock);
 
+	if (ps_stm401->is_suspended) {
+		dev_dbg(&ps_stm401->client->dev,
+			"setting pending_wake_work [true]");
+		ps_stm401->pending_wake_work = true;
+		goto EXIT_NO_WAKE;
+	}
+
 	if (ps_stm401->mode == BOOTMODE)
 		goto EXIT_NO_WAKE;
 
