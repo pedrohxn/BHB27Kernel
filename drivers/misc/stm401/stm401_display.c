@@ -692,7 +692,7 @@ static int stm401_qw_check(void *data)
 	ps_stm401->qw_irq_status = irq_status;
 
 	if (irq_status & M_QUICKPEEK) {
-		queue_kthread_work(&ps_stm401->irq_wake_worker,
+		queue_work(ps_stm401->irq_work_queue,
 			&ps_stm401->irq_wake_work);
 		ret = 1;
 	}

@@ -371,8 +371,6 @@ int switch_stm401_mode(enum stm_mode mode)
 	pdata = stm401_misc_data->pdata;
 	stm401_misc_data->mode = mode;
 
-	stm401_misc_data->wake_work_delay = 0;
-
 	/* bootloader mode */
 	if (mode == BOOTMODE) {
 		gpio_set_value(pdata->gpio_bslen,

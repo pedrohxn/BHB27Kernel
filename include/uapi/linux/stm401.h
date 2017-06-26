@@ -19,8 +19,6 @@
 #ifndef __STM401_H__
 #define __STM401_H__
 
-#include <linux/kthread.h>
-
 #ifdef __KERNEL__
 #include <mach/mmi_hall_notifier.h>
 #endif
@@ -616,23 +614,11 @@ struct stm401_data {
 	struct stm401_platform_data *pdata;
 	/* to avoid two i2c communications at the same time */
 	struct mutex lock;
-
-	struct kthread_worker irq_worker;
-	struct task_struct *irq_task;
-	struct kthread_work irq_work;
-
-	struct kthread_worker irq_wake_worker;
-	struct task_struct *irq_wake_task;
-	struct kthread_work irq_wake_work;
-
-	struct kthread_worker clear_interrupt_status_worker;
-	struct task_struct *clear_interrupt_status_task;
-	struct kthread_work clear_interrupt_status_work;
-
+	struct work_struct irq_work;
+	struct work_struct irq_wake_work;
+	struct work_struct clear_interrupt_status_work;
 	struct workqueue_struct *irq_work_queue;
 	struct workqueue_struct *ioctl_work_queue;
-
- 	unsigned int wake_work_delay;
 	struct wake_lock wakelock;
 	struct wake_lock reset_wakelock;
 	struct input_dev *input_dev;
@@ -723,10 +709,10 @@ int stm401_set_rv_9axis_update_rate(
 	const uint8_t newDelay);
 
 irqreturn_t stm401_isr(int irq, void *dev);
-void stm401_irq_thread_func(struct kthread_work *work);
+void stm401_irq_work_func(struct work_struct *work);
 
 irqreturn_t stm401_wake_isr(int irq, void *dev);
-void stm401_irq_wake_thread_func(struct kthread_work *work);
+void stm401_irq_wake_work_func(struct work_struct *work);
 int stm401_process_ir_gesture(struct stm401_data *ps_stm401);
 
 long stm401_misc_ioctl(struct file *file, unsigned int cmd,
