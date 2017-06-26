@@ -53,14 +53,22 @@ ZIPNAME="BHB27-Kernel-V52.zip";
 export ARCH=arm
 export KBUILD_OUTPUT=./build/temp
 
-# Clean temp directory
-echo -e "\nCleaning temp directory\n";
-rm -rf ./build/temp
-rm -rf ./build/bhbkernel/modules/*
-mkdir ./build/temp
+echo -e "\nIn $rom - Clean build?\n empty = Yes\n"
+read -r clean
+echo -e "\nYou choose: $clean"
 
-# Making started
-make clean && make mrproper
+if [ -z "$clean" ]; then
+
+	# Clean temp directory
+	echo -e "\nCleaning temp directory\n";
+	rm -rf ./build/temp
+	rm -rf ./build/bhbkernel/modules/*
+	mkdir ./build/temp
+
+	# Making started
+	make clean && make mrproper
+
+fi
 
 # change -j4 to -j# number of cores to do the job... the log.txt here are the build logs to check if error stop the kernel build
 time make quark_defconfig && time make -j8 2>&1 | tee ./build/build_log.txt && ./build/dtbToolCM -2 -o ./build/temp/arch/arm/boot/dt.img -s 4096 -p ./build/temp/scripts/dtc/ ./build/temp/arch/arm/boot/dts/
