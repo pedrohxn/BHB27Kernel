@@ -28,7 +28,10 @@
 #include <linux/slab.h>
 #include <linux/hrtimer.h>
 #include <linux/input.h>
-#include <linux/fb.h>
+#ifdef CONFIG_STATE_NOTIFIER
+#include <linux/state_notifier.h>
+#endif
+
 #define DEBUG 0
 
 #define ASMP_TAG			"AutoSMP:"
@@ -62,7 +65,9 @@ static struct asmp_param_struct {
 	unsigned int min_boost_freq;
 	bool enabled;
 	u64 boost_lock_dur;
-	struct notifier_block notify;
+#ifdef CONFIG_STATE_NOTIFIER
+	struct notifier_block notif;
+#endif
 } asmp_param = {
 	.delay = DEFAULT_UPDATE_RATE,
 	.max_cpus = NR_CPUS,
@@ -188,6 +193,7 @@ static void __cpuinit asmp_work_fn(struct work_struct *work)
 	reschedule_hotplug_work();
 }
 
+#ifdef CONFIG_STATE_NOTIFIER
 static void asmp_suspend(void)
 {
 	unsigned int cpu;
@@ -221,33 +227,26 @@ static void __ref asmp_resume(void)
 	pr_info(ASMP_TAG"Screen -> On. Resumed.\n");
 }
 
-static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
+static int state_notifier_callback(struct notifier_block *this,
+				unsigned long event, void *data)
 {
-	struct fb_event *evdata = data;
-	int *blank;
-
 	if (!asmp_param.enabled || !hotplug_suspend)
-		return 0;
+                return NOTIFY_OK;
 
-	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
-		blank = evdata->data;
-		switch (*blank) {
-			case FB_BLANK_UNBLANK:
-				//display on
-				asmp_resume();
-				break;
-		case FB_BLANK_POWERDOWN:
-			case FB_BLANK_HSYNC_SUSPEND:
-			case FB_BLANK_VSYNC_SUSPEND:
-			case FB_BLANK_NORMAL:
-				//display off
-				asmp_suspend();
-				break;
-		}
+	switch (event) {
+		case STATE_NOTIFIER_ACTIVE:
+			asmp_resume();
+			break;
+		case STATE_NOTIFIER_SUSPEND:
+			asmp_suspend();
+			break;
+		default:
+			break;
 	}
 
-	return 0;
+	return NOTIFY_OK;
 }
+#endif
 
 static void autosmp_input_event(struct input_handle *handle, unsigned int type,
 				unsigned int code, int value)
@@ -256,6 +255,11 @@ static void autosmp_input_event(struct input_handle *handle, unsigned int type,
 
 	if (!asmp_param.enabled)
 		return;
+
+#ifdef CONFIG_STATE_NOTIFIER
+	if (state_suspended)
+		return;
+#endif
 
 	now = ktime_to_us(ktime_get());
 	if (now - last_boost_time < MIN_INPUT_INTERVAL)
@@ -353,12 +357,14 @@ static int hotplug_start(void)
 		goto err_wq;
 	}
 
-	asmp_param.notify.notifier_call = fb_notifier_callback;
-	if (fb_register_client(&asmp_param.notify) != 0) {
+#ifdef CONFIG_STATE_NOTIFIER
+	asmp_param.notif.notifier_call = state_notifier_callback;
+	if (state_register_client(&asmp_param.notif)) {
 		pr_err("%s: Failed to register State notifier callback\n",
 			ASMP_TAG);
-		goto err_notify;
+		goto err_notif;
 	}
+#endif
 
 	ret = input_register_handler(&autosmp_input_handler);
 	if (ret) {
@@ -373,9 +379,11 @@ static int hotplug_start(void)
 	return ret;
 
 err:
-	fb_unregister_client(&asmp_param.notify);
-err_notify:
-	asmp_param.notify.notifier_call = NULL;
+#ifdef CONFIG_STATE_NOTIFIER
+	state_unregister_client(&asmp_param.notif);
+err_notif:
+	asmp_param.notif.notifier_call = NULL;
+#endif
 	destroy_workqueue(asmp_workq);
 err_wq:
 	asmp_param.enabled = false;
@@ -387,8 +395,10 @@ static void __ref hotplug_stop(void)
 	int cpu;
 
 	input_unregister_handler(&autosmp_input_handler);
-	fb_unregister_client(&asmp_param.notify);
-	asmp_param.notify.notifier_call = NULL;
+#ifdef CONFIG_STATE_NOTIFIER
+	state_unregister_client(&asmp_param.notif);
+	asmp_param.notif.notifier_call = NULL;
+#endif
 	flush_workqueue(asmp_workq);
 	cancel_delayed_work_sync(&asmp_work);
 	destroy_workqueue(asmp_workq);
