@@ -24,9 +24,7 @@
 #include <linux/cpufreq.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-#ifdef CONFIG_STATE_NOTIFIER
-#include <linux/state_notifier.h>
-#endif
+#include <linux/fb.h>
 
 #define INIT_DELAY		20000
 #define DELAY			100
@@ -54,7 +52,6 @@ static unsigned int plug_threshold[MAX_ONLINE] = {[0 ... MAX_ONLINE-1] = DEF_PLU
 
 static struct delayed_work dyn_work;
 static struct workqueue_struct *dyn_workq;
-#ifdef CONFIG_STATE_NOTIFIER
 static struct notifier_block notify;
 
 /* Bring online each possible CPU up to max_online cores */
@@ -68,7 +65,7 @@ static void __ref up_all(void)
 
 	down_timer = 0;
 }
-#endif
+
 /* Iterate through possible CPUs and bring online the first offline found */
 static void __ref up_one(void)
 {
@@ -169,7 +166,6 @@ static void load_timer(struct work_struct *work)
 	queue_delayed_work_on(0, dyn_workq, &dyn_work, msecs_to_jiffies(delay));
 }
 
-#ifdef CONFIG_STATE_NOTIFIER
 static void blu_plug_suspend(void)
 {
 	int cpu;
@@ -189,26 +185,33 @@ static void blu_plug_resume(void)
 	queue_delayed_work_on(0, dyn_workq, &dyn_work, msecs_to_jiffies(delay));
 }
 
-static int state_notifier_callback(struct notifier_block *this,
-				unsigned long event, void *data)
+static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
-	if (!blu_plug_enabled)
-		return NOTIFY_OK;
+	struct fb_event *evdata = data;
+	int *blank;
 
-	switch (event) {
-		case STATE_NOTIFIER_ACTIVE:
-			blu_plug_resume();
-			break;
-		case STATE_NOTIFIER_SUSPEND:
-			blu_plug_suspend();
-			break;
-		default:
-			break;
+	if (!blu_plug_enabled)
+		return 0;
+
+	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
+		blank = evdata->data;
+		switch (*blank) {
+			case FB_BLANK_UNBLANK:
+				//display on
+				blu_plug_resume();
+				break;
+		case FB_BLANK_POWERDOWN:
+			case FB_BLANK_HSYNC_SUSPEND:
+			case FB_BLANK_VSYNC_SUSPEND:
+			case FB_BLANK_NORMAL:
+				//display off
+				blu_plug_suspend();
+				break;
+		}
 	}
 
-	return NOTIFY_OK;
+	return 0;
 }
-#endif
 
 /******************** Module parameters *********************/
 
@@ -377,13 +380,9 @@ static int dyn_hp_init(void)
 {
 	if (!blu_plug_enabled)
 		return 0;
-
-#ifdef CONFIG_STATE_NOTIFIER
-	notify.notifier_call = state_notifier_callback;
-	if (state_register_client(&notify))
-		pr_err("%s: Failed to register State notifier callback\n",
-			__func__);
-#endif
+	notify.notifier_call = fb_notifier_callback;
+	if (fb_register_client(&notify) != 0)
+		pr_info("%s: Failed to register FB notifier callback\n", __func__);
 
 	dyn_workq = alloc_workqueue("dyn_hotplug_workqueue", WQ_HIGHPRI | WQ_FREEZABLE, 0);
 	if (!dyn_workq)
@@ -402,10 +401,7 @@ static void __ref dyn_hp_exit(void)
 	int cpu;
 
 	cancel_delayed_work_sync(&dyn_work);
-
-#ifdef CONFIG_STATE_NOTIFIER
-	state_unregister_client(&notify);
-#endif
+	fb_unregister_client(&notify);
 
 	destroy_workqueue(dyn_workq);
 

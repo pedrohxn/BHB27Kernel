@@ -23,10 +23,7 @@
 #include <linux/platform_device.h>
 #include <linux/module.h>
 #include <linux/device.h>
-#ifdef CONFIG_STATE_NOTIFIER
-#include <linux/state_notifier.h>
-#endif
-
+#include <linux/fb.h>
 #define DEBUG 0
 
 #define MPDEC_TAG			"bricked_hotplug"
@@ -48,7 +45,7 @@ enum {
 	MSM_MPDEC_UP,
 };
 
-static struct notifier_block notif;
+static struct notifier_block notify;
 static struct delayed_work hotplug_work;
 static struct workqueue_struct *hotplug_wq;
 
@@ -246,7 +243,7 @@ out:
 					msecs_to_jiffies(hotplug.delay));
 	return;
 }
-#ifdef CONFIG_STATE_NOTIFIER
+
 static void bricked_hotplug_suspend(void)
 {
 	int cpu;
@@ -312,26 +309,33 @@ static void __ref bricked_hotplug_resume(void)
 	}
 }
 
-static int state_notifier_callback(struct notifier_block *this,
-				unsigned long event, void *data)
+static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
-	if (!hotplug.bricked_enabled)
-		return NOTIFY_OK;
+	struct fb_event *evdata = data;
+	int *blank;
 
-	switch (event) {
-		case STATE_NOTIFIER_ACTIVE:
-			bricked_hotplug_resume();
-			break;
-		case STATE_NOTIFIER_SUSPEND:
-			bricked_hotplug_suspend();
-			break;
-		default:
-			break;
+	if (!hotplug.bricked_enabled)
+		return 0;
+
+	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
+		blank = evdata->data;
+		switch (*blank) {
+			case FB_BLANK_UNBLANK:
+				//display on
+				bricked_hotplug_resume();
+				break;
+		case FB_BLANK_POWERDOWN:
+			case FB_BLANK_HSYNC_SUSPEND:
+			case FB_BLANK_VSYNC_SUSPEND:
+			case FB_BLANK_NORMAL:
+				//display off
+				bricked_hotplug_suspend();
+				break;
+		}
 	}
 
-	return NOTIFY_OK;
+	return 0;
 }
-#endif
 
 static int bricked_hotplug_start(void)
 {
@@ -344,14 +348,12 @@ static int bricked_hotplug_start(void)
 		goto err_out;
 	}
 
-#ifdef CONFIG_STATE_NOTIFIER
-	notif.notifier_call = state_notifier_callback;
-	if (state_register_client(&notif)) {
+	notify.notifier_call = fb_notifier_callback;
+	if (fb_register_client(&notify) != 0) {
 		pr_err("%s: Failed to register State notifier callback\n",
 			MPDEC_TAG);
 		goto err_dev;
 	}
-#endif
 
 	mutex_init(&hotplug.bricked_cpu_mutex);
 	mutex_init(&hotplug.bricked_hotplug_mutex);
@@ -368,10 +370,8 @@ static int bricked_hotplug_start(void)
 					msecs_to_jiffies(hotplug.startdelay));
 
 	return ret;
-#ifdef CONFIG_STATE_NOTIFIER
 err_dev:
 	destroy_workqueue(hotplug_wq);
-#endif
 err_out:
 	hotplug.bricked_enabled = 0;
 	return ret;
@@ -390,10 +390,8 @@ static void bricked_hotplug_stop(void)
 	cancel_delayed_work_sync(&hotplug_work);
 	mutex_destroy(&hotplug.bricked_hotplug_mutex);
 	mutex_destroy(&hotplug.bricked_cpu_mutex);
-#ifdef CONFIG_STATE_NOTIFIER
-	state_unregister_client(&notif);
-#endif
-	notif.notifier_call = NULL;
+	fb_unregister_client(&notify);
+	notify.notifier_call = NULL;
 	destroy_workqueue(hotplug_wq);
 
 	/* Put all sibling cores to sleep */
