@@ -412,6 +412,7 @@ static void cpufreq_interactive_timer(unsigned long data)
 	do_div(cputime_speedadj, delta_time);
 	loadadjfreq = (unsigned int)cputime_speedadj * 100;
 	cpu_load = loadadjfreq / pcpu->policy->cur;
+	cpufreq_notify_utilization(pcpu->policy, cpu_load);
 	this_hispeed_freq = max(tunables->hispeed_freq, pcpu->policy->min);
 
 	if (cpu_load >= tunables->go_hispeed_load) {
