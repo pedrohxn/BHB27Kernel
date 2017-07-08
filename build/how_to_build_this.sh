@@ -105,6 +105,8 @@ if [ ! -e ./build/bhbkernel/modules/qca_cld/qca_cld_wlan.ko ]; then
 	exit 1;
 else
 	cp -rf ./drivers/staging/qcacld-2.0/firmware_bin/WCNSS_qcom_cfg.ini ./build/bhbkernel/system/etc/wifi/WCNSS_qcom_cfg.ini
+	cp -rf ./drivers/staging/qcacld-2.0/firmware_bin/WCNSS_qcom_wlan_nv.bin ./build/bhbkernel/system/etc/wifi/WCNSS_qcom_wlan_nv.bin
+	cp -rf ./drivers/staging/qcacld-2.0/firmware_bin/WCNSS_cfg.dat ./build/bhbkernel/system/etc/firmware/wlan/qca_cld/WCNSS_cfg.dat
 	cp -rf ./build/temp/arch/arm/boot/zImage ./build/bhbkernel/zImage
 	cp -rf ./build/temp/arch/arm/boot/dt.img.lz4 ./build/bhbkernel/dtb
 	rm -rf ./build/bhbkernel/*.zip
@@ -116,6 +118,8 @@ else
 	mv ./ZipScriptSign/BHB27-Kernel-signed.zip ./$ZIPNAME
 	cd -
         rm -rf ./build/bhbkernel/system/etc/wifi/WCNSS_qcom_cfg.ini
+        rm -rf ./build/bhbkernel/system/etc/wifi/WCNSS_qcom_wlan_nv.bin
+        rm -rf ./build/bhbkernel/system/etc/firmware/wlan/qca_cld/WCNSS_cfg.dat
 	echo -e "\nKernel Build OK zip file at... $FOLDER build/bhbkernel/$ZIPNAME \n";
 fi;
 
