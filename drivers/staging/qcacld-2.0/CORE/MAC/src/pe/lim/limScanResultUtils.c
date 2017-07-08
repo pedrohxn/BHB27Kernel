@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2015 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2011-2014 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -39,9 +39,6 @@
 #include "limUtils.h"
 #include "limSerDesUtils.h"
 #include "limApi.h"
-#ifdef WLAN_FEATURE_VOWIFI_11R
-#include "limFTDefs.h"
-#endif
 #include "limSession.h"
 #if defined WLAN_FEATURE_VOWIFI
 #include "rrmApi.h"
@@ -164,8 +161,7 @@ limCollectBssDescription(tpAniSirGlobal pMac,
      */
     if ((NULL != pMac->lim.gpLimMlmScanReq && pMac->lim.gpLimMlmScanReq->p2pSearch) ||
             (pMac->fScanOffload && pMac->lim.fOffloadScanPending &&
-             (pMac->lim.fOffloadScanP2PSearch ||
-              pMac->lim.fOffloadScanP2PListen)))
+             pMac->lim.fOffloadScanP2PSearch))
     {
         if (NULL == limGetP2pIEPtr(pMac, (pBody + SIR_MAC_B_PR_SSID_OFFSET), ieLen))
         {
@@ -177,17 +173,11 @@ limCollectBssDescription(tpAniSirGlobal pMac,
     /**
      * Length of BSS desription is without length of
      * length itself and length of pointer
-     * that holds ieFields
-     *
-     * tSirBssDescription
-     * +--------+---------------------------------+---------------+
-     * | length | other fields                    | pointer to IEs|
-     * +--------+---------------------------------+---------------+
-     *                                            ^
-     *                                            ieFields
+     * that holds the next BSS description
      */
-    pBssDescr->length = (tANI_U16)(offsetof(tSirBssDescription, ieFields[0]) -
-                                   sizeof(pBssDescr->length) + ieLen);
+    pBssDescr->length = (tANI_U16)(
+                    sizeof(tSirBssDescription) - sizeof(tANI_U16) -
+                    sizeof(tANI_U32) + ieLen);
 
     // Copy BSS Id
     vos_mem_copy((tANI_U8 *) &pBssDescr->bssId,
@@ -253,19 +243,12 @@ limCollectBssDescription(tpAniSirGlobal pMac,
     sirDumpBuf(pMac, SIR_LIM_MODULE_ID, LOG4, pBssDescr->bssId, 6 );
     sirDumpBuf( pMac, SIR_LIM_MODULE_ID, LOG4, (tANI_U8*)pRxPacketInfo, 36 );)
 
-    pBssDescr->rssi = (tANI_S8)WDA_GET_RX_RSSI_NORMALIZED(pRxPacketInfo);
-    pBssDescr->rssi_raw = (tANI_S8)WDA_GET_RX_RSSI_RAW(pRxPacketInfo);
+    pBssDescr->rssi = (tANI_S8)WDA_GET_RX_RSSI_DB(pRxPacketInfo);
 
     //SINR no longer reported by HW
     pBssDescr->sinr = 0;
 
     pBssDescr->nReceivedTime = (tANI_TIMESTAMP)palGetTickCount(pMac->hHdd);
-    pBssDescr->tsf_delta = WDA_GET_RX_TSF_DELTA(pRxPacketInfo);
-
-    limLog(pMac, LOG1,
-        FL("BSSID: "MAC_ADDRESS_STR " rssi: normalized: %d, absolute = %d, tsf_delta: %u"),
-        MAC_ADDR_ARRAY(pHdr->bssId), pBssDescr->rssi, pBssDescr->rssi_raw,
-        pBssDescr->tsf_delta);
 
 #if defined WLAN_FEATURE_VOWIFI
     if( fScanning )
@@ -306,9 +289,7 @@ limCollectBssDescription(tpAniSirGlobal pMac,
                   pBody + SIR_MAC_B_PR_SSID_OFFSET,
                   ieLen);
 
-    /*set channel number in beacon in case it is not present*/
-    pBPR->channelNumber = pBssDescr->channelId;
-
+    //sirDumpBuf( pMac, SIR_LIM_MODULE_ID, LOGW, (tANI_U8 *) pBssDescr, pBssDescr->length + 2 );
     limLog( pMac, LOG3,
         FL("Collected BSS Description for Channel(%1d), length(%u), aniIndicator(%d), IE Fields(%u)"),
         pBssDescr->channelId,
@@ -734,7 +715,6 @@ limLookupNaddHashEntry(tpAniSirGlobal pMac,
     int idx, len;
     tANI_U8 *pbIe;
     tANI_S8  rssi = 0;
-    tANI_S8  rssi_raw = 0;
 
     index = limScanHashFunction(pBssDescr->bssDescription.bssId);
     ptemp = pMac->lim.gLimCachedScanHashTable[index];
@@ -783,7 +763,6 @@ limLookupNaddHashEntry(tpAniSirGlobal pMac,
                 if(dontUpdateAll)
                 {
                    rssi = ptemp->bssDescription.rssi;
-                   rssi_raw = ptemp->bssDescription.rssi_raw;
                 }
 
                 if(pBssDescr->bssDescription.fProbeRsp != ptemp->bssDescription.fProbeRsp)
@@ -840,10 +819,9 @@ limLookupNaddHashEntry(tpAniSirGlobal pMac,
     }
 
     //for now, only rssi, we can add more if needed
-    if ((action == LIM_HASH_UPDATE) && dontUpdateAll && rssi && rssi_raw)
+    if ((action == LIM_HASH_UPDATE) && dontUpdateAll && rssi)
     {
         pBssDescr->bssDescription.rssi = rssi;
-        pBssDescr->bssDescription.rssi_raw = rssi_raw;
     }
 
     // Add this BSS description at same index
@@ -972,7 +950,6 @@ limLookupNaddLfrHashEntry(tpAniSirGlobal pMac,
     int idx, len;
     tANI_U8 *pbIe;
     tANI_S8  rssi = 0;
-    tANI_S8  rssi_raw = 0;
 
     index = limScanHashFunction(pBssDescr->bssDescription.bssId);
     ptemp = pMac->lim.gLimCachedLfrScanHashTable[index];
@@ -1008,7 +985,6 @@ limLookupNaddLfrHashEntry(tpAniSirGlobal pMac,
                 if(dontUpdateAll)
                 {
                    rssi = ptemp->bssDescription.rssi;
-                   rssi_raw = ptemp->bssDescription.rssi_raw;
                 }
 
                 if(pBssDescr->bssDescription.fProbeRsp != ptemp->bssDescription.fProbeRsp)
@@ -1065,10 +1041,9 @@ limLookupNaddLfrHashEntry(tpAniSirGlobal pMac,
     }
 
     //for now, only rssi, we can add more if needed
-    if ((action == LIM_HASH_UPDATE) && dontUpdateAll && rssi && rssi_raw)
+    if ((action == LIM_HASH_UPDATE) && dontUpdateAll && rssi)
     {
         pBssDescr->bssDescription.rssi = rssi;
-        pBssDescr->bssDescription.rssi_raw = rssi_raw;
     }
 
     // Add this BSS description at same index

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2014 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2011-2013 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -144,6 +144,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                             encrAuthFrame[LIM_ENCR_AUTH_BODY_LEN],
                             plainBody[256];
     tANI_U16                frameLen;
+    //tANI_U32                authRspTimeout, maxNumPreAuth, val;
     tANI_U32                maxNumPreAuth, val;
     tSirMacAuthFrameBody    *pRxAuthFrameBody, rxAuthFrame, authFrame;
     tpSirMacMgmtHdr         pHdr;
@@ -156,8 +157,10 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
     tANI_U8                 challengeTextArray[SIR_MAC_AUTH_CHALLENGE_LENGTH];
     tpDphHashNode           pStaDs = NULL;
     tANI_U16                assocId = 0;
-
+    /* Added For BT -AMP support */
     // Get pointer to Authentication frame header and body
+
+
     pHdr = WDA_GET_RX_MAC_HEADER(pRxPacketInfo);
     frameLen = WDA_GET_RX_PAYLOAD_LEN(pRxPacketInfo);
 
@@ -188,9 +191,11 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                "Frame Received: BSSID: "MAC_ADDRESS_STR " (RSSI %d)"),
                psessionEntry->peSessionId, psessionEntry->limSystemRole,
                psessionEntry->limMlmState, MAC_ADDR_ARRAY(pHdr->bssId),
-              (uint)abs((tANI_S8)WDA_GET_RX_RSSI_NORMALIZED(pRxPacketInfo)));
+              (uint)abs((tANI_S8)WDA_GET_RX_RSSI_DB(pRxPacketInfo)));
 
     pBody = WDA_GET_RX_MPDU_DATA(pRxPacketInfo);
+
+    //PELOG3(sirDumpBuf(pMac, SIR_LIM_MODULE_ID, LOG3, (tANI_U8*)pBd, ((tpHalBufDesc) pBd)->mpduDataOffset + frameLen);)
 
     //Restore default failure timeout
     if (VOS_P2P_CLIENT_MODE == psessionEntry->pePersona && psessionEntry->defaultAuthFailureTimeout)
@@ -245,9 +250,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
             limSendAuthMgmtFrame(pMac, &authFrame,
                                  pHdr->sa,
-                                 LIM_NO_WEP_IN_FC,
-                                 psessionEntry,
-                                 eSIR_FALSE);
+                                 LIM_NO_WEP_IN_FC,psessionEntry);
             return;
         }
 
@@ -290,11 +293,11 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
             if (pAuthNode == NULL)
             {
-                // Log error
-                PELOGE(limLog(pMac, LOGE,
-                       FL("received Authentication frame from peer that has no preauth context with WEP bit set "
-                           MAC_ADDRESS_STR), MAC_ADDR_ARRAY(pHdr->sa));)
-
+               // Log error
+               PELOGE(limLog(pMac, LOGE,
+                      FL("received Authentication frame from peer that has "
+                      "no preauth context with WEP bit set "MAC_ADDRESS_STR),
+                      MAC_ADDR_ARRAY(pHdr->sa));)
                 /**
                  * No 'pre-auth' context exists for this STA that sent
                  * an Authentication frame with FC bit set.
@@ -308,9 +311,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                 limSendAuthMgmtFrame(pMac, &authFrame,
                                      pHdr->sa,
-                                     LIM_NO_WEP_IN_FC,
-                                     psessionEntry,
-                                     eSIR_FALSE);
+                                     LIM_NO_WEP_IN_FC,psessionEntry);
                 return;
             }
             else
@@ -346,9 +347,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
                     return;
                 }
             }
@@ -380,9 +379,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
                     return;
                 } // if (!pKeyMapEntry->wepOn)
                 else
@@ -410,9 +407,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                         limSendAuthMgmtFrame(
                                             pMac, &authFrame,
                                             pHdr->sa,
-                                            LIM_NO_WEP_IN_FC,
-                                            psessionEntry,
-                                            eSIR_FALSE);
+                                            LIM_NO_WEP_IN_FC,psessionEntry);
 
 
                         return;
@@ -426,6 +421,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                                "failed to convert Auth Frame to structure or Auth is not valid "));)
                         return;
                     }
+
                 } // end if (pKeyMapEntry->key == NULL)
             } // if keyMappings has entry
             else
@@ -462,9 +458,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
 
                     return;
                 }
@@ -494,9 +488,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                         limSendAuthMgmtFrame(
                                             pMac, &authFrame,
                                             pHdr->sa,
-                                            LIM_NO_WEP_IN_FC,
-                                            psessionEntry,
-                                            eSIR_FALSE);
+                                            LIM_NO_WEP_IN_FC,psessionEntry);
                         return;
                     }
                     if ( ( sirConvertAuthFrame2Struct(pMac, plainBody, frameLen-8,
@@ -507,6 +499,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                                FL("failed to convert Auth Frame to structure or Auth is not valid "));
                         return;
                     }
+
             } // End of check for Key Mapping/Default key presence
         }
         else
@@ -532,9 +525,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
             limSendAuthMgmtFrame(pMac, &authFrame,
                                  pHdr->sa,
-                                 LIM_NO_WEP_IN_FC,
-                                 psessionEntry,
-                                 eSIR_FALSE);
+                                 LIM_NO_WEP_IN_FC,psessionEntry);
             return;
         } // else if (wlan_cfgGetInt(CFG_PRIVACY_OPTION_IMPLEMENTED))
     } // if (fc.wep)
@@ -545,7 +536,8 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
             ( !isAuthValid(pMac, &rxAuthFrame,psessionEntry) ) )
         {
             PELOGE(limLog(pMac, LOGE,
-                   FL("failed to convert Auth Frame to structure or Auth is not valid "));)
+                   FL("failed to convert Auth Frame to structure or Auth is "
+                   "not valid "));)
             return;
         }
     }
@@ -673,11 +665,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                         pStaDs = NULL;
                     }
 
-                    if (NULL != pStaDs
-#ifdef WLAN_FEATURE_11W
-                        && !pStaDs->rmfEnabled
-#endif
-                       )
+                    if (NULL != pStaDs)
                     {
                         PELOGE(limLog(pMac, LOGE,
                                FL("lim Delete Station Context (staId: %d, assocId: %d) "),
@@ -711,7 +699,6 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
             }
             if (pMac->lim.gLimNumPreAuthContexts == maxNumPreAuth)
             {
-                PELOGE(limLog(pMac, LOGE, FL("Max number of preauth context reached"));)
                 /**
                  * Maximum number of pre-auth contexts
                  * reached. Send Authentication frame
@@ -726,9 +713,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                 limSendAuthMgmtFrame(pMac, &authFrame,
                                      pHdr->sa,
-                                     LIM_NO_WEP_IN_FC,
-                                     psessionEntry,
-                                     eSIR_FALSE);
+                                     LIM_NO_WEP_IN_FC,psessionEntry);
 
                 return;
             }
@@ -782,9 +767,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                         limSendAuthMgmtFrame(
                                             pMac, &authFrame,
                                             pHdr->sa,
-                                            LIM_NO_WEP_IN_FC,
-                                            psessionEntry,
-                                            eSIR_FALSE);
+                                            LIM_NO_WEP_IN_FC,psessionEntry);
 
                         /// Send Auth indication to SME
 
@@ -844,9 +827,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                             limSendAuthMgmtFrame(
                                                 pMac, &authFrame,
                                                 pHdr->sa,
-                                                LIM_NO_WEP_IN_FC,
-                                                psessionEntry,
-                                                eSIR_FALSE);
+                                                LIM_NO_WEP_IN_FC,psessionEntry);
                             return;
                         }
                         else
@@ -904,9 +885,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                                 limSendAuthMgmtFrame(pMac, &authFrame,
                                                      pHdr->sa,
-                                                     LIM_NO_WEP_IN_FC,
-                                                     psessionEntry,
-                                                     eSIR_FALSE);
+                                                     LIM_NO_WEP_IN_FC,psessionEntry);
 
                                 limDeletePreAuthNode(pMac, pHdr->sa);
                                 return;
@@ -948,9 +927,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                             limSendAuthMgmtFrame(
                                                 pMac, &authFrame,
                                                 pHdr->sa,
-                                                LIM_NO_WEP_IN_FC,
-                                                psessionEntry,
-                                                eSIR_FALSE);
+                                                LIM_NO_WEP_IN_FC,psessionEntry);
                         } // if (wlan_cfgGetInt(CFG_PRIVACY_OPTION_IMPLEMENTED))
 
                         break;
@@ -980,9 +957,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                         limSendAuthMgmtFrame(
                                             pMac, &authFrame,
                                             pHdr->sa,
-                                            LIM_NO_WEP_IN_FC,
-                                            psessionEntry,
-                                            eSIR_FALSE);
+                                            LIM_NO_WEP_IN_FC,psessionEntry);
                         return;
                 } // end switch(pRxAuthFrameBody->authAlgoNumber)
             } // if (limIsAuthAlgoSupported(pRxAuthFrameBody->authAlgoNumber))
@@ -1008,9 +983,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                 limSendAuthMgmtFrame(pMac, &authFrame,
                                      pHdr->sa,
-                                     LIM_NO_WEP_IN_FC,
-                                     psessionEntry,
-                                     eSIR_FALSE);
+                                     LIM_NO_WEP_IN_FC,psessionEntry);
                 return;
             } //end if (limIsAuthAlgoSupported(pRxAuthFrameBody->authAlgoNumber))
             break;
@@ -1029,22 +1002,21 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                      (psessionEntry->limSystemRole == eLIM_BT_AMP_STA_ROLE)) &&
                     (psessionEntry->limSmeState == eLIM_SME_WT_REASSOC_STATE) &&
                     (pRxAuthFrameBody->authStatusCode == eSIR_MAC_SUCCESS_STATUS) &&
-                    (psessionEntry->ftPEContext.pFTPreAuthReq != NULL) &&
-                    (vos_mem_compare(
-                        psessionEntry->ftPEContext.pFTPreAuthReq->preAuthbssId,
-                        pHdr->sa, sizeof(tSirMacAddr))))
+                    (pMac->ft.ftPEContext.pFTPreAuthReq != NULL) &&
+                    (vos_mem_compare(pMac->ft.ftPEContext.pFTPreAuthReq->preAuthbssId,
+                                     pHdr->sa, sizeof(tSirMacAddr))))
                 {
                     // Update the FTIEs in the saved auth response
                     PELOGW(limLog(pMac, LOGW, FL("received another PreAuth frame2"
                            " from peer " MAC_ADDRESS_STR" in Smestate %d"),
                            MAC_ADDR_ARRAY(pHdr->sa), psessionEntry->limSmeState);)
 
-                    psessionEntry->ftPEContext.saved_auth_rsp_length = 0;
+                    pMac->ft.ftPEContext.saved_auth_rsp_length = 0;
                     if ((pBody != NULL) && (frameLen < MAX_FTIE_SIZE))
                     {
-                        vos_mem_copy(psessionEntry->ftPEContext.saved_auth_rsp,
+                        vos_mem_copy(pMac->ft.ftPEContext.saved_auth_rsp,
                                      pBody, frameLen);
-                        psessionEntry->ftPEContext.saved_auth_rsp_length = frameLen;
+                        pMac->ft.ftPEContext.saved_auth_rsp_length = frameLen;
                     }
                 }
                 else
@@ -1078,8 +1050,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                 // Log error
                 PELOGW(limLog(pMac, LOGW,
-                       FL("received Auth frame2 from unexpected peer "
-                       MAC_ADDRESS_STR),
+                       FL("received Auth frame2 from unexpected peer "MAC_ADDRESS_STR),
                        MAC_ADDR_ARRAY(pHdr->sa));)
 
                 break;
@@ -1197,9 +1168,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                         limSendAuthMgmtFrame(pMac, &authFrame,
                                             pHdr->sa,
-                                            LIM_NO_WEP_IN_FC,
-                                            psessionEntry,
-                                            eSIR_FALSE);
+                                            LIM_NO_WEP_IN_FC,psessionEntry);
                         return;
                     }
                     else
@@ -1245,9 +1214,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                                 limSendAuthMgmtFrame(pMac, &authFrame,
                                                      pHdr->sa,
-                                                     LIM_NO_WEP_IN_FC,
-                                                     psessionEntry,
-                                                     eSIR_FALSE);
+                                                     LIM_NO_WEP_IN_FC,psessionEntry);
 
                                 limRestoreFromAuthState(pMac, eSIR_SME_NO_KEY_MAPPING_KEY_FOR_PEER,
                                                               eSIR_MAC_UNSPEC_FAILURE_REASON,psessionEntry);
@@ -1278,9 +1245,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                                 limSendAuthMgmtFrame(pMac,
                                                      (tpSirMacAuthFrameBody) encrAuthFrame,
                                                      pHdr->sa,
-                                                     LIM_WEP_IN_FC,
-                                                     psessionEntry,
-                                                     eSIR_FALSE);
+                                                     LIM_WEP_IN_FC,psessionEntry);
 
                                 break;
                             } // end if (pKeyMapEntry->key == NULL)
@@ -1328,9 +1293,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                                 limSendAuthMgmtFrame(
                                                     pMac, &authFrame,
                                                     pHdr->sa,
-                                                    LIM_NO_WEP_IN_FC,
-                                                    psessionEntry,
-                                                    eSIR_FALSE);
+                                                    LIM_NO_WEP_IN_FC,psessionEntry);
 
                                 limRestoreFromAuthState(pMac, eSIR_SME_INVALID_WEP_DEFAULT_KEY,
                                                               eSIR_MAC_UNSPEC_FAILURE_REASON,psessionEntry);
@@ -1361,9 +1324,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                                 limSendAuthMgmtFrame(pMac,
                                                      (tpSirMacAuthFrameBody) encrAuthFrame,
                                                      pHdr->sa,
-                                                     LIM_WEP_IN_FC,
-                                                     psessionEntry,
-                                                     eSIR_FALSE);
+                                                     LIM_WEP_IN_FC,psessionEntry);
 
                                 break;
                         } // end if (pKeyMapEntry)
@@ -1413,9 +1374,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                 limSendAuthMgmtFrame(pMac, &authFrame,
                                      pHdr->sa,
-                                     LIM_NO_WEP_IN_FC,
-                                     psessionEntry,
-                                     eSIR_FALSE);
+                                     LIM_NO_WEP_IN_FC,psessionEntry);
                 return;
             }
 
@@ -1443,9 +1402,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
                     return;
                 }
 
@@ -1472,9 +1429,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
                     return;
                 }
 
@@ -1499,9 +1454,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                     limSendAuthMgmtFrame(
                                         pMac, &authFrame,
                                         pHdr->sa,
-                                        LIM_NO_WEP_IN_FC,
-                                        psessionEntry,
-                                        eSIR_FALSE);
+                                        LIM_NO_WEP_IN_FC,psessionEntry);
 
                     /// Delete pre-auth context of STA
                     limDeletePreAuthNode(pMac,
@@ -1556,9 +1509,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
 
                     /// Send Auth indication to SME
                     vos_mem_copy((tANI_U8 *) mlmAuthInd.peerMacAddr,
@@ -1596,9 +1547,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
                     limSendAuthMgmtFrame(pMac, &authFrame,
                                          pHdr->sa,
-                                         LIM_NO_WEP_IN_FC,
-                                         psessionEntry,
-                                         eSIR_FALSE);
+                                         LIM_NO_WEP_IN_FC,psessionEntry);
                     return;
                 }
             } // if (pMac->lim.gLimSystemRole == eLIM_AP_ROLE || ...
@@ -1635,7 +1584,7 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
                 // Log error
                 PELOGE(limLog(pMac, LOGE,
                        FL("received Auth frame4 from peer with invalid auth algo %d "
-                           MAC_ADDRESS_STR), pRxAuthFrameBody->authAlgoNumber,
+                       MAC_ADDRESS_STR), pRxAuthFrameBody->authAlgoNumber,
                        MAC_ADDR_ARRAY(pHdr->sa));)
 
                 return;
@@ -1731,9 +1680,8 @@ limProcessAuthFrame(tpAniSirGlobal pMac, tANI_U8 *pRxPacketInfo, tpPESession pse
 
             // Log error
             PELOGE(limLog(pMac, LOGE,
-                   FL("received Auth frame from peer with invalid auth seq "
-                   "number %d " MAC_ADDRESS_STR),
-                   pRxAuthFrameBody->authTransactionSeqNumber,
+                   FL("received Auth frame from peer with invalid auth seq number %d "
+                   MAC_ADDRESS_STR), pRxAuthFrameBody->authTransactionSeqNumber,
                    MAC_ADDR_ARRAY(pHdr->sa));)
 
             break;
@@ -1766,7 +1714,6 @@ tSirRetStatus limProcessAuthFrameNoSession(tpAniSirGlobal pMac, tANI_U8 *pBd, vo
     tSirMacAuthFrameBody rxAuthFrame;
     tSirMacAuthFrameBody *pRxAuthFrameBody = NULL;
     tSirRetStatus ret_status = eSIR_FAILURE;
-    int i;
 
     pHdr = WDA_GET_RX_MAC_HEADER(pBd);
     pBody = WDA_GET_RX_MPDU_DATA(pBd);
@@ -1775,29 +1722,17 @@ tSirRetStatus limProcessAuthFrameNoSession(tpAniSirGlobal pMac, tANI_U8 *pBd, vo
     limLog(pMac, LOG1,
            FL("Auth Frame Received: BSSID "MAC_ADDRESS_STR" (RSSI %d)"),
            MAC_ADDR_ARRAY(pHdr->bssId),
-           (uint)abs((tANI_S8)WDA_GET_RX_RSSI_NORMALIZED(pBd)));
+           (uint)abs((tANI_S8)WDA_GET_RX_RSSI_DB(pBd)));
 
-    /* Auth frame has come on a new BSS, however, we need to find the session
-     * from where the auth-req was sent to the new AP
-     */
-    for (i = 0; i < pMac->lim.maxBssId; i++) {
-        /* Find first free room in session table */
-        if (pMac->lim.gpSession[i].valid == TRUE &&
-           pMac->lim.gpSession[i].ftPEContext.ftPreAuthSession == VOS_TRUE) {
-            /* Found the session */
-            psessionEntry = &pMac->lim.gpSession[i];
-            pMac->lim.gpSession[i].ftPEContext.ftPreAuthSession = VOS_FALSE;
-        }
-    }
-
+    // Check for the operating channel and see what needs to be done next.
+    psessionEntry = pMac->ft.ftPEContext.psavedsessionEntry;
     if (psessionEntry == NULL)
     {
-        limLog(pMac, LOGE,
-        FL("Error: Unable to find session id while in pre-auth phase for FT"));
+        limLog(pMac, LOGE, FL("Error: Unable to find session id while in pre-auth phase for FT"));
         return eSIR_FAILURE;
     }
 
-    if (psessionEntry->ftPEContext.pFTPreAuthReq == NULL)
+    if (pMac->ft.ftPEContext.pFTPreAuthReq == NULL)
     {
         limLog(pMac, LOGE, FL("Error: No FT"));
         // No FT in progress.
@@ -1811,8 +1746,7 @@ tSirRetStatus limProcessAuthFrameNoSession(tpAniSirGlobal pMac, tANI_U8 *pBd, vo
     }
 #ifdef WLAN_FEATURE_VOWIFI_11R_DEBUG
     limPrintMacAddr(pMac, pHdr->bssId, LOG2);
-    limPrintMacAddr(pMac,
-                psessionEntry->ftPEContext.pFTPreAuthReq->preAuthbssId, LOG2);
+    limPrintMacAddr(pMac, pMac->ft.ftPEContext.pFTPreAuthReq->preAuthbssId, LOG2);
     limLog(pMac,LOG2,FL("seqControl 0x%X"),
             ((pHdr->seqControl.seqNumHi << 8) |
             (pHdr->seqControl.seqNumLo << 4) |
@@ -1820,17 +1754,17 @@ tSirRetStatus limProcessAuthFrameNoSession(tpAniSirGlobal pMac, tANI_U8 *pBd, vo
 #endif
 
     // Check that its the same bssId we have for preAuth
-    if (!vos_mem_compare(psessionEntry->ftPEContext.pFTPreAuthReq->preAuthbssId,
+    if (!vos_mem_compare(pMac->ft.ftPEContext.pFTPreAuthReq->preAuthbssId,
                          pHdr->bssId, sizeof( tSirMacAddr )))
     {
-        limLog(pMac, LOGE, FL("Error: Same bssid as preauth BSSID"));
+        limLog(pMac, LOGE, FL("Error: NOT Same bssid as preauth BSSID"));
         // In this case SME if indeed has triggered a
         // pre auth it will time out.
         return eSIR_FAILURE;
     }
 
     if (eANI_BOOLEAN_TRUE ==
-        psessionEntry->ftPEContext.pFTPreAuthReq->bPreAuthRspProcessed)
+        pMac->ft.ftPEContext.pFTPreAuthReq->bPreAuthRspProcessed)
     {
         /*
          * This is likely a duplicate for the same pre-auth request.
@@ -1851,15 +1785,15 @@ tSirRetStatus limProcessAuthFrameNoSession(tpAniSirGlobal pMac, tANI_U8 *pBd, vo
          */
         PELOGE(limLog(pMac,LOG1,"Auth rsp already posted to SME"
                " (session %p, FT session %p)", psessionEntry,
-               psessionEntry););
+               pMac->ft.ftPEContext.pftSessionEntry););
         return eSIR_SUCCESS;
     }
     else
     {
         PELOGE(limLog(pMac,LOGW,"Auth rsp not yet posted to SME"
                " (session %p, FT session %p)", psessionEntry,
-               psessionEntry););
-        psessionEntry->ftPEContext.pFTPreAuthReq->bPreAuthRspProcessed =
+               pMac->ft.ftPEContext.pftSessionEntry););
+        pMac->ft.ftPEContext.pFTPreAuthReq->bPreAuthRspProcessed =
             eANI_BOOLEAN_TRUE;
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -34,11 +34,7 @@
 #include <linux/slab.h>
 #include <linux/hardirq.h>
 #include <linux/vmalloc.h>
-#if defined(HIF_USB)
-#include <linux/usb.h>
-#elif defined(HIF_PCI)
 #include <linux/pci.h> /* pci_alloc_consistent */
-#endif
 #else
 /*
  * Provide dummy defs for kernel data types, functions, and enums
@@ -58,7 +54,7 @@ __adf_os_mem_alloc(adf_os_device_t osdev, size_t size)
 {
     int flags = GFP_KERNEL;
 
-    if (in_interrupt() || irqs_disabled() || in_atomic())
+    if(in_interrupt() || irqs_disabled())
         flags = GFP_ATOMIC;
 
     return kzalloc(size, flags);
@@ -88,12 +84,7 @@ __adf_os_mem_alloc_consistent(
     *paddr = ((adf_os_dma_addr_t) vaddr);
     return vaddr;
 #else
-    void* alloc_mem = NULL;
-    alloc_mem = dma_alloc_coherent(osdev->dev, size, paddr, GFP_KERNEL);
-    if (alloc_mem == NULL)
-        pr_err("%s Warning: unable to alloc consistent memory of size %zu!\n",
-            __func__, size);
-    return alloc_mem;
+    return dma_alloc_coherent(osdev->dev, size, paddr, GFP_KERNEL);
 #endif
 }
 
@@ -174,6 +165,21 @@ static inline a_int32_t
 __adf_os_str_cmp(const char *str1, const char *str2)
 {
     return strcmp(str1, str2);
+}
+
+/**
+ * @brief Copy from one string to another
+ *
+ * @param[in] dest  destination string
+ * @param[in] src   source string
+ * @param[in] bytes limit of num bytes to copy
+ *
+ * @retval    0     returns the initial value of dest
+ */
+static inline char *
+__adf_os_str_ncopy(char *dest, const char *src, a_uint32_t bytes)
+{
+    return strncpy(dest, src, bytes);
 }
 
 /**

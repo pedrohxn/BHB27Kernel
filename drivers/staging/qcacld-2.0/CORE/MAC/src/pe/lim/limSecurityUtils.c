@@ -47,9 +47,6 @@
 #include "utilsApi.h"
 #include "limUtils.h"
 #include "limSecurityUtils.h"
-#ifdef WLAN_FEATURE_VOWIFI_11R
-#include "limFTDefs.h"
-#endif
 #include "limSession.h"
 
 
@@ -443,11 +440,6 @@ limRestoreFromAuthState(tpAniSirGlobal pMac, tSirResultCodes resultCode, tANI_U1
     tSirMacAddr     currentBssId;
     tLimMlmAuthCnf  mlmAuthCnf;
 
-#ifdef FEATURE_WLAN_DIAG_SUPPORT
-    limDiagEventReport(pMac, WLAN_PE_DIAG_AUTH_COMP_EVENT, sessionEntry,
-                       resultCode, protStatusCode);
-#endif
-
     vos_mem_copy( (tANI_U8 *) &mlmAuthCnf.peerMacAddr,
                   (tANI_U8 *) &pMac->lim.gpLimMlmAuthReq->peerMacAddr,
                   sizeof(tSirMacAddr));
@@ -466,16 +458,18 @@ limRestoreFromAuthState(tpAniSirGlobal pMac, tSirResultCodes resultCode, tANI_U1
     sessionEntry->limMlmState = sessionEntry->limPrevMlmState;
 
     MTRACE(macTrace(pMac, TRACE_CODE_MLM_STATE, sessionEntry->peSessionId, sessionEntry->limMlmState));
-    /* Set the authAckStatus status flag as sucess as
-     * host have received the auth rsp and no longer auth
-     * retry is needed also cancel the auth rety timer
-     */
-    pMac->auth_ack_status = LIM_AUTH_ACK_RCD_SUCCESS;
-    /* 'Change' timer for future activations */
-    limDeactivateAndChangeTimer(pMac, eLIM_AUTH_RETRY_TIMER);
+
+
     // 'Change' timer for future activations
     limDeactivateAndChangeTimer(pMac, eLIM_AUTH_FAIL_TIMER);
 
+    #if 0
+    if (wlan_cfgGetStr(pMac, WNI_CFG_BSSID, currentBssId, &cfg) != eSIR_SUCCESS)
+    {
+        /// Could not get BSSID from CFG. Log error.
+        limLog(pMac, LOGP, FL("could not retrieve BSSID"));
+    }
+    #endif //TO SUPPORT BT-AMP
     sirCopyMacAddr(currentBssId,sessionEntry->bssId);
 
     if (sessionEntry->limSmeState == eLIM_SME_WT_PRE_AUTH_STATE)
@@ -934,6 +928,11 @@ tANI_U32 val = 0;
 
   SET_LIM_PROCESS_DEFD_MESGS(pMac, false);
   msgQ.type = WDA_SET_BSSKEY_REQ;
+  //
+  // FIXME_GEN4
+  // A global counter (dialog token) is required to keep track of
+  // all PE <-> HAL communication(s)
+  //
   msgQ.reserved = 0;
   msgQ.bodyptr = pSetBssKeyParams;
   msgQ.bodyval = 0;
@@ -1083,8 +1082,6 @@ void limSendSetStaKeyReq( tpAniSirGlobal pMac,
           else
           {
              limLog( pMac, LOGE, FL( "Wrong Key Index %d" ), defWEPIdx);
-             vos_mem_free (pSetStaKeyParams);
-             return;
           }
       }
       break;
@@ -1104,6 +1101,11 @@ void limSendSetStaKeyReq( tpAniSirGlobal pMac,
 
   pSetStaKeyParams->sendRsp = sendRsp;
 
+  //
+  // FIXME_GEN4
+  // A global counter (dialog token) is required to keep track of
+  // all PE <-> HAL communication(s)
+  //
   msgQ.reserved = 0;
   msgQ.bodyptr = pSetStaKeyParams;
   msgQ.bodyval = 0;
@@ -1176,6 +1178,11 @@ tSirRetStatus      retCode;
   pRemoveBssKeyParams->sessionId = psessionEntry->peSessionId;
 
   msgQ.type = WDA_REMOVE_BSSKEY_REQ;
+  //
+  // FIXME_GEN4
+  // A global counter (dialog token) is required to keep track of
+  // all PE <-> HAL communication(s)
+  //
   msgQ.reserved = 0;
   msgQ.bodyptr = pRemoveBssKeyParams;
   msgQ.bodyval = 0;
@@ -1269,6 +1276,11 @@ tSirRetStatus      retCode;
   SET_LIM_PROCESS_DEFD_MESGS(pMac, false);
 
   msgQ.type = WDA_REMOVE_STAKEY_REQ;
+  //
+  // FIXME_GEN4
+  // A global counter (dialog token) is required to keep track of
+  // all PE <-> HAL communication(s)
+  //
   msgQ.reserved = 0;
   msgQ.bodyptr = pRemoveStaKeyParams;
   msgQ.bodyval = 0;

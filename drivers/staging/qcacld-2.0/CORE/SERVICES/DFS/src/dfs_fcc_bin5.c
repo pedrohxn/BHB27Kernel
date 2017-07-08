@@ -102,11 +102,9 @@ dfs_bin5_check_pulse(struct ath_dfs *dfs, struct dfs_event *re,
    }
 
    /* Adjust the filter threshold for rssi in non TURBO mode */
-   adf_os_spin_lock_bh(&dfs->ic->chan_lock);
    if( ! (dfs->ic->ic_curchan->ic_flags & CHANNEL_TURBO))
       b5_rssithresh += br->br_pulse.b5_rssimargin;
 
-   adf_os_spin_unlock_bh(&dfs->ic->chan_lock);
    /*
     * Check if the pulse is within duration and rssi
     * thresholds.
@@ -185,11 +183,7 @@ dfs_bin5_check(struct ath_dfs *dfs)
    struct dfs_bin5radars *br;
         int index[DFS_MAX_B5_SIZE];
    u_int32_t n = 0, i = 0, i1 = 0, this = 0, prev = 0, rssi_diff = 0, width_diff = 0, bursts= 0;
-#ifdef BUILD_DEBUG_VERSION
         u_int32_t total_diff=0, average_diff=0, total_width=0, average_width=0, numevents=0;
-#else
-        u_int32_t numevents=0;
-#endif
    u_int64_t pri;
 
 
@@ -530,7 +524,6 @@ dfs_check_chirping_merlin(struct ath_dfs *dfs, void *buf, u_int16_t datalen,
     int same_sign;
     int temp;
 
-    adf_os_spin_lock_bh(&dfs->ic->chan_lock);
     if (IS_CHAN_HT40(dfs->ic->ic_curchan)) {
         num_fft_bytes     = NUM_FFT_BYTES_HT40;
         num_bin_bytes     = NUM_BIN_BYTES_HT40;
@@ -560,8 +553,6 @@ dfs_check_chirping_merlin(struct ath_dfs *dfs, void *buf, u_int16_t datalen,
         lower_mag_byte    = LOWER_MAG_BYTE_HT20;
         upper_mag_byte    = UPPER_MAG_BYTE_HT20;
     }
-
-    adf_os_spin_unlock_bh(&dfs->ic->chan_lock);
 
     ptr     = (u_int8_t*)buf;
     /*
@@ -593,7 +584,6 @@ dfs_check_chirping_merlin(struct ath_dfs *dfs, void *buf, u_int16_t datalen,
         max_index_lower[i] = ptr[fft_start + lower_index_byte] >> 2;
         max_index_upper[i] = (ptr[fft_start + upper_index_byte] >> 2) + num_subchan_bins;
 
-        adf_os_spin_lock_bh(&dfs->ic->chan_lock);
         if (!IS_CHAN_HT40(dfs->ic->ic_curchan)) {
             /*
              * for HT20 mode indices are 6 bit signed number
@@ -601,8 +591,6 @@ dfs_check_chirping_merlin(struct ath_dfs *dfs, void *buf, u_int16_t datalen,
             max_index_lower[i] ^= 0x20;
             max_index_upper[i] = 0;
         }
-
-        adf_os_spin_unlock_bh(&dfs->ic->chan_lock);
         /*
          * Reconstruct the maximum magnitude for each sub-channel. Also select
          * and flag the max overall magnitude between the two sub-channels.
