@@ -4700,6 +4700,7 @@ static void __cond_resched(void)
 	sub_preempt_count(PREEMPT_ACTIVE);
 }
 
+#ifndef CONFIG_PREEMPT
 int __sched _cond_resched(void)
 {
 	if (should_resched()) {
@@ -4709,6 +4710,7 @@ int __sched _cond_resched(void)
 	return 0;
 }
 EXPORT_SYMBOL(_cond_resched);
+#endif
 
 /*
  * __cond_resched_lock() - if a reschedule is pending, drop the given lock,
