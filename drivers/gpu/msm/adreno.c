@@ -1277,7 +1277,7 @@ adreno_identify_gpu(struct adreno_device *adreno_dev)
 	const struct adreno_reg_offsets *reg_offsets;
 	struct kgsl_device_platform_data *pdata =
 		dev_get_platdata(&(adreno_dev->dev.pdev->dev));
-	struct adreno_gpudev *gpudev;
+	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
 	int i;
 
 	adreno_dev->chip_id = pdata->chipid;
@@ -1306,8 +1306,8 @@ adreno_identify_gpu(struct adreno_device *adreno_dev)
 		if (reg_offsets->offset_0 != i && !reg_offsets->offsets[i])
 			reg_offsets->offsets[i] = ADRENO_REG_UNUSED;
 	}
-	if (adreno_dev->gpudev->gpudev_init)
-		adreno_dev->gpudev->gpudev_init(adreno_dev);
+	if (gpudev->gpudev_init)
+		gpudev->gpudev_init(adreno_dev);
 }
 
 static struct platform_device_id adreno_id_table[] = {
@@ -1942,8 +1942,9 @@ static int adreno_start(struct kgsl_device *device, int priority)
  */
 static void adreno_vbif_clear_pending_transactions(struct kgsl_device *device)
 {
-	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
-	unsigned int mask = adreno_dev->gpudev->vbif_xin_halt_ctrl0_mask;
+ 	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
+	struct adreno_gpudev *gpudev = ADRENO_GPU_DEVICE(adreno_dev);
+	unsigned int mask = gpudev->vbif_xin_halt_ctrl0_mask;
 	unsigned int val;
 	unsigned long wait_for_vbif;
 
